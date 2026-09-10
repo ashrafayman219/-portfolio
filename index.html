@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Ashraf Ayman, GIS software developer in Mansoura, Egypt. ArcGIS API for JavaScript, spatial analysis, and web GIS." />
+    <title>Ashraf Ayman | GIS Software Developer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://js.arcgis.com/4.32/esri/themes/light/main.css" />
+    <link rel="stylesheet" href="css/tokens.css" />
+    <link rel="stylesheet" href="css/layout.css" />
+    <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="css/map-chrome.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#home">Skip to content</a>
+
+    <header class="site-header">
+      <div class="container nav-inner">
+        <a class="logo" href="#home">
+          <span class="logo-name">Ashraf Ayman</span>
+          <span class="logo-role">GIS Solutions Engineer</span>
+        </a>
+
+        <nav class="nav-tabs" aria-label="Primary">
+          <ul class="nav-links" id="navLinks">
+            <li><a href="#home" data-section="home" class="is-active">Home</a></li>
+            <li><a href="#map" data-section="map">Map</a></li>
+            <li><a href="#projects" data-section="projects">Projects</a></li>
+            <li><a href="#experience" data-section="experience">Experience</a></li>
+            <li><a href="#skills" data-section="skills">Skills</a></li>
+            <li><a href="#contact" data-section="contact">Contact</a></li>
+          </ul>
+          <span class="nav-indicator" id="navIndicator" aria-hidden="true"></span>
+        </nav>
+
+        <div class="nav-actions">
+          <a class="icon-link" id="navGithub" href="https://github.com/ashrafayman219" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.58 2 12.26c0 4.5 2.87 8.32 6.84 9.67.5.1.68-.22.68-.49 0-.24-.01-.87-.01-1.71-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.5-1.11-1.5-.9-.64.07-.62.07-.62 1 .07 1.53 1.06 1.53 1.06.89 1.56 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.37-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.7 0 0 .84-.27 2.75 1.05A9.3 9.3 0 0 1 12 6.84c.85 0 1.71.12 2.51.35 1.9-1.32 2.74-1.05 2.74-1.05.56 1.4.21 2.44.1 2.7.65.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.8-4.58 5.06.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.81 0 .27.18.6.69.49A10.03 10.03 0 0 0 22 12.26C22 6.58 17.52 2 12 2Z"/></svg>
+          </a>
+          <a class="icon-link" id="navLinkedin" href="https://www.linkedin.com/in/ashraf-ayman" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5C4.98 4.88 3.88 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.5 8.5h4V24h-4V8.5zM8.5 8.5h3.8v2.1h.05c.53-1 1.82-2.1 3.75-2.1 4 0 4.7 2.6 4.7 6V24h-4v-7.7c0-1.8 0-4.2-2.55-4.2s-2.95 2-2.95 4.1V24h-4V8.5z"/></svg>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero" id="home">
+        <div class="container hero-grid">
+          <div>
+            <p class="hero-kicker">Mansoura, Egypt</p>
+            <h1 class="hero-name">Ashraf Ayman</h1>
+            <p class="hero-roles" id="heroRoles">GIS Software Developer</p>
+            <p class="hero-about" id="heroAbout"></p>
+            <div class="hero-actions">
+              <a class="btn btn-primary" href="#map">View map</a>
+              <a class="btn btn-outline" href="#projects">Projects</a>
+              <a class="btn btn-outline" id="heroEmail" href="mailto:ashrafayman219@gmail.com">Email</a>
+            </div>
+            <dl class="hero-stats">
+              <div class="stat">
+                <dt>Experience</dt>
+                <dd id="statYears">-</dd>
+              </div>
+              <div class="stat">
+                <dt>Projects here</dt>
+                <dd id="statProjects">-</dd>
+              </div>
+              <div class="stat">
+                <dt>Now</dt>
+                <dd id="statNow">Gulf Terminal</dd>
+              </div>
+            </dl>
+          </div>
+          <div class="profile-wrap">
+            <img class="profile-photo" id="heroPhoto" src="https://avatars.githubusercontent.com/u/140410745?v=4" alt="Ashraf Ayman" width="280" height="280" />
+          </div>
+        </div>
+      </section>
+
+      <section class="section map-section" id="map">
+        <div class="container">
+          <header class="section-header">
+            <p class="section-kicker">Places</p>
+            <h2 class="section-title">Project map</h2>
+            <p class="section-sub">A 3D ArcGIS scene of the work in Projects. Use the country pills, search, or the globe to fly to a card.</p>
+          </header>
+          <div id="map-wrap" data-map-theme="glass">
+            <div id="top-bar">
+              <div id="project-pills" aria-label="Countries"></div>
+            </div>
+            <aside id="dock" aria-label="Workspace panel">
+              <div class="dock-head">
+                <div>
+                  <div class="dock-kicker">Portfolio map</div>
+                  <h2 id="dock-title">Layers</h2>
+                </div>
+                <button class="map-icon-btn" id="btn-close-dock" type="button" aria-label="Close panel">×</button>
+              </div>
+              <div class="dock-body">
+                <div class="panel active" id="panel-layers">
+                  <div class="section-label">Show on map</div>
+                  <button class="choice-btn active" type="button" data-layer="professional">
+                    <span class="choice-copy">
+                      <strong>Professional</strong>
+                      <span>Client and company work</span>
+                    </span>
+                  </button>
+                  <button class="choice-btn active" type="button" data-layer="academic">
+                    <span class="choice-copy">
+                      <strong>Academic</strong>
+                      <span>Institute projects</span>
+                    </span>
+                  </button>
+                </div>
+                <div class="panel" id="panel-locations">
+                  <div class="section-label">Locations</div>
+                  <label class="visually-hidden" for="locationSearch">Search locations</label>
+                  <input id="locationSearch" type="search" placeholder="Search projects" autocomplete="off" />
+                  <ul class="location-list" id="locationList"></ul>
+                </div>
+              </div>
+            </aside>
+
+            <div id="mapView"></div>
+            <div id="map-pins" aria-label="Project goals"></div>
+
+            <div id="map-legend" class="open">
+              <div class="legend-title">Projects</div>
+              <div id="legendContent">
+                <div class="legend-item"><span class="legend-swatch professional-swatch"></span><span class="legend-text">Professional</span></div>
+                <div class="legend-item"><span class="legend-swatch academic-swatch"></span><span class="legend-text">Academic</span></div>
+              </div>
+            </div>
+
+            <div id="bottom-stack">
+              <div id="status-bar">
+                <div class="status-item"><span class="dot" style="background:#1A7A8C"></span><span class="k">Projects</span><span class="v" id="stat-project">0</span></div>
+                <div class="status-item"><span class="dot" style="background:#6B778C"></span><span class="k">Cursor</span><span class="v" id="stat-coords">-</span></div>
+                <div class="status-item"><span class="dot" style="background:#C45C26"></span><span class="k">Zoom</span><span class="v" id="stat-zoom">-</span></div>
+              </div>
+              <nav id="map-toolbar" aria-label="Map tools">
+                <button class="tool" type="button" data-dock="layers">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 2 8l10 6 10-6-10-6zm-8.3 8.6L2 11.5l10 6 10-6-1.7-.9L12 15.2 3.7 10.6zM2 15.1l10 6 10-6-1.7-.9L12 18.7 3.7 14.2 2 15.1z"/></svg>
+                  <span>Layers</span>
+                </button>
+                <button class="tool" type="button" data-dock="locations">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg>
+                  <span>Locations</span>
+                </button>
+                <button class="tool" type="button" id="btn-legend" aria-pressed="true">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5.5" cy="6.5" r="2"/><circle cx="5.5" cy="12" r="2"/><circle cx="5.5" cy="17.5" r="2"/><path d="M10 5.5h10v2H10v-2zm0 5.5h10v2H10v-2zm0 5.5h8v2h-8v-2z"/></svg>
+                  <span>Legend</span>
+                </button>
+                <button class="tool" type="button" id="btn-search" aria-expanded="false" aria-controls="search-menu">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.8l-.3-.3A6.5 6.5 0 1 0 9.5 16c1.6 0 3.1-.6 4.2-1.6l.3.3v.8l5 5 1.5-1.5-5-5zm-6 0C7 14 5 12 5 9.5S7 5 9.5 5 14 7 14 9.5 12 14 9.5 14z"/></svg>
+                  <span>Search</span>
+                </button>
+                <div class="tool-sep" aria-hidden="true"></div>
+                <button class="tool" id="btn-home" type="button">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 2.4 11.6h2.8V21h5.5v-6.4h3.6V21h5.5v-9.4h2.8L12 3z"/></svg>
+                  <span>Home</span>
+                </button>
+                <button class="tool" id="btn-zoom-in" type="button">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6V5z"/></svg>
+                  <span>Zoom in</span>
+                </button>
+                <button class="tool" id="btn-zoom-out" type="button">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 11h14v2H5v-2z"/></svg>
+                  <span>Zoom out</span>
+                </button>
+                <button class="tool" id="btn-fullscreen" type="button">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 3h7v2H5v5H3V3zm11 0h7v7h-2V5h-5V3zM3 14h2v5h5v2H3v-7zm16 0h2v7h-7v-2h5v-5z"/></svg>
+                  <span>Fullscreen</span>
+                </button>
+                <div class="tool-sep" aria-hidden="true"></div>
+                <button class="tool" id="btn-labels" type="button" aria-expanded="false" aria-controls="labels-menu">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 5h16v2H4V5zm0 6h12v2H4v-2zm0 6h16v2H4v-2z"/></svg>
+                  <span>Labels</span>
+                </button>
+                <button class="tool" id="btn-basemap" type="button" aria-expanded="false" aria-controls="basemap-menu">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5.5 12 2l9 3.5V19l-9 3.5L3 19V5.5zm2 1.7v10.3l7 2.7V10L5 7.2zm9 2.8v10.2l7-2.7V7.2L14 10z"/></svg>
+                  <span>Basemap</span>
+                </button>
+                <button class="tool active" id="btn-theme" type="button" aria-pressed="true">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zM11 1h2v3h-2V1zm0 19h2v3h-2v-3zM1 11h3v2H1v-2zm19 0h3v2h-3v-2zM3.8 3.8l1.4-1.4 2.1 2.1-1.4 1.4L3.8 3.8zm12.9 12.9 2.1 2.1-1.4 1.4-2.1-2.1 1.4-1.4zM3.8 20.2l2.1-2.1 1.4 1.4-2.1 2.1-1.4-1.4zm12.9-12.9 2.1-2.1 1.4 1.4-2.1 2.1-1.4-1.4z"/></svg>
+                  <span>Theme</span>
+                </button>
+              </nav>
+            </div>
+
+            <div class="flyout search-flyout" id="search-menu">
+              <input type="search" id="search-input" placeholder="Project, company, or year" autocomplete="off" />
+              <div id="search-results"></div>
+            </div>
+            <div class="flyout" id="labels-menu">
+              <div class="flyout-item active" data-labels="off">Off</div>
+              <div class="flyout-item" data-labels="name">Name</div>
+            </div>
+            <div class="flyout" id="basemap-menu">
+              <div class="flyout-item" data-basemap="gray">Gray</div>
+              <div class="flyout-item" data-basemap="streets">Streets</div>
+              <div class="flyout-item active" data-basemap="satellite">Satellite</div>
+            </div>
+
+            <aside id="detail-panel">
+              <div class="detail-head">
+                <div>
+                  <div class="detail-type" id="detail-type">Place</div>
+                  <h3 id="detail-title"></h3>
+                </div>
+                <button class="map-icon-btn" id="btn-close-detail" type="button" aria-label="Close">×</button>
+              </div>
+              <div class="detail-body" id="detail-body"></div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="projects">
+        <div class="container">
+          <header class="section-header">
+            <p class="section-kicker">Selected work</p>
+            <h2 class="section-title">Projects</h2>
+            <p class="section-sub">Professional and academic GIS applications.</p>
+          </header>
+          <div class="projects-marquee" id="projectsMarquee">
+            <div class="projects-track" id="projectsGrid"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="experience">
+        <div class="container">
+          <header class="section-header">
+            <p class="section-kicker">Background</p>
+            <h2 class="section-title">Experience and education</h2>
+            <p class="section-sub">Gulf Terminal today; Applied Innovation Center in 2024; Edge Pro before that; surveying and GIS training in Mansoura and Cairo.</p>
+          </header>
+          <div class="split-two">
+            <div>
+              <h3 class="section-kicker">Experience</h3>
+              <div class="timeline" id="workTimeline"></div>
+            </div>
+            <div>
+              <h3 class="section-kicker">Education</h3>
+              <div class="timeline" id="eduTimeline"></div>
+              <p style="margin-top: 1.25rem">
+                <a class="btn btn-outline" id="cvLink" href="files/Ashraf Ayman CV.pdf" download>Download CV</a>
+                <a class="btn btn-outline" id="resumeLink" href="files/Ashraf Ayman resume.pdf" download>One-page resume</a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="skills">
+        <div class="container">
+          <header class="section-header">
+            <p class="section-kicker">Toolkit</p>
+            <h2 class="section-title">Skills</h2>
+            <p class="section-sub">GIS platforms, programming, and remote sensing. No fake percentage bars.</p>
+          </header>
+          <div class="skills-grid" id="skillsGrid"></div>
+        </div>
+      </section>
+
+      <section class="section" id="contact">
+        <div class="container">
+          <header class="section-header">
+            <p class="section-kicker">Say hello</p>
+            <h2 class="section-title">Contact</h2>
+            <p class="section-sub" id="contactGoal"></p>
+          </header>
+          <div class="contact-grid">
+            <div class="contact-card">
+              <ul class="contact-list">
+                <li>
+                  <span>Location</span>
+                  <strong id="contactLocation">Mansoura, Dakahlia, Egypt</strong>
+                </li>
+                <li>
+                  <span>Email</span>
+                  <a id="contactEmail" href="mailto:ashrafayman219@gmail.com">ashrafayman219@gmail.com</a>
+                </li>
+                <li>
+                  <span>Current role</span>
+                  <strong id="contactRole">Senior GIS Developer at Gulf Terminal</strong>
+                </li>
+              </ul>
+              <div class="hero-actions">
+                <a class="btn btn-primary" id="contactGithub" href="https://github.com/ashrafayman219" target="_blank" rel="noopener noreferrer">GitHub</a>
+                <a class="btn btn-outline" id="contactLinkedin" href="https://www.linkedin.com/in/ashraf-ayman" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+              </div>
+            </div>
+            <div class="contact-card">
+              <p>References are available on request. The CV and one-page resume are the same PDFs as before.</p>
+              <div class="hero-actions">
+                <a class="btn btn-outline" href="files/Ashraf Ayman CV.pdf" download>CV (PDF)</a>
+                <a class="btn btn-outline" href="files/Ashraf Ayman resume.pdf" download>Resume (PDF)</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <p id="footerCopy">© 2026 Ashraf Ayman</p>
+        <p>GIS software developer in Mansoura, Egypt</p>
+      </div>
+    </footer>
+
+    <nav class="mobile-nav" id="mobileNav" aria-label="Mobile">
+      <div class="mobile-nav-items">
+        <a href="#home" class="mobile-nav-item" data-section="home" style="--d: 50ms">
+          <span class="mobile-nav-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3 3 10.2V21h6v-7h6v7h6V10.2L12 3z"/></svg>
+          </span>
+          <span class="mobile-nav-label">Home</span>
+        </a>
+        <a href="#map" class="mobile-nav-item" data-section="map" style="--d: 90ms">
+          <span class="mobile-nav-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21s7-5.4 7-11a7 7 0 1 0-14 0c0 5.6 7 11 7 11z"/><circle cx="12" cy="10" r="2.2"/></svg>
+          </span>
+          <span class="mobile-nav-label">Map</span>
+        </a>
+        <a href="#projects" class="mobile-nav-item" data-section="projects" style="--d: 130ms">
+          <span class="mobile-nav-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="7" height="7" rx="1"/><rect x="14" y="4" width="7" height="7" rx="1"/><rect x="3" y="13" width="7" height="7" rx="1"/><rect x="14" y="13" width="7" height="7" rx="1"/></svg>
+          </span>
+          <span class="mobile-nav-label">Projects</span>
+        </a>
+        <a href="#experience" class="mobile-nav-item" data-section="experience" style="--d: 170ms">
+          <span class="mobile-nav-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m-10 0h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2z"/></svg>
+          </span>
+          <span class="mobile-nav-label">Experience</span>
+        </a>
+        <a href="#skills" class="mobile-nav-item" data-section="skills" style="--d: 210ms">
+          <span class="mobile-nav-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2M4 12a8 8 0 1 0 16 0 8 8 0 0 0-16 0z"/></svg>
+          </span>
+          <span class="mobile-nav-label">Skills</span>
+        </a>
+        <a href="#contact" class="mobile-nav-item" data-section="contact" style="--d: 250ms">
+          <span class="mobile-nav-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16v12H4z"/><path stroke-linecap="round" stroke-linejoin="round" d="m4 7 8 6 8-6"/></svg>
+          </span>
+          <span class="mobile-nav-label">Contact</span>
+        </a>
+      </div>
+      <button class="mobile-nav-plus" id="mobileNavToggle" type="button" aria-label="Open menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+        </svg>
+      </button>
+    </nav>
+
+    <button class="btn btn-primary back-to-top" id="backToTop" type="button" aria-label="Back to top">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 19V5m0 0-6.5 6.5M12 5l6.5 6.5" />
+      </svg>
+    </button>
+
+    <svg id="liquid-glass-svg" xmlns="http://www.w3.org/2000/svg" width="0" height="0" aria-hidden="true" focusable="false">
+      <defs>
+        <filter id="glass-distortion" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
+          <feTurbulence type="fractalNoise" baseFrequency="0.008 0.008" numOctaves="2" seed="92" result="noise" />
+          <feGaussianBlur in="noise" stdDeviation="1.2" result="blurred" />
+          <feDisplacementMap in="SourceGraphic" in2="blurred" scale="24" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+      </defs>
+    </svg>
+
+    <div class="modal" id="projectModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" hidden>
+      <div class="modal-backdrop" data-close-modal></div>
+      <div class="modal-panel">
+        <button class="modal-close" type="button" data-close-modal aria-label="Close">×</button>
+        <div id="modalBody"></div>
+      </div>
+    </div>
+
+    <script src="https://js.arcgis.com/4.32/"></script>
+    <script src="js/config.js"></script>
+    <script src="js/projects.js"></script>
+    <script src="js/map-ui.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>

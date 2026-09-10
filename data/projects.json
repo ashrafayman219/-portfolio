@@ -1,0 +1,894 @@
+{
+  "personalInfo": {
+    "name": "Ashraf Ayman",
+    "fullName": "Ashraf Ayman Abdel Majeed",
+    "title": "GIS Software Developer",
+    "roles": [
+      "Sr. GIS Solutions Engineer",
+      "GIS Software Developer",
+      "GIS Analyst",
+      "GIS Specialist",
+      "Spatial Analyst"
+    ],
+    "location": "Mansoura, Dakahlia, Egypt",
+    "email": "ashrafayman219@gmail.com",
+    "profileImage": "https://avatars.githubusercontent.com/u/140410745?v=4",
+    "currentCompany": "Gulf Terminal",
+    "currentPosition": "Senior GIS Developer",
+    "careerStart": "April 2022",
+    "social": {
+      "github": "https://github.com/ashrafayman219",
+      "linkedin": "https://www.linkedin.com/in/ashraf-ayman"
+    },
+    "about": "I build GIS software, from ArcGIS web apps and spatial APIs to location-intelligence workflows. My work sits at the intersection of geo-informatics, web development, and .NET, and I care about shipping tools that help people see and act on spatial data.",
+    "cvUrl": "files/Ashraf Ayman CV.pdf",
+    "resumeUrl": "files/Ashraf Ayman resume.pdf",
+    "goal": "I want to grow as a GIS developer in a team that values technical depth and the chance to keep learning."
+  },
+  "education": [
+    {
+      "id": "mansoura-university",
+      "institution": "Mansoura University",
+      "degree": "Bachelor of Arts",
+      "field": "Surveying, Remote Sensing & GIS",
+      "graduationDate": "June 2021",
+      "logo": "images/MU-logo.jpg",
+      "location": {
+        "latitude": 31.0409,
+        "longitude": 31.3785,
+        "name": "Mansoura, Egypt"
+      },
+      "honors": [
+        "Honours in GIS and Remote Sensing, 2021"
+      ]
+    },
+    {
+      "id": "iti",
+      "institution": "Information Technology Institute (ITI)",
+      "degree": "Certificate",
+      "field": "5-month intensive program in GIS and Web Development",
+      "graduationDate": "April 2022",
+      "logo": "images/iti.PNG",
+      "location": {
+        "latitude": 30.0444,
+        "longitude": 31.2357,
+        "name": "Cairo, Egypt"
+      }
+    },
+    {
+      "id": "nti",
+      "institution": "National Telecommunication Institute (NTI)",
+      "degree": "Certificate",
+      "field": "Digital Egypt Youth Program, Front-End Web Development",
+      "graduationDate": "February 2023",
+      "logo": "images/nti.jpg",
+      "location": {
+        "latitude": 30.0566,
+        "longitude": 31.2497,
+        "name": "Cairo, Egypt"
+      }
+    }
+  ],
+  "workExperience": [
+    {
+      "id": "gulf-terminal-senior",
+      "company": "Gulf Terminal",
+      "position": "Senior GIS Developer",
+      "startDate": "September 2026",
+      "endDate": "Present",
+      "location": "Mansoura, Egypt",
+      "employmentType": "Full-time",
+      "website": "https://gulfterminal.com/",
+      "logo": "images/GT.png",
+      "latitude": 31.0409,
+      "longitude": 31.3785,
+      "responsibilities": [
+        "Lead GIS software design and development with the Esri suite and standard programming tools.",
+        "Own and extend the ArcGIS Maps SDK API library for 2D and 3D web apps and spatial analysis.",
+        "Write programming specifications and review results with project managers.",
+        "Work with SQL Server and PostgreSQL, and debug production issues as they appear."
+      ],
+      "skills": [
+        "ArcGIS Maps SDK",
+        "JavaScript",
+        "Leaflet",
+        "Mapbox",
+        "Google Earth Studio",
+        "SQL Server",
+        "PostgreSQL"
+      ]
+    },
+    {
+      "id": "gulf-terminal",
+      "company": "Gulf Terminal",
+      "position": "GIS Developer",
+      "startDate": "May 2023",
+      "endDate": "August 2026",
+      "location": "Mansoura, Egypt",
+      "employmentType": "Full-time",
+      "website": "https://gulfterminal.com/",
+      "logo": "images/GT.png",
+      "showOnMap": false,
+      "latitude": 31.0409,
+      "longitude": 31.3785,
+      "responsibilities": [
+        "Built a dynamic API library on the ArcGIS Maps SDK for JavaScript for 2D and 3D GIS web apps and spatial analysis.",
+        "Design, develop, and maintain software with the Esri suite and standard programming tools.",
+        "Write programming specifications for assigned tasks.",
+        "Work with SQL Server and PostgreSQL.",
+        "Test systems and review results with project managers.",
+        "Write source code, run validation tests, and debug issues as they appear."
+      ],
+      "skills": [
+        "ArcGIS Maps SDK",
+        "JavaScript",
+        "Leaflet",
+        "Mapbox",
+        "Google Earth Studio",
+        "SQL Server",
+        "PostgreSQL"
+      ]
+    },
+    {
+      "id": "upwork",
+      "company": "Upwork",
+      "position": "Sr. GIS Solutions Engineer",
+      "headline": "ArcGIS Pro, Esri GeoAI, Remote Sensing",
+      "startDate": "2024",
+      "endDate": "Present",
+      "location": "Remote",
+      "employmentType": "Freelance",
+      "workMode": "Remote",
+      "displayPlace": false,
+      "logo": "images/upwork_logo.jpg",
+      "showOnMap": false,
+      "latitude": 31.0409,
+      "longitude": 31.3785,
+      "summary": [
+        "Maps don't have limits. A good map tells an excellent story.",
+        "With over 4 years in GIS, I turn complex geospatial data into accurate, practical solutions for analysis, visualization, automation, and decision-making.",
+        "I help businesses, researchers, and organizations understand their spatial data, solve location-based problems, and get clear, actionable results. The work covers GIS development and interactive web apps, spatial analysis, GeoAI, remote sensing, LiDAR, and spatial data automation. I pick the stack from the problem, the workflow, and the outcome you need."
+      ],
+      "responsibilities": [
+        "Turn complex spatial data into clear insights and decision-ready outputs.",
+        "Build GIS workflows that cut manual work and keep results consistent.",
+        "Analyze locations, property, terrain, and spatial relationships to support planning.",
+        "Create interactive maps and GIS applications that make spatial information easier to explore.",
+        "Typical work: property and site analysis, location intelligence, terrain and elevation, remote sensing, spatial visualization, and GIS web apps.",
+        "I start from what the data or application needs to accomplish, then choose the analysis, tools, and workflow that fit."
+      ],
+      "skills": [
+        "ArcGIS API for JavaScript",
+        "Leaflet",
+        "Mapbox GL JS",
+        "ArcGIS Pro",
+        "QGIS",
+        "Python / ArcPy",
+        "GeoAI",
+        "Remote sensing",
+        "LiDAR",
+        "ArcGIS Enterprise",
+        "StoryMaps"
+      ],
+      "insights": {
+        "badge": "Top Rated",
+        "jss": 100
+      }
+    },
+    {
+      "id": "aic",
+      "company": "Applied Innovation Center (AIC)",
+      "position": "Team Leader",
+      "startDate": "January 2024",
+      "endDate": "December 2024",
+      "location": "Smart Village, Giza, Egypt",
+      "employmentType": "Part-time",
+      "workMode": "Remote",
+      "logo": "images/aic_logo.png",
+      "partnerLogo": "images/وزارة_الاتصالات_وتكنولوجيا_المعلومات.png",
+      "partnerName": "Ministry of Communications and Information Technology",
+      "website": "https://aic.gov.eg/",
+      "logoFill": true,
+      "showOnMap": false,
+      "latitude": 30.0722,
+      "longitude": 31.0218,
+      "responsibilities": [
+        "Team leader for about one year in 2024 on a large Google Earth Pro project, annotating study areas of about 1 km.",
+        "Drew polygons around specific objects, green land, agriculture, desert crops, and urban areas, then labeled them for crop and land-use classification.",
+        "Reviewed the team's results and prepared reports for the supervisor.",
+        "Critical assignment with the Ministry of Communications and Information Technology, adding national-scale government geospatial work to this experience.",
+        "Supported AIC agriculture decision-support work: classifying land use and labeling strategic crops so maps could inform planning, subsidies, and food security.",
+        "Supported satellite-based mapping and urban classification: tracking change across industrial zones, new cities, informal settlements, and agricultural land."
+      ],
+      "skills": [
+        "Google Earth Pro",
+        "Land-use classification",
+        "Crop annotation",
+        "Team leadership"
+      ]
+    },
+    {
+      "id": "edge-pro-developer",
+      "company": "Edge Pro for Information Systems",
+      "position": "GIS Developer",
+      "startDate": "June 2022",
+      "endDate": "February 2023",
+      "location": "Cairo, Egypt",
+      "employmentType": "Full-time",
+      "logo": "images/edge.jpg",
+      "latitude": 30.0444,
+      "longitude": 31.2357,
+      "responsibilities": [
+        "Built customized client solutions and GIS demos.",
+        "Worked with ArcGIS API for JavaScript, Esri technologies, JavaScript, Python, and SQL.",
+        "Contributed to a GIS and remote-sensing project presented at COP27, Sharm El-Sheikh, 2022.",
+        "Worked with ArcSDE, RDBMS, ArcGIS Server, SQL Server, and PostgreSQL.",
+        "Used Hexagon technologies and ERDAS Imagine.",
+        "Coordinated with external stakeholders.",
+        "Collaborated with developers and architects."
+      ],
+      "skills": [
+        "GeoServer",
+        "ERDAS Imagine",
+        "ArcGIS Server",
+        "Python",
+        "SQL Server"
+      ]
+    },
+    {
+      "id": "edge-pro-specialist",
+      "company": "Edge Pro for Information Systems",
+      "position": "GIS Specialist",
+      "startDate": "April 2022",
+      "endDate": "June 2022",
+      "location": "Cairo, Egypt",
+      "employmentType": "Full-time",
+      "logo": "images/edge.jpg",
+      "latitude": 30.0488,
+      "longitude": 31.2412,
+      "responsibilities": [
+        "Worked on GIS integration for military surveying and military-space workflows.",
+        "Produced geographic reports and data visualizations.",
+        "Built mapping tools and applications.",
+        "Applied GIS fundamentals: data formats, projections, editing, and georeferencing.",
+        "Reviewed GIS data for accuracy and standardized geographic datasets.",
+        "Worked with geospatial databases."
+      ],
+      "skills": [
+        "GIS",
+        "Spatial analysis",
+        "Georeferencing"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "id": "od-travel-time-matrix",
+      "title": "OD Travel Time Matrix, 97 US Cities",
+      "subtitle": "ArcGIS Pro Network Analyst",
+      "category": "professional",
+      "year": "2026",
+      "company": "Upwork",
+      "status": "completed",
+      "featured": true,
+      "showOnMap": true,
+      "description": "A large-scale origin-destination cost matrix for 97 U.S. cities in ArcGIS Pro Network Analyst, computing neighborhood-to-neighborhood travel times on a custom road network.",
+      "longDescription": "I built this as an Upwork freelance project in the GIS Analyst role, focused on network analysis and spatial data processing. The work covers 97 U.S. cities. I used a custom road network with pre-calculated travel-time costs and a neighborhood point layer for each city, built a Network Dataset, and ran OD Cost Matrix analysis so every neighborhood pair within a city received a travel time. The output was tens of millions of OD records, including a merged table of about 57 million rows, delivered as geodatabases, shapefiles, and Excel schema reports. A follow-up project extended and refined the original analysis. The client rated the work 5.0 out of 5.",
+      "technologies": [
+        "ArcGIS Pro",
+        "Network Analyst",
+        "Network Dataset",
+        "OD Cost Matrix",
+        "File geodatabase",
+        "Shapefile",
+        "Excel"
+      ],
+      "features": [
+        "OD Cost Matrix for 97 U.S. cities",
+        "Custom road network with pre-calculated travel-time costs",
+        "Neighborhood point layers per city",
+        "Network Dataset built in ArcGIS Pro",
+        "Travel time between every neighborhood pair within each city",
+        "Tens of millions of OD records, including a merged table of about 57 million rows",
+        "Deliverables: geodatabases, shapefiles, and Excel schema reports",
+        "Follow-up project to extend and refine the analysis",
+        "Client rating 5.0 out of 5"
+      ],
+      "images": [
+        "images/od-00.png",
+        "images/od-01.png"
+      ],
+      "demoUrl": null,
+      "githubUrl": null,
+      "tags": [
+        "Network Analyst",
+        "OD matrix",
+        "Travel time",
+        "ArcGIS Pro"
+      ],
+      "location": {
+        "latitude": 39.8283,
+        "longitude": -98.5795,
+        "name": "United States",
+        "country": "United States"
+      },
+      "mapLabel": "OD Matrix"
+    },
+    {
+      "id": "ameriwater-territory-map",
+      "title": "AmeriWater Dealer Territory Map",
+      "subtitle": "Region-based ZIP3 viewer",
+      "category": "professional",
+      "year": "2026",
+      "company": "Upwork",
+      "status": "completed",
+      "featured": true,
+      "showOnMap": true,
+      "description": "An ArcGIS web app that maps AmeriWater dealer coverage across 854 ZIP3 territories, with region filters, dealer coloring, and a full-screen map workspace.",
+      "longDescription": "I built this dealer territory map as an Upwork freelance project for AmeriWater. It is a full-viewport ArcGIS 4.32 app that draws real ZIP boundaries from Esri's USA Boundaries service and colors each ZIP3 by dealer. Four sales regions sit as pills at the top: Brian Bates, Dave Tholin, Tommy LoVoi, and Med Water | Bates. You can select more than one region or state, switch Primary / Secondary / Show All dealer views, and click a territory for region, ZIP, and account details, including a Strategic badge where it applies. A bottom toolbar holds layers, search, basemaps, labels, scale, and a light or liquid-glass theme. Preferences stay in the browser. Administrators can refresh the 854 ZIP3 records from a CSV and deploy an updated data file.",
+      "technologies": [
+        "ArcGIS API for JavaScript 4.32",
+        "JavaScript",
+        "HTML5",
+        "CSS3",
+        "Esri ZIP boundaries"
+      ],
+      "features": [
+        "854 ZIP3 territories on real Esri ZIP geometry",
+        "Four-region filter with multi-select pills",
+        "Primary, Secondary, and Show All dealer views",
+        "State chips combined with region filters, then auto-zoom to the result",
+        "Territory detail card with Strategic badge and dealer accounts",
+        "Search by dealer, ZIP3, or state",
+        "Gray, Streets, and Satellite basemaps",
+        "ZIP3 or dealer labels, dual-unit scale bar, and a live status bar",
+        "Light theme and liquid-glass theme, saved in the browser"
+      ],
+      "images": [
+        "images/AM-03.png",
+        "images/AM-01.png",
+        "images/AM-02.png"
+      ],
+      "demoUrl": null,
+      "githubUrl": null,
+      "tags": [
+        "ArcGIS",
+        "Territory mapping",
+        "Dealer network",
+        "ZIP3"
+      ],
+      "location": {
+        "latitude": 39.8283,
+        "longitude": -98.5795,
+        "name": "United States",
+        "country": "United States"
+      },
+      "mapLabel": "AmeriWater"
+    },
+    {
+      "id": "gt-agroptics",
+      "title": "Agroptics Field Maps",
+      "subtitle": "Leaflet maps for satellite irrigation",
+      "category": "professional",
+      "year": "2026",
+      "company": "Gulf Terminal",
+      "status": "completed",
+      "featured": true,
+      "showOnMap": true,
+      "description": "The interactive map for Agroptics: growers draw farm fields, then view Planet, Sentinel, Landsat, and WaPOR crop and water layers inside the Gulf Terminal platform.",
+      "longDescription": "Agroptics is Gulf Terminal's satellite irrigation platform. Growers define field boundaries, send that geometry to the backend, and then read crop and water data on the same map. My main work was the map itself. I wrote the full Leaflet front end in vanilla JavaScript, with no framework, so the same map can open in add-field, edit-field, and season-detail screens. Add and edit modes cover the field lifecycle: draw a polygon, circle, or rectangle, or upload GeoJSON, KML, KMZ, or Shapefile. You can edit vertices, split a field, delete it, catch overlaps, and keep area under a limit. Display mode is read-only. It loads satellite index rasters with a color legend, plus measure, search, geolocation, and download. The dashboard map switches Planet, Sentinel, Landsat, and WaPOR, then layers such as water demand, crop vigor, fractional cover, NDVI, MSAVI, and ETc. Behind the map, I wrote the Planet satellite processing in Python, including the AWS steps. The team converted that code to .NET for production. The map still talks to the backend through init, setFeatures, and getAllFeatures so field geometry and metadata stay with the rest of the Agroptics app.",
+      "technologies": [
+        "Leaflet.js",
+        "JavaScript",
+        "HTML5",
+        "CSS3",
+        "Python",
+        "GeoTIFF",
+        "GeoJSON / KML / Shapefile",
+        "Planet imagery",
+        "WaPOR"
+      ],
+      "features": [
+        "Embeddable map for add, edit, and display screens",
+        "Draw polygon, circle, or rectangle field boundaries",
+        "Upload GeoJSON, KML, KMZ, or Shapefile",
+        "Edit vertices, split fields, delete, overlap checks, and an area limit",
+        "Read-only dashboards with measure, search, geolocation, and download",
+        "Planet, Sentinel, Landsat, and WaPOR sources on the season map",
+        "Satellite index overlays: water demand, crop vigor, fractional cover, NDVI, MSAVI, ETc",
+        "Category legend and date playback for index rasters",
+        "FAO WaPOR water-productivity layers in display mode",
+        "Python processing for Planet images on AWS, later converted to .NET"
+      ],
+      "images": [
+        "images/agroptics-02.png",
+        "images/agroptics-landpage.png"
+      ],
+      "demoUrl": null,
+      "githubUrl": null,
+      "tags": [
+        "Leaflet",
+        "Precision agriculture",
+        "Remote sensing",
+        "Field mapping"
+      ],
+      "location": {
+        "latitude": 40.5853,
+        "longitude": -105.0844,
+        "name": "Colorado, USA",
+        "country": "United States"
+      },
+      "mapLabel": "Agroptics"
+    },
+    {
+      "id": "cop27-sharm",
+      "title": "COP27, Sharm El-Sheikh",
+      "subtitle": "Real-time green-area monitoring",
+      "category": "professional",
+      "year": "2022",
+      "company": "Edge Pro for Information Systems",
+      "status": "completed",
+      "featured": true,
+      "description": "GIS and remote-sensing work for COP27: pan-sharpened satellite imagery and a web app to monitor Sharm El-Sheikh’s green areas.",
+      "longDescription": "Geospatial tools can show whether sustainability work is actually landing. For COP27 we used Hexagon solutions to track Sharm El-Sheikh’s green initiatives. I pan-sharpened satellite imagery to about 10 cm resolution and built a GIS web app so teams could read oxygen and carbon dioxide levels over time and catalogue newly planted trees.",
+      "technologies": [
+        "ArcGIS API for JavaScript",
+        "Remote Sensing",
+        "ERDAS Imagine",
+        "Python",
+        "Satellite Imagery",
+        "Hexagon Solutions"
+      ],
+      "features": [
+        "Near real-time environmental monitoring",
+        "Pan-sharpening to about 10 cm resolution",
+        "Oxygen and CO2 tracking over time",
+        "Tree cataloguing and renaturation tracking",
+        "Decision-support web app"
+      ],
+      "images": [
+        "images/Sharm.png"
+      ],
+      "demoUrl": null,
+      "githubUrl": null,
+      "tags": [
+        "Environmental Monitoring",
+        "Remote Sensing",
+        "Climate Change",
+        "COP27"
+      ],
+      "location": {
+        "latitude": 27.9158,
+        "longitude": 34.33,
+        "name": "Sharm El-Sheikh, Egypt",
+        "country": "Egypt"
+      },
+      "showOnMap": true,
+      "mapLabel": "COP27"
+    },
+    {
+      "id": "pinastra-kuwait-map",
+      "title": "Pinastra Real Estate Map, Kuwait",
+      "subtitle": "Mapbox prices by region",
+      "category": "professional",
+      "year": "2024",
+      "company": "Upwork",
+      "status": "completed",
+      "featured": true,
+      "showOnMap": true,
+      "description": "An interactive Mapbox map for Pinastra that shows Kuwait real-estate prices by region, with buy and rent views, search, and filters. Built in HTML and JavaScript for a no-code platform.",
+      "longDescription": "I built this as an Upwork freelance project in 2024 for Pinastra (pinastra.com), a Kuwait real-estate platform. The client needed a Mapbox map that shows sale and rental prices by region, delivered as HTML and JavaScript so it could sit inside their no-code stack. I prepared the source data from Excel files of real-estate records, then mapped regions so each polygon could carry pricing. The map lets you switch Buy and Rent, search an address or place, and filter by region, street type, and area. Zoom, home, and a basemap switcher sit on the map. The interface is in Arabic to match the rest of the site.",
+      "technologies": [
+        "Mapbox",
+        "JavaScript",
+        "HTML5",
+        "CSS3",
+        "Excel"
+      ],
+      "features": [
+        "Interactive Mapbox map of Kuwait regions with pricing",
+        "Buy and Rent views",
+        "Search by address or place",
+        "Filters for region, street type, and area",
+        "Zoom, home, and basemap controls",
+        "Arabic interface for the Pinastra platform",
+        "Real-estate data prepared from Excel files"
+      ],
+      "images": [
+        "images/kuwait03.png",
+        "images/kuwait02.png",
+        "images/kuwait01.png"
+      ],
+      "demoUrl": "https://pinastra.com",
+      "githubUrl": null,
+      "tags": [
+        "Mapbox",
+        "Real estate",
+        "Kuwait",
+        "Pricing map"
+      ],
+      "location": {
+        "latitude": 29.3759,
+        "longitude": 47.9774,
+        "name": "Kuwait",
+        "country": "Kuwait"
+      },
+      "mapLabel": "Pinastra"
+    },
+    {
+      "id": "geoai-valdosta-parking",
+      "title": "Parking Lot Detection Using GeoAI, Valdosta, GA",
+      "subtitle": "Esri GeoAI on satellite imagery",
+      "category": "professional",
+      "year": "2024",
+      "company": "Upwork",
+      "status": "completed",
+      "featured": true,
+      "showOnMap": true,
+      "description": "An Esri GeoAI workflow that detects parking lots in Valdosta, Georgia from satellite imagery and writes the results to a GIS layer.",
+      "longDescription": "I built this as an Upwork freelance project in 2024 in the GIS Solutions Engineer role. The client wanted a GeoAI demo that could extract street features such as sidewalks and parking lots. I used Esri GeoAI in ArcGIS to detect parking lots in Valdosta, GA. The workflow processed satellite imagery, trained a model to find parking lots, and converted the detections into a GIS layer. The deliverable was a spatial dataset that could go into GIS apps for analysis and decision-making.",
+      "technologies": [
+        "Esri GeoAI",
+        "ArcGIS Pro",
+        "Satellite imagery",
+        "Deep learning"
+      ],
+      "features": [
+        "GeoAI demo for street-feature extraction",
+        "Parking lot detection in Valdosta, Georgia",
+        "Satellite imagery processed for model training",
+        "Detected features converted to a GIS layer",
+        "Spatial dataset ready for GIS apps and analysis"
+      ],
+      "images": [
+        "images/geoAI-valdosta.png"
+      ],
+      "demoUrl": null,
+      "githubUrl": null,
+      "tags": [
+        "GeoAI",
+        "Object detection",
+        "Parking lots",
+        "ArcGIS"
+      ],
+      "location": {
+        "latitude": 30.8327,
+        "longitude": -83.2785,
+        "name": "Valdosta, Georgia",
+        "country": "United States"
+      },
+      "mapLabel": "GeoAI"
+    },
+    {
+      "id": "geoai-bloomington-vehicles",
+      "title": "Vehicles Detection using Deep Learning (GeoAI)",
+      "subtitle": "Esri GeoAI, Bloomington, IL",
+      "category": "professional",
+      "year": "2024",
+      "company": "Upwork",
+      "status": "completed",
+      "featured": true,
+      "showOnMap": true,
+      "description": "An Esri GeoAI workflow that detects and counts vehicles in a Bloomington, Illinois parking lot from a time series of satellite rasters.",
+      "longDescription": "I built this as an Upwork freelance project in 2024 in the GIS Developer role, using Esri GeoAI in ArcGIS Pro. The site is the parking lot at 3 State Farm Plaza S, Bloomington, IL. The client had a time series of medium-resolution images and needed a vehicle count in each scene, then a later high-resolution SkyFi raster from 30 April 2024. I ran deep learning on the imagery rasters to detect vehicles, wrote the results to GIS layers, and summarized counts over time. The stack included ArcGIS Pro, ArcGIS Online, deep-learning modeling, and geospatial data for geolocation and analysis.",
+      "technologies": [
+        "Esri GeoAI",
+        "ArcGIS Pro",
+        "ArcGIS Online",
+        "Deep learning",
+        "Satellite imagery"
+      ],
+      "features": [
+        "Vehicle detection from imagery rasters with Esri GeoAI",
+        "Parking lot at 3 State Farm Plaza S, Bloomington, Illinois",
+        "Time-series counts across multiple acquisition dates",
+        "High-resolution SkyFi scene from 30 April 2024",
+        "Detected vehicles converted to GIS layers",
+        "ArcGIS Online deliverable for analysis and decision-making"
+      ],
+      "images": [
+        "images/parking-geoai.png",
+        "images/SkyFi_2417W1WP-1_2024-04-30_1707Z_DAY_VERY-HIGH_Illinois-USA - Copy.png"
+      ],
+      "demoUrl": null,
+      "githubUrl": null,
+      "tags": [
+        "GeoAI",
+        "Vehicle detection",
+        "Deep learning",
+        "ArcGIS"
+      ],
+      "location": {
+        "latitude": 40.4486,
+        "longitude": -88.9464,
+        "name": "Bloomington, Illinois",
+        "country": "United States"
+      },
+      "mapLabel": "Vehicles"
+    },
+    {
+      "id": "uk-neighbourhood-centres",
+      "title": "UK Neighbourhood Centre Points, March 2024",
+      "subtitle": "Lat/long centroids for about 10,000 shapes",
+      "category": "professional",
+      "year": "2024",
+      "company": "Upwork",
+      "status": "completed",
+      "featured": true,
+      "showOnMap": true,
+      "description": "Geographic centre points (lat/long) for about 10,000 March 2024 UK police neighbourhood boundaries from data.police.uk.",
+      "longDescription": "I built this as an Upwork freelance project in 2024. The client needed latitude and longitude centre points for the March 2024 neighbourhood boundaries published at data.police.uk/data/boundaries, about 10,000 neighbourhoods. In ArcGIS Pro I converted the source KML into geodatabase feature classes, then used ArcPy to batch-copy regional layers into one workspace. For each neighbourhood polygon I calculated a geographic centre and wrote centerLong and centerLat. The national point layer went out to Excel, with force-area tables such as Avon and Somerset, so the client could use the coordinates without GIS software.",
+      "technologies": [
+        "ArcGIS Pro",
+        "ArcPy",
+        "KML",
+        "File geodatabase",
+        "Excel"
+      ],
+      "features": [
+        "March 2024 UK police neighbourhood boundaries from data.police.uk",
+        "About 10,000 neighbourhood polygons",
+        "KML converted and merged in ArcGIS Pro",
+        "ArcPy batch processing across regional geodatabases",
+        "Lat/long centre point for each neighbourhood",
+        "Excel deliverables by police force area"
+      ],
+      "images": [
+        "images/centrepoints00.png",
+        "images/centrepoints01.png",
+        "images/centrepoints02.png"
+      ],
+      "demoUrl": null,
+      "githubUrl": null,
+      "tags": [
+        "Centroids",
+        "UK police",
+        "ArcPy",
+        "Boundaries"
+      ],
+      "location": {
+        "latitude": 52.3555,
+        "longitude": -1.1743,
+        "name": "United Kingdom",
+        "country": "United Kingdom"
+      },
+      "mapLabel": "Centre points"
+    },
+    {
+      "id": "nyc-virtual-tour",
+      "title": "Virtual Tour Route Mapping, NYC",
+      "subtitle": "Google Earth cinematic route",
+      "category": "professional",
+      "year": "2025",
+      "company": "Upwork",
+      "status": "completed",
+      "featured": true,
+      "showOnMap": true,
+      "description": "A Google Earth virtual tour of a route in New York City, with cinematic camera paths, 3D buildings, and elevation along the way.",
+      "longDescription": "I built this as an Upwork freelance project in 2025 in the GIS Solutions Engineer role. It is a high-quality virtual tour of a route in New York City, made in Google Earth. The tour uses cinematic camera paths and 3D buildings to tell the GIS story of the route, including elevation change and geospatial context. The deliverable was a smooth professional video for portfolio demonstration, published 17 November 2025.",
+      "technologies": [
+        "Google Earth",
+        "GIS software",
+        "Digital mapping",
+        "Routing",
+        "Data visualization"
+      ],
+      "features": [
+        "Virtual tour of a New York City route",
+        "Cinematic camera paths in Google Earth",
+        "3D buildings along the route",
+        "Elevation change and geospatial context",
+        "Professional video deliverable"
+      ],
+      "images": [],
+      "videoUrl": "images/gep-nyc.mp4",
+      "demoUrl": null,
+      "githubUrl": null,
+      "tags": [
+        "Google Earth",
+        "Virtual tour",
+        "NYC",
+        "Storytelling"
+      ],
+      "location": {
+        "latitude": 40.758,
+        "longitude": -73.9855,
+        "name": "New York City",
+        "country": "United States"
+      },
+      "mapLabel": "NYC tour"
+    },
+    {
+      "id": "aic-land-annotation",
+      "title": "AIC Land-Use Annotation for AI Training",
+      "subtitle": "Google Earth Pro labeling, Egypt",
+      "category": "professional",
+      "year": "2024",
+      "company": "Applied Innovation Center (AIC)",
+      "status": "completed",
+      "featured": true,
+      "showOnMap": true,
+      "description": "Team-led satellite annotation for AIC and MCIT: polygons and labels on about 1 km study areas so land-use and crop classes could train AI models.",
+      "longDescription": "In 2024 I was team leader at the Applied Innovation Center on a national Google Earth Pro annotation project with the Ministry of Communications and Information Technology. The work was for AI training. Each study area was about 1 km. The team drew polygons around objects, green land, agriculture, desert crops, and urban fabric, then labeled those shapes for crop and land-use classes. I reviewed the team's results and sent reports to my supervisor. The labeled maps fed AIC agriculture decision-support work, so planning, subsidies, and food-security tools could read land use and strategic crops. The same labeling supported satellite mapping of industrial zones, new cities, informal settlements, and agricultural land.",
+      "technologies": [
+        "Google Earth Pro",
+        "Satellite imagery",
+        "Land-use classification",
+        "Crop annotation"
+      ],
+      "features": [
+        "Study areas of about 1 km annotated in Google Earth Pro",
+        "Polygons for objects, green land, agriculture, desert crops, and urban areas",
+        "Crop and land-use labels prepared for AI training",
+        "Team review and supervisor reports",
+        "Agriculture decision-support classes for planning, subsidies, and food security",
+        "Urban and land-change labeling across industrial zones, new cities, and informal settlements",
+        "Assignment with AIC and the Ministry of Communications and Information Technology"
+      ],
+      "images": [
+        "images/aic_satelleite.png"
+      ],
+      "demoUrl": null,
+      "githubUrl": null,
+      "tags": [
+        "AI training",
+        "Annotation",
+        "Land use",
+        "Satellite"
+      ],
+      "location": {
+        "latitude": 30.0722,
+        "longitude": 31.0218,
+        "name": "Smart Village, Giza, Egypt",
+        "country": "Egypt"
+      },
+      "mapLabel": "AIC"
+    },
+    {
+      "id": "geowarehouse-solutions",
+      "title": "Geowarehouse Solutions",
+      "subtitle": "Spatial analysis for warehouse management",
+      "category": "academic",
+      "year": "2022",
+      "company": "Information Technology Institute (ITI)",
+      "status": "completed",
+      "featured": true,
+      "description": "ITI final project: a GIS business web app for warehouse coverage, customer patterns, and branch decisions.",
+      "longDescription": "A GIS-based business application for warehouse decisions, built as the ITI final project with Ahmed Ashraf, Ahmed Mesbah, and Shady Mamdouh. It analyzes spatial data over time so operators can see service coverage, customer patterns, delivery demand, and where a new branch might make sense. The stack was ArcGIS Enterprise (Online, Portal, Server) with Esri APIs and standard web technologies.",
+      "technologies": [
+        "ArcGIS Enterprise",
+        "ArcGIS Portal",
+        "ArcGIS Server",
+        "JavaScript",
+        "HTML/CSS",
+        "SQL",
+        "Esri APIs"
+      ],
+      "features": [
+        "Warehouse location and coverage analysis",
+        "Customer behavior tracking",
+        "Delivery and service-area insight",
+        "Time-series spatial analysis",
+        "Support for new-branch decisions"
+      ],
+      "images": [
+        "images/website-screen.png"
+      ],
+      "demoUrl": "https://ashrafayman219.github.io/FINAL-PROJECT-ITI/",
+      "githubUrl": null,
+      "presentationUrl": "https://medmansedu-my.sharepoint.com/:p:/g/personal/ashrafayman219_std_mans_edu_eg/ESbkYK_bwJJAkgtmCqlYw5MBtzzxjqizxEXD8scUM0bpFA?e=nVhtds",
+      "collaborators": [
+        "Ahmed Ashraf",
+        "Ahmed Mesbah",
+        "Shady Mamdouh"
+      ],
+      "tags": [
+        "Business Intelligence",
+        "Warehouse Management",
+        "Academic Project"
+      ],
+      "location": {
+        "latitude": 30.0444,
+        "longitude": 31.2357,
+        "name": "Cairo, Egypt",
+        "country": "Egypt"
+      },
+      "showOnMap": true,
+      "mapLabel": "Geowarehouse"
+    }
+  ],
+  "skills": {
+    "gis": [
+      {
+        "name": "ArcGIS API for JavaScript"
+      },
+      {
+        "name": "ArcGIS Enterprise (Server, Portal, Online)"
+      },
+      {
+        "name": "ArcGIS Pro"
+      },
+      {
+        "name": "M.App Enterprise"
+      },
+      {
+        "name": "GeoServer"
+      },
+      {
+        "name": "QGIS"
+      },
+      {
+        "name": "Leaflet"
+      },
+      {
+        "name": "OpenLayers"
+      },
+      {
+        "name": "Mapbox"
+      },
+      {
+        "name": "Google Earth Studio"
+      },
+      {
+        "name": "PostGIS"
+      },
+      {
+        "name": "PostgreSQL"
+      }
+    ],
+    "programming": [
+      {
+        "name": "JavaScript"
+      },
+      {
+        "name": "Python"
+      },
+      {
+        "name": "TypeScript"
+      },
+      {
+        "name": "C#"
+      },
+      {
+        "name": "ASP.NET Core"
+      },
+      {
+        "name": "Angular"
+      },
+      {
+        "name": "MS SQL Server"
+      },
+      {
+        "name": "SQL"
+      },
+      {
+        "name": "HTML/CSS"
+      },
+      {
+        "name": "Git and GitHub"
+      },
+      {
+        "name": "OOP"
+      }
+    ],
+    "remoteSensing": [
+      {
+        "name": "ERDAS Imagine"
+      },
+      {
+        "name": "ENVI"
+      },
+      {
+        "name": "LIDAR processing"
+      },
+      {
+        "name": "Hexagon technologies"
+      }
+    ]
+  },
+  "metadata": {
+    "lastUpdated": "2026",
+    "version": "2.0",
+    "copyright": "2026 Ashraf Ayman"
+  }
+}

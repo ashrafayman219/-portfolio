@@ -1,0 +1,150 @@
+:root {
+  --bg: #f7f8fa;
+  --bg-elevated: #ffffff;
+  --text: #1b2430;
+  --text-muted: #5b6775;
+  --navy: #2c3e50;
+  --accent: #1a7a8c;
+  --accent-hover: #156575;
+  --border: #e2e6eb;
+  --shadow: 0 8px 24px rgba(28, 40, 52, 0.08);
+  --shadow-hover: 0 14px 32px rgba(28, 40, 52, 0.12);
+  --nav-bg: rgba(247, 248, 250, 0.86);
+  --map-overlay: rgba(255, 255, 255, 0.92);
+  --pin-work: #2c3e50;
+  --pin-project: #1a7a8c;
+  --pin-education: #8a7a62;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --nav-h: 4.25rem;
+  --container: 1120px;
+  --font: "Noto Sans", "Segoe UI", sans-serif;
+  --font-display: var(--font);
+  --ease: 0.22s ease;
+  --z-nav: 40;
+  --z-modal: 60;
+  --z-top: 50;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: light;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--bg);
+  min-height: 100vh;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: var(--accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+
+a:hover {
+  color: var(--accent-hover);
+}
+
+button,
+input {
+  font-family: inherit;
+}
+
+h1,
+h2,
+h3,
+.display {
+  font-family: var(--font-display);
+  font-weight: 550;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -3rem;
+  background: var(--navy);
+  color: #fff;
+  padding: 0.5rem 0.75rem;
+  z-index: 100;
+  border-radius: 6px;
+}
+
+.skip-link:focus {
+  top: 0.75rem;
+}
+
+.container {
+  width: min(var(--container), calc(100% - 2rem));
+  margin-inline: auto;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
