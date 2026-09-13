@@ -11,6 +11,7 @@
     "geoai-bloomington-vehicles": "#0D9488",
     "uk-neighbourhood-centres": "#C2410C",
     "nyc-virtual-tour": "#2563EB",
+    "la-forensic-gps-tour": "#BE123C",
     "aic-land-annotation": "#1D4ED8",
     "geowarehouse-solutions": "#2F4A6D"
   };

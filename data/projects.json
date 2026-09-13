@@ -699,6 +699,51 @@
       "mapLabel": "NYC tour"
     },
     {
+      "id": "la-forensic-gps-tour",
+      "title": "Forensic GPS Route Tour, Los Angeles",
+      "subtitle": "Google Earth Studio with timestamps",
+      "category": "professional",
+      "year": "2026",
+      "company": "Upwork",
+      "status": "completed",
+      "featured": true,
+      "showOnMap": true,
+      "description": "A Google Earth Studio tour of phone GPS points in Los Angeles, with timestamps, to compare the recorded path with a stated timeline from 21 January 2023.",
+      "longDescription": "I built this as an Upwork freelance project in 2026. The work is a forensic location tour in Los Angeles, California. The incident time is 21 January 2023 at 16:27. The client had a sequence of phone GPS locations and a statement of what happened that day, and needed a route that showed those points with timestamps so the GPS path could be compared with the description. I used Google Earth Studio to fly a cinematic tour through the points. The deliverable was a trimmed video of the tour.",
+      "technologies": [
+        "Google Earth Studio",
+        "GPS",
+        "Digital mapping",
+        "Routing",
+        "Data visualization"
+      ],
+      "features": [
+        "Google Earth Studio tour through GPS point locations",
+        "Route displayed with timestamps",
+        "Los Angeles, California",
+        "Incident time 21 January 2023 at 16:27",
+        "Phone GPS path compared with a stated daily timeline",
+        "Trimmed tour video as the deliverable"
+      ],
+      "images": [],
+      "videoUrl": "images/Part 01 - Tour 03 - Trim.mp4",
+      "demoUrl": null,
+      "githubUrl": null,
+      "tags": [
+        "Forensics",
+        "Google Earth Studio",
+        "GPS",
+        "Los Angeles"
+      ],
+      "location": {
+        "latitude": 34.0522,
+        "longitude": -118.2437,
+        "name": "Los Angeles, California",
+        "country": "United States"
+      },
+      "mapLabel": "LA GPS"
+    },
+    {
       "id": "aic-land-annotation",
       "title": "AIC Land-Use Annotation for AI Training",
       "subtitle": "Google Earth Pro labeling, Egypt",

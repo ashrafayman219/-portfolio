@@ -8,6 +8,17 @@
     return Math.max(1, Math.floor(years));
   }
 
+  function shuffle(items) {
+    const list = (items || []).slice();
+    for (let i = list.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const hold = list[i];
+      list[i] = list[j];
+      list[j] = hold;
+    }
+    return list;
+  }
+
   function escapeHtml(value) {
     return String(value ?? "")
       .replace(/&/g, "&amp;")
@@ -244,7 +255,7 @@
       const hidden = clone ? ' aria-hidden="true"' : "";
       const media =
         project.videoUrl && !image
-          ? `<video class="project-card-video" src="${escapeHtml(project.videoUrl)}" muted loop playsinline preload="metadata" autoplay disablepictureinpicture></video>`
+          ? `<video class="project-card-video" src="${escapeHtml(encodeURI(project.videoUrl))}" muted loop playsinline preload="metadata" autoplay disablepictureinpicture></video>`
           : `<img src="${escapeHtml(image)}" alt="${clone ? "" : escapeHtml(project.title)}" onerror="${IMG_FALLBACK}" />`;
       return `
         <article class="project-card" data-project-id="${escapeHtml(project.id)}"${hidden}>
@@ -286,7 +297,7 @@
       const track = document.getElementById("projectsGrid");
       const marquee = document.getElementById("projectsMarquee");
       if (!track) return;
-      const list = this.data.projects || [];
+      const list = shuffle(this.data.projects || []);
 
       if (!list.length) {
         track.innerHTML = "";
@@ -534,7 +545,7 @@
       if (project.presentationUrl) links.push(`<a class="btn btn-outline" href="${escapeHtml(project.presentationUrl)}" target="_blank" rel="noopener noreferrer">Presentation</a>`);
 
       const video = project.videoUrl
-        ? `<video class="modal-video" src="${escapeHtml(project.videoUrl)}" controls playsinline></video>`
+        ? `<video class="modal-video" src="${escapeHtml(encodeURI(project.videoUrl))}" controls playsinline></video>`
         : "";
       const hero = main
         ? `<img id="modalHero" src="${escapeHtml(main)}" alt="${escapeHtml(project.title)}" />`
