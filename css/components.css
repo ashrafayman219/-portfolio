@@ -40,8 +40,6 @@
 .projects-marquee {
   overflow: hidden;
   width: 100%;
-  max-width: 100vw;
-  margin-top: 0.15rem;
   padding: 0.35rem 0 0.75rem;
   cursor: grab;
   touch-action: pan-y;
@@ -651,6 +649,10 @@
 
 .modal-gallery {
   position: relative;
+}
+
+.modal-stills {
+  margin-top: 0.75rem;
 }
 
 .modal-gallery img,

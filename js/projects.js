@@ -216,7 +216,6 @@
       document.getElementById("contactLocation").textContent = info.location;
       document.getElementById("contactRole").textContent =
         info.currentPosition + " at " + info.currentCompany;
-      document.getElementById("contactGoal").textContent = info.goal;
       document.getElementById("cvLink").href = info.cvUrl;
       document.getElementById("resumeLink").href = info.resumeUrl;
       document.getElementById("footerCopy").textContent =
@@ -253,10 +252,10 @@
     projectCardHtml(project, clone) {
       const image = project.images && project.images[0] ? project.images[0] : "";
       const hidden = clone ? ' aria-hidden="true"' : "";
-      const media =
-        project.videoUrl && !image
-          ? `<video class="project-card-video" src="${escapeHtml(encodeURI(project.videoUrl))}" muted loop playsinline preload="metadata" autoplay disablepictureinpicture></video>`
-          : `<img src="${escapeHtml(image)}" alt="${clone ? "" : escapeHtml(project.title)}" onerror="${IMG_FALLBACK}" />`;
+      const leadVideo = project.videoUrl && (project.leadMedia === "video" || !image);
+      const media = leadVideo
+        ? `<video class="project-card-video" src="${escapeHtml(encodeURI(project.videoUrl))}" muted loop playsinline preload="metadata" autoplay disablepictureinpicture></video>`
+        : `<img src="${escapeHtml(image)}" alt="${clone ? "" : escapeHtml(project.title)}" onerror="${IMG_FALLBACK}" />`;
       return `
         <article class="project-card" data-project-id="${escapeHtml(project.id)}"${hidden}>
           ${media}
@@ -544,12 +543,28 @@
       if (project.documentationUrl) links.push(`<a class="btn btn-outline" href="${escapeHtml(project.documentationUrl)}" target="_blank" rel="noopener noreferrer">API docs</a>`);
       if (project.presentationUrl) links.push(`<a class="btn btn-outline" href="${escapeHtml(project.presentationUrl)}" target="_blank" rel="noopener noreferrer">Presentation</a>`);
 
+      const leadVideo = project.leadMedia === "video" && !!project.videoUrl;
       const video = project.videoUrl
-        ? `<video class="modal-video" src="${escapeHtml(encodeURI(project.videoUrl))}" controls playsinline></video>`
+        ? `<video class="modal-video" src="${escapeHtml(encodeURI(project.videoUrl))}" controls playsinline ${leadVideo ? "autoplay muted" : ""}></video>`
         : "";
-      const hero = main
-        ? `<img id="modalHero" src="${escapeHtml(main)}" alt="${escapeHtml(project.title)}" />`
-        : video;
+      const hero = leadVideo
+        ? video
+        : main
+          ? `<img id="modalHero" src="${escapeHtml(main)}" alt="${escapeHtml(project.title)}" />`
+          : video;
+      const galleryNav =
+        !!main && images.length > 1
+          ? `<button type="button" class="gallery-nav gallery-prev" data-gallery-step="-1" aria-label="Previous image">‹</button>
+             <button type="button" class="gallery-nav gallery-next" data-gallery-step="1" aria-label="Next image">›</button>
+             <p class="gallery-count" id="galleryCount">1 / ${images.length}</p>`
+          : "";
+      const stills =
+        leadVideo && main
+          ? `<div class="modal-gallery modal-stills">
+              <img id="modalHero" src="${escapeHtml(main)}" alt="${escapeHtml(project.title)}" />
+              ${galleryNav}
+            </div>`
+          : "";
 
       const features = (project.features || []).map((f) => `<li>${escapeHtml(f)}</li>`).join("");
       const techs = (project.technologies || []).map((t) => `<li>${escapeHtml(t)}</li>`).join("");
@@ -557,22 +572,16 @@
         ? `<p><strong>With:</strong> ${escapeHtml(project.collaborators.join(", "))}</p>`
         : "";
 
-      const galleryNav =
-        !!main && images.length > 1
-          ? `<button type="button" class="gallery-nav gallery-prev" data-gallery-step="-1" aria-label="Previous image">‹</button>
-             <button type="button" class="gallery-nav gallery-next" data-gallery-step="1" aria-label="Next image">›</button>
-             <p class="gallery-count" id="galleryCount">1 / ${images.length}</p>`
-          : "";
-
       body.innerHTML = `
         <h2 id="modalTitle">${escapeHtml(project.title)}</h2>
         <p class="project-meta">${escapeHtml(project.company)} · ${escapeHtml(project.year)} · ${escapeHtml(project.location.name)}</p>
         <div class="modal-gallery">
           ${hero}
-          ${galleryNav}
+          ${leadVideo ? "" : galleryNav}
         </div>
+        ${stills}
         ${images.length > 1 ? `<div class="thumbs">${thumbs}</div>` : ""}
-        ${main && video ? video : ""}
+        ${!leadVideo && main && video ? video : ""}
         <p>${escapeHtml(project.longDescription)}</p>
         ${collab}
         <h3>What it does</h3>

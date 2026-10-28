@@ -7,7 +7,7 @@
   const MapUI = {
     state: {
       theme: "glass",
-      legendOn: true,
+      legendOn: false,
       dockOpen: false,
       dockPanel: "layers",
       labelMode: "off"
@@ -27,7 +27,8 @@
     loadPrefs() {
       const prefs = {
         theme: "glass",
-        legendOn: true,
+        legendOn: false,
+        legendExplicit: false,
         dockOpen: false,
         dockPanel: "layers",
         labelMode: "off"
@@ -35,6 +36,7 @@
       try {
         const raw = localStorage.getItem(PREFS_KEY);
         if (raw) Object.assign(prefs, JSON.parse(raw));
+        if (!prefs.legendExplicit) prefs.legendOn = false;
       } catch (err) {
         /* ignore */
       }
@@ -56,6 +58,7 @@
           PREFS_KEY,
           JSON.stringify({
             legendOn: this.state.legendOn,
+            legendExplicit: !!this.state.legendExplicit,
             dockOpen: this.state.dockOpen,
             dockPanel: this.state.dockPanel,
             labelMode: this.state.labelMode || "off"
@@ -268,6 +271,7 @@
       if (legendBtn) {
         legendBtn.addEventListener("click", () => {
           const legend = document.getElementById("map-legend");
+          this.state.legendExplicit = true;
           this.setLegend(!(legend && legend.classList.contains("open")));
         });
       }
@@ -318,7 +322,7 @@
       this.applyTheme(this.state.theme || "glass", false);
       this.bind();
       this.setDock(this.state.dockPanel || "layers", false);
-      this.setLegend(this.state.legendOn !== false);
+      this.setLegend(!!this.state.legendOn);
       this.syncLabelsToolButton();
     }
   };

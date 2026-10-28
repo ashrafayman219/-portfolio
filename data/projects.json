@@ -421,6 +421,64 @@
       "mapLabel": "Agroptics"
     },
     {
+      "id": "gt-indoor-map",
+      "title": "Gulf Terminal Indoor Map",
+      "subtitle": "Plaza and Mall floors, plus a DXF converter",
+      "category": "professional",
+      "year": "2026",
+      "company": "Gulf Terminal",
+      "status": "completed",
+      "featured": true,
+      "showOnMap": true,
+      "description": "A browser indoor map of the Plaza and Mall, with floors, rooms, shops, and pathways in 3D, plus a DXF page that builds the GeoJSON the map uses.",
+      "longDescription": "I built this indoor map at Gulf Terminal in 2026. It is a browser map of the Plaza and Mall: floors, rooms, shops, and pathways in 3D, with Explore, directions, and a 360 viewer. On open it uses the phone as the start when you are near the building and asks only for the destination. Routes draw above the buildings, can be replayed, and can be built by typing, tapping the map, or using your location. The phone layout is Explore, Directions, 360, and More. Labels no longer pile on top of each other. A separate browser page reads a DXF floor plan and turns it into the indoor GeoJSON the map uses. Closed doors are not treated as walls, floor names and stair or elevator types follow the drawing, and floors line up. DWG files cannot be read in the browser. Open in map hands the result to the indoor map.",
+      "technologies": [
+        "JavaScript",
+        "GeoJSON",
+        "DXF",
+        "3D indoor mapping",
+        "OpenStreetMap"
+      ],
+      "features": [
+        "3D floors, rooms, shops, and pathways for the Plaza and Mall",
+        "Explore, directions, and a 360 viewer",
+        "Phone location as the start when you are near the building",
+        "Routes drawn above the buildings, with replay",
+        "Routes by typing, tapping the map, or using your location",
+        "Phone layout: Explore, Directions, 360, and More",
+        "Labels that stay apart instead of stacking",
+        "DXF floor plans converted to indoor GeoJSON in the browser",
+        "Closed doors kept out of the wall network",
+        "Floor names and stair or elevator types taken from the drawing",
+        "Open in map sends the converted plan to the indoor map"
+      ],
+      "leadMedia": "video",
+      "images": [
+        "images/indoor01.png",
+        "images/indoor02.png",
+        "images/indoor03.png",
+        "images/indoor04.png",
+        "images/indoor06.png",
+        "images/indoor05.png"
+      ],
+      "videoUrl": "images/indoor00.mp4",
+      "demoUrl": null,
+      "githubUrl": null,
+      "tags": [
+        "Indoor mapping",
+        "Wayfinding",
+        "DXF",
+        "3D"
+      ],
+      "location": {
+        "latitude": 31.0409,
+        "longitude": 31.3785,
+        "name": "Mansoura, Egypt",
+        "country": "Egypt"
+      },
+      "mapLabel": "Indoor"
+    },
+    {
       "id": "cop27-sharm",
       "title": "COP27, Sharm El-Sheikh",
       "subtitle": "Real-time green-area monitoring",

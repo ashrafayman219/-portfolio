@@ -1,21 +1,6 @@
 (function (global) {
   "use strict";
 
-  const PIN_COLORS = {
-    "od-travel-time-matrix": "#1B2A4A",
-    "ameriwater-territory-map": "#1565A8",
-    "gt-agroptics": "#15803D",
-    "cop27-sharm": "#0E7490",
-    "pinastra-kuwait-map": "#6D28D9",
-    "geoai-valdosta-parking": "#C026D3",
-    "geoai-bloomington-vehicles": "#0D9488",
-    "uk-neighbourhood-centres": "#C2410C",
-    "nyc-virtual-tour": "#2563EB",
-    "la-forensic-gps-tour": "#BE123C",
-    "aic-land-annotation": "#1D4ED8",
-    "geowarehouse-solutions": "#2F4A6D"
-  };
-
   const COUNTRY_COLORS = {
     "United States": "#1565A8",
     "United Kingdom": "#012169",
@@ -25,79 +10,57 @@
 
   const COUNTRY_ORDER = ["United States", "United Kingdom", "Egypt", "Kuwait"];
 
-  const SPACE_CAMERA = {
-    position: { longitude: -62, latitude: 28, z: 15000000 },
-    heading: 0,
-    tilt: 8
+  const TILES = {
+    gray: [
+      "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
+      "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}"
+    ],
+    streets: ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"],
+    satellite: ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"]
   };
 
-  const HOME_CAMERA = SPACE_CAMERA;
-
-  function offsetOverlaps(features) {
-    const groups = new Map();
-    features.forEach((feature) => {
-      const key = feature.latitude.toFixed(3) + "," + feature.longitude.toFixed(3);
-      if (!groups.has(key)) groups.set(key, []);
-      groups.get(key).push(feature);
-    });
-    groups.forEach((items) => {
-      if (items.length < 2) return;
-      items.forEach((item, index) => {
-        const angle = (Math.PI * 2 * index) / items.length;
-        const radius = 0.8;
-        item.latitude += radius * Math.cos(angle);
-        item.longitude += (radius * Math.sin(angle)) / Math.cos((item.latitude * Math.PI) / 180);
-      });
-    });
-    return features;
-  }
+  const CIRCLE_COLORS = ["#3eb4c6", "#c6a15a", "#1c2838"];
 
   function collectFeatures(data) {
-    return offsetOverlaps(
-      (data.projects || []).map((project, index) => ({
-        id: "project-" + project.id,
-        projectId: project.id,
-        name: project.title,
-        mapLabel: project.mapLabel || project.title,
-        subtitle: project.company,
-        category: project.category || "professional",
-        period: String(project.year),
-        country: (project.location && project.location.country) || "Unknown",
-        latitude: project.location.latitude,
-        longitude: project.location.longitude,
-        color: PIN_COLORS[project.id] || "#1A7A8C",
-        phase: index * 0.9
-      }))
-    );
-  }
-
-  function loadModule(name) {
-    return new Promise((resolve, reject) => {
-      if (typeof require !== "function") {
-        reject(new Error("ArcGIS API did not load"));
-        return;
-      }
-      require([name], resolve, reject);
-    });
+    return (data.projects || []).map((project, index) => ({
+      id: "project-" + project.id,
+      projectId: project.id,
+      name: project.title,
+      mapLabel: project.mapLabel || project.title,
+      subtitle: project.company,
+      category: project.category || "professional",
+      period: String(project.year),
+      country: (project.location && project.location.country) || "Unknown",
+      latitude: project.location.latitude,
+      longitude: project.location.longitude,
+      color: CIRCLE_COLORS[index % CIRCLE_COLORS.length]
+    }));
   }
 
   function categoryLabel(category) {
     return category === "academic" ? "Academic" : "Professional";
   }
 
+  function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, (char) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    }[char]));
+  }
+
   const GISMap = {
-    view: null,
     map: null,
-    graphics: null,
-    labelsLayer: null,
+    group: null,
     features: [],
-    modules: null,
-    currentBasemap: "satellite",
+    byId: null,
+    tileLayers: [],
+    currentBasemap: "gray",
     layerVisible: { professional: true, academic: true },
     selectedId: null,
     selectedCountry: null,
-    pinEls: null,
-    pinSyncRaf: null,
 
     async init(data) {
       this.features = collectFeatures(data);
@@ -108,10 +71,7 @@
       this.updateStatusCounts();
 
       try {
-        await this.createMap();
-        this.addMarkers();
-        this.addGoalPins();
-        this.bindPinSync();
+        this.createMap();
         this.bindChrome();
         this.setLabelMode((global.MapUI && global.MapUI.state.labelMode) || "off");
         this.playIntro();
@@ -121,151 +81,137 @@
       }
     },
 
-    keepPageFocus() {
-      const root = this.view && this.view.container;
-      if (!root) return;
-      const blurIfMapHoldsFocus = () => {
-        if (root.contains(document.activeElement)) document.activeElement.blur();
-      };
-      blurIfMapHoldsFocus();
-      requestAnimationFrame(blurIfMapHoldsFocus);
-      setTimeout(blurIfMapHoldsFocus, 50);
-      setTimeout(blurIfMapHoldsFocus, 250);
-      const surface = root.querySelector(".esri-view-surface");
-      if (surface) surface.setAttribute("tabindex", "-1");
-    },
-
     showError(message) {
-      const host = document.getElementById("map-wrap") || document.getElementById("mapView");
-      const box = document.createElement("div");
-      box.className = "map-error";
-      box.textContent = message;
-      host.appendChild(box);
+      const view = document.getElementById("mapView");
+      if (!view || view.querySelector(".map-error")) return;
+      const el = document.createElement("div");
+      el.className = "map-error";
+      el.textContent = message;
+      view.appendChild(el);
     },
 
     visibleFeatures() {
       return this.features.filter((feature) => this.layerVisible[feature.category] !== false);
     },
 
-    pinSymbol() {
-      const { PointSymbol3D, IconSymbol3DLayer } = this.modules;
-      return new PointSymbol3D({
-        symbolLayers: [
-          new IconSymbol3DLayer({
-            resource: { primitive: "circle" },
-            material: { color: [0, 0, 0, 0] },
-            size: 10
-          })
-        ]
+    pinIcon(feature) {
+      return L.divIcon({
+        className: "goal-pin-icon",
+        html:
+          '<div class="pin-wave" style="--pin-color:' +
+          feature.color +
+          '"><span class="pulse"></span><span class="pulse delay"></span><span class="dot"></span></div>',
+        iconSize: [22, 22],
+        iconAnchor: [11, 11]
       });
     },
 
-    facingCamera(longitude, latitude) {
-      if (!this.view || !this.view.camera || !this.view.camera.position) return true;
-      const cam = this.view.camera.position;
-      const lat1 = (latitude * Math.PI) / 180;
-      const lon1 = (longitude * Math.PI) / 180;
-      const lat2 = (cam.latitude * Math.PI) / 180;
-      const lon2 = (cam.longitude * Math.PI) / 180;
-      return Math.sin(lat1) * Math.sin(lat2) + Math.cos(lat1) * Math.cos(lat2) * Math.cos(lon1 - lon2) > 0.12;
-    },
+    createMap() {
+      if (typeof L === "undefined" || typeof L.markerClusterGroup !== "function") {
+        throw new Error("Leaflet did not load");
+      }
 
-    addGoalPins() {
-      const root = document.getElementById("map-pins");
-      if (!root) return;
-      root.innerHTML = "";
-      this.pinEls = new Map();
+      const mapApi = this;
+      this.map = L.map("mapView", {
+        zoomControl: false,
+        scrollWheelZoom: true,
+        minZoom: 2,
+        maxZoom: 13,
+        worldCopyJump: true
+      }).setView([28, -62], 2);
+
+      this.map.createPane("place-labels");
+      const labelPane = this.map.getPane("place-labels");
+      labelPane.style.zIndex = 350;
+      labelPane.style.pointerEvents = "none";
+
+      this.group = L.markerClusterGroup({
+        showCoverageOnHover: false,
+        zoomToBoundsOnClick: true,
+        spiderfyOnMaxZoom: true,
+        maxClusterRadius: 54,
+        spiderLegPolylineOptions: { weight: 1.5, color: "#8b95a1", opacity: 0.9 },
+        spiderfyDistanceMultiplier: 1,
+        spiderfyShapePositions: function (count, center) {
+          const reach = count === 2 ? 58 : Math.min(84, 42 + count * 7);
+          const start = count === 2 ? 0 : -Math.PI / 2;
+          const step = (Math.PI * 2) / count;
+          const points = [];
+          for (let i = 0; i < count; i++) {
+            const angle = start + i * step;
+            points.push(L.point(center.x + Math.cos(angle) * reach, center.y + Math.sin(angle) * reach));
+          }
+          return points;
+        },
+        iconCreateFunction: function (cluster) {
+          const count = cluster.getChildCount();
+          const selected = cluster.getAllChildMarkers().some((marker) => marker.feature && marker.feature.id === mapApi.selectedId);
+          return L.divIcon({
+            className: "map-cluster-icon" + (selected ? " is-selected" : ""),
+            html: '<div class="cluster-bubble"><span class="cluster-count">' + count + "</span></div>",
+            iconSize: [46, 46],
+            iconAnchor: [23, 23]
+          });
+        }
+      });
+
+      this.byId = new Map();
       this.features.forEach((feature) => {
-        const delay = ((feature.phase || 0) * 0.08).toFixed(2) + "s";
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "goal-pin";
-        btn.setAttribute("data-id", feature.id);
-        btn.setAttribute("aria-label", feature.mapLabel);
-        btn.title = feature.mapLabel;
-        btn.style.setProperty("--pin-color", feature.color);
-
-        const mark = document.createElement("span");
-        mark.className = "goal-mark";
-        mark.setAttribute("aria-hidden", "true");
-        mark.style.animationDelay = delay;
-
-        const shadow = document.createElement("span");
-        shadow.className = "goal-shadow";
-        shadow.setAttribute("aria-hidden", "true");
-        shadow.style.animationDelay = delay;
-
-        btn.appendChild(mark);
-        btn.appendChild(shadow);
-        btn.addEventListener("click", (event) => {
-          event.stopPropagation();
+        const marker = L.marker([feature.latitude, feature.longitude], {
+          icon: this.pinIcon(feature),
+          title: feature.mapLabel
+        });
+        marker.feature = feature;
+        marker.on("click", (event) => {
+          L.DomEvent.stopPropagation(event);
           this.onSelect(feature.id);
         });
-        root.appendChild(btn);
-        this.pinEls.set(feature.id, btn);
+        this.byId.set(feature.id, marker);
       });
-      this.syncGoalPinState();
-      this.syncPinPositions();
-    },
 
-    bindPinSync() {
-      if (!this.view) return;
-      const { reactiveUtils } = this.modules;
-      if (reactiveUtils) {
-        reactiveUtils.watch(() => this.view.camera, () => this.schedulePinSync());
-        reactiveUtils.watch(() => this.view.stationary, () => this.syncPinPositions());
-      }
-      this.view.on("resize", () => this.syncPinPositions());
-    },
+      this.refreshMarkers();
+      this.map.addLayer(this.group);
+      this.setBasemap(this.currentBasemap);
 
-    schedulePinSync() {
-      if (this.pinSyncRaf) return;
-      this.pinSyncRaf = requestAnimationFrame(() => {
-        this.pinSyncRaf = null;
-        this.syncPinPositions();
+      this.map.on("click", () => {
+        this.selectedId = null;
+        this.selectedCountry = null;
+        this.syncPills(null);
+        this.syncMarkerState();
+        document.querySelectorAll("#locationList button").forEach((btn) => btn.classList.remove("is-active"));
+        if (global.MapUI) global.MapUI.closeDetail();
       });
-    },
 
-    syncPinPositions() {
-      if (!this.view || !this.pinEls || !this.modules) return;
-      const { Point } = this.modules;
-      const pad = 48;
-      this.features.forEach((feature) => {
-        const el = this.pinEls.get(feature.id);
+      this.map.on("mousemove", (event) => {
+        const el = document.getElementById("stat-coords");
         if (!el) return;
-        const layerOn = this.layerVisible[feature.category] !== false;
-        if (!layerOn) {
-          el.style.display = "none";
-          return;
-        }
-        const point = new Point({ longitude: feature.longitude, latitude: feature.latitude });
-        const screen = this.view.toScreen(point);
-        const facing = this.facingCamera(feature.longitude, feature.latitude);
-        const onScreen =
-          screen &&
-          screen.x >= -pad &&
-          screen.y >= -pad &&
-          screen.x <= this.view.width + pad &&
-          screen.y <= this.view.height + pad;
-        if (!screen || !facing || !onScreen) {
-          el.style.display = "none";
-          return;
-        }
-        el.style.display = "";
-        el.style.left = screen.x + "px";
-        el.style.top = screen.y + "px";
+        el.textContent = event.latlng.lng.toFixed(2) + ", " + event.latlng.lat.toFixed(2);
+      });
+
+      this.map.on("zoom", () => {
+        const el = document.getElementById("stat-zoom");
+        if (el) el.textContent = this.map.getZoom().toFixed(1);
+      });
+
+      window.addEventListener("resize", () => this.map.invalidateSize());
+    },
+
+    refreshMarkers() {
+      if (!this.group) return;
+      this.group.clearLayers();
+      this.visibleFeatures().forEach((feature) => {
+        const marker = this.byId.get(feature.id);
+        if (marker) this.group.addLayer(marker);
       });
     },
 
-    syncGoalPinState() {
-      if (!this.pinEls) return;
-      this.pinEls.forEach((el, id) => {
-        const feature = this.features.find((item) => item.id === id);
-        const selected = this.selectedId === id;
-        const focus = !this.selectedId && !!this.selectedCountry && feature && feature.country === this.selectedCountry;
-        el.classList.toggle("is-selected", selected);
-        el.classList.toggle("is-focus", !!focus);
+    syncMarkerState() {
+      if (!this.byId) return;
+      this.byId.forEach((marker, id) => {
+        const icon = marker.getElement();
+        if (icon) icon.classList.toggle("is-selected", id === this.selectedId);
       });
+      if (this.group) this.group.refreshClusters();
     },
 
     renderList(features) {
@@ -277,8 +223,8 @@
           (feature) => `
           <li>
             <button type="button" data-loc="${feature.id}">
-              ${feature.mapLabel}
-              <small>${categoryLabel(feature.category)} · ${feature.period}</small>
+              ${escapeHtml(feature.mapLabel)}
+              <small>${categoryLabel(feature.category)} · ${escapeHtml(feature.period)}</small>
             </button>
           </li>`
         )
@@ -308,9 +254,9 @@
       root.innerHTML = countries
         .map(
           (item) =>
-            `<button type="button" class="bookmark-pill" data-country="${item.country}" aria-pressed="false">
+            `<button type="button" class="bookmark-pill" data-country="${escapeHtml(item.country)}" aria-pressed="false">
               <span class="pill-dot" style="background:${item.color}"></span>
-              ${item.country}
+              ${escapeHtml(item.country)}
             </button>`
         )
         .join("");
@@ -364,7 +310,7 @@
         .map(
           (feature) =>
             `<button type="button" class="search-hit" data-loc="${feature.id}">
-              <span>${feature.mapLabel}</span>
+              <span>${escapeHtml(feature.mapLabel)}</span>
               <span class="hit-kind">${categoryLabel(feature.category)}</span>
             </button>`
         )
@@ -384,182 +330,51 @@
 
     setLayerVisible(category, on) {
       this.layerVisible[category] = !!on;
-      if (this.graphics) {
-        this.graphics.graphics.forEach((graphic) => {
-          if (graphic.attributes && graphic.attributes.category === category) graphic.visible = !!on;
-        });
-      }
       document.querySelectorAll("#project-pills .bookmark-pill").forEach((btn) => {
         const country = btn.getAttribute("data-country");
         btn.hidden = !this.visibleFeatures().some((feature) => feature.country === country);
       });
-      this.syncGoalPinState();
-      this.syncPinPositions();
+      this.refreshMarkers();
+      this.syncMarkerState();
       this.rebuildLabels();
       this.renderList();
       this.updateStatusCounts();
     },
 
-    async createMap() {
-      const [
-        esriConfig,
-        Map,
-        SceneView,
-        GraphicsLayer,
-        Graphic,
-        Point,
-        PointSymbol3D,
-        IconSymbol3DLayer,
-        TextSymbol3DLayer,
-        Extent,
-        reactiveUtils
-      ] = await Promise.all([
-        loadModule("esri/config"),
-        loadModule("esri/Map"),
-        loadModule("esri/views/SceneView"),
-        loadModule("esri/layers/GraphicsLayer"),
-        loadModule("esri/Graphic"),
-        loadModule("esri/geometry/Point"),
-        loadModule("esri/symbols/PointSymbol3D"),
-        loadModule("esri/symbols/IconSymbol3DLayer"),
-        loadModule("esri/symbols/TextSymbol3DLayer"),
-        loadModule("esri/geometry/Extent"),
-        loadModule("esri/core/reactiveUtils")
-      ]);
-
-      const key = (global.PORTFOLIO_CONFIG && global.PORTFOLIO_CONFIG.arcgisApiKey) || "";
-      if (key) esriConfig.apiKey = key;
-
-      this.modules = { Map, SceneView, GraphicsLayer, Graphic, Point, PointSymbol3D, IconSymbol3DLayer, TextSymbol3DLayer, Extent, reactiveUtils };
-
-      this.graphics = new GraphicsLayer({ title: "Projects", elevationInfo: { mode: "relative-to-ground" } });
-      this.labelsLayer = new GraphicsLayer({ title: "Labels", elevationInfo: { mode: "relative-to-ground" } });
-      this.map = new Map({
-        basemap: "satellite",
-        ground: "world-elevation",
-        layers: [this.graphics, this.labelsLayer]
-      });
-
-      this.view = new SceneView({
-        container: "mapView",
-        map: this.map,
-        camera: SPACE_CAMERA,
-        ui: { components: ["attribution"] },
-        popupEnabled: false
-      });
-
-      await this.view.when();
-      this.keepPageFocus();
-      this.bindMapScrollLock();
-
-      this.view.on("click", async (event) => {
-        const hit = await this.view.hitTest(event, { include: this.graphics });
-        const graphic = hit.results.map((r) => r.graphic).find((g) => g && g.attributes && g.attributes.id);
-        if (graphic) this.onSelect(graphic.attributes.id);
-        else if (global.MapUI) {
-          global.MapUI.closeDetail();
-          this.selectedId = null;
-          this.selectedCountry = null;
-          this.syncPills(null);
-          this.syncGoalPinState();
-        }
-      });
-
-      this.view.on("pointer-move", (event) => {
-        const point = this.view.toMap({ x: event.x, y: event.y });
-        const el = document.getElementById("stat-coords");
-        if (!el || !point) return;
-        el.textContent = point.longitude.toFixed(2) + ", " + point.latitude.toFixed(2);
-      });
-
-      if (reactiveUtils) {
-        reactiveUtils.watch(
-          () => this.view.zoom,
-          (zoom) => {
-            const el = document.getElementById("stat-zoom");
-            if (el && typeof zoom === "number") el.textContent = zoom.toFixed(1);
-          }
-        );
-      }
-    },
-
-    bindMapScrollLock() {
-      const wrap = document.getElementById("map-wrap");
-      if (!wrap) return;
-      const chrome = "#dock, #detail-panel, .flyout, #map-legend, #map-toolbar, #status-bar, #project-pills";
-      wrap.addEventListener(
-        "wheel",
-        (event) => {
-          if (event.target.closest(chrome)) return;
-          event.preventDefault();
-          if (event.target.closest("#map-pins")) this.zoomByWheel(event);
-        },
-        { passive: false, capture: true }
-      );
-    },
-
-    zoomByWheel(event) {
-      if (!this.view) return;
-      const zoom = this.view.zoom;
-      if (typeof zoom === "number" && isFinite(zoom)) {
-        const next = zoom - event.deltaY * 0.008;
-        this.view.goTo({ zoom: next }, { duration: 0 }).catch(() => {});
-        return;
-      }
-      const cam = this.view.camera && this.view.camera.clone();
-      if (!cam) return;
-      const factor = event.deltaY > 0 ? 1.08 : 0.92;
-      cam.position.z = Math.max(800, Math.min(4e7, cam.position.z * factor));
-      this.view.goTo(cam, { duration: 0 }).catch(() => {});
-    },
-
     setBasemap(name) {
       if (!this.map) return;
-      this.currentBasemap = name;
-      document.querySelectorAll("#basemap-menu [data-basemap]").forEach((item) => {
-        item.classList.toggle("active", item.getAttribute("data-basemap") === name);
-      });
-      const ids = { gray: "gray-vector", streets: "streets-vector", satellite: "satellite" };
-      this.map.basemap = ids[name] || "satellite";
-    },
-
-    addMarkers() {
-      const { Graphic, Point } = this.modules;
-      this.features.forEach((feature) => {
-        const graphic = new Graphic({
-          geometry: new Point({ longitude: feature.longitude, latitude: feature.latitude }),
-          symbol: this.pinSymbol(),
-          attributes: feature,
-          visible: this.layerVisible[feature.category] !== false
+      const urls = TILES[name] || TILES.gray;
+      this.currentBasemap = TILES[name] ? name : "gray";
+      this.tileLayers.forEach((layer) => this.map.removeLayer(layer));
+      this.tileLayers = urls.map((url, index) => {
+        const layer = L.tileLayer(url, {
+          maxZoom: 13,
+          attribution: index === 0 ? "Tiles &copy; Esri" : "",
+          pane: index === 1 ? "place-labels" : "tilePane"
         });
-        this.graphics.add(graphic);
+        layer.addTo(this.map);
+        return layer;
+      });
+      const wrap = document.getElementById("map-wrap");
+      if (wrap) wrap.setAttribute("data-basemap", this.currentBasemap);
+      document.querySelectorAll("#basemap-menu [data-basemap]").forEach((item) => {
+        item.classList.toggle("active", item.getAttribute("data-basemap") === this.currentBasemap);
       });
     },
 
     rebuildLabels() {
-      if (!this.labelsLayer || !this.modules) return;
-      this.labelsLayer.removeAll();
+      if (!this.byId) return;
       const mode = (global.MapUI && global.MapUI.state.labelMode) || "off";
-      if (mode !== "name") return;
-      const { Graphic, Point, PointSymbol3D, TextSymbol3DLayer } = this.modules;
-      this.visibleFeatures().forEach((feature) => {
-        this.labelsLayer.add(
-          new Graphic({
-            geometry: new Point({ longitude: feature.longitude, latitude: feature.latitude }),
-            symbol: new PointSymbol3D({
-              symbolLayers: [
-                new TextSymbol3DLayer({
-                  text: feature.mapLabel,
-                  material: { color: "#ffffff" },
-                  halo: { color: [20, 32, 56, 0.9], size: 1.2 },
-                  font: { size: 11, family: "Noto Sans", weight: "bold" },
-                  size: 12
-                })
-              ],
-              verticalOffset: { screenLength: 44, maxWorldLength: 140000, minWorldLength: 8000 }
-            })
-          })
-        );
+      this.byId.forEach((marker) => {
+        if (marker.getTooltip()) marker.unbindTooltip();
+        if (mode !== "name" || !marker.feature) return;
+        marker.bindTooltip(escapeHtml(marker.feature.mapLabel), {
+          permanent: true,
+          direction: "top",
+          offset: [0, -14],
+          className: "pin-label",
+          opacity: 1
+        });
       });
     },
 
@@ -575,15 +390,9 @@
     },
 
     changeZoom(delta) {
-      if (!this.view) return;
-      const zoom = this.view.zoom;
-      if (typeof zoom === "number" && isFinite(zoom)) {
-        this.view.goTo({ zoom: zoom + delta }, { duration: 400 }).catch(() => {});
-        return;
-      }
-      const cam = this.view.camera.clone();
-      cam.position.z = Math.max(400000, cam.position.z * (delta > 0 ? 0.6 : 1.6));
-      this.view.goTo(cam, { duration: 400 }).catch(() => {});
+      if (!this.map) return;
+      if (delta > 0) this.map.zoomIn();
+      else this.map.zoomOut();
     },
 
     bindChrome() {
@@ -614,7 +423,7 @@
           const on = document.fullscreenElement === wrap || document.webkitFullscreenElement === wrap;
           document.body.classList.toggle("map-fullscreen", on);
           full.classList.toggle("active", on);
-          requestAnimationFrame(() => this.syncPinPositions());
+          if (this.map) this.map.invalidateSize();
         };
         document.addEventListener("fullscreenchange", onFull);
         document.addEventListener("webkitfullscreenchange", onFull);
@@ -649,124 +458,86 @@
           const action = event.target.closest("[data-open-mapped-project]");
           if (!action) return;
           const projectId = action.getAttribute("data-open-mapped-project");
-          if (global.PortfolioUI) {
-            global.PortfolioUI.highlightProject(projectId, { scroll: true });
-          }
+          if (global.PortfolioUI) global.PortfolioUI.highlightProject(projectId, { scroll: true });
           const projects = document.getElementById("projects");
           if (projects) projects.scrollIntoView({ behavior: "smooth", block: "start" });
         });
       }
     },
 
-    extentForFeatures(features) {
-      const items = features || [];
-      if (!items.length || !this.modules || !this.modules.Extent) return null;
-      const lons = items.map((item) => item.longitude);
-      const lats = items.map((item) => item.latitude);
-      const xmin = Math.min.apply(null, lons);
-      const xmax = Math.max.apply(null, lons);
-      const ymin = Math.min.apply(null, lats);
-      const ymax = Math.max.apply(null, lats);
-      const padLon = Math.min(8, Math.max(0.45, (xmax - xmin) * 0.12));
-      const padLat = Math.min(6, Math.max(0.45, (ymax - ymin) * 0.12));
-      return new this.modules.Extent({
-        xmin: xmin - padLon,
-        ymin: ymin - padLat,
-        xmax: xmax + padLon,
-        ymax: ymax + padLat,
-        spatialReference: { wkid: 4326 }
+    fitFeatures(features, options) {
+      if (!this.map || !features || !features.length) return;
+      const bounds = L.latLngBounds(features.map((feature) => [feature.latitude, feature.longitude]));
+      const duration = options && typeof options.duration === "number" ? options.duration : 1000;
+      this.map.fitBounds(bounds, {
+        padding: [64, 64],
+        maxZoom: options && options.maxZoom ? options.maxZoom : 3,
+        animate: duration > 0,
+        duration: duration / 1000
       });
     },
 
-    countryExtent(country) {
-      return this.extentForFeatures(this.visibleFeatures().filter((feature) => feature.country === country));
-    },
-
-    flyToExtent(extent, duration) {
-      if (!extent || !this.view) return;
-      this.view.goTo({ target: extent, tilt: 12, heading: 0 }, { duration: duration }).catch(() => {});
-    },
-
-    goToProjects(options) {
-      const extent = this.extentForFeatures(this.visibleFeatures());
-      if (!extent) return;
+    clearSelection() {
       this.selectedId = null;
       this.selectedCountry = null;
       this.syncPills(null);
-      this.syncGoalPinState();
+      this.syncMarkerState();
+      document.querySelectorAll("#locationList button").forEach((btn) => btn.classList.remove("is-active"));
+      if (this.group && typeof this.group.unspiderfy === "function") this.group.unspiderfy();
       if (global.MapUI) global.MapUI.closeDetail();
-      const duration = options && typeof options.duration === "number" ? options.duration : 1100;
-      this.view.goTo({ target: extent, zoom: 2.9, tilt: 12, heading: 0 }, { duration: duration }).catch(() => {});
     },
 
     playIntro() {
-      if (!this.view) return;
+      if (!this.map) return;
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      if (reduced) {
-        this.goToProjects({ duration: 0 });
-        return;
-      }
-      this.view.goTo(SPACE_CAMERA, { duration: 0 }).catch(() => {});
-      window.setTimeout(() => {
-        this.goToProjects({ duration: 2800 });
-      }, 700);
+      this.fitFeatures(this.visibleFeatures(), { duration: reduced ? 0 : 900, maxZoom: 3 });
     },
 
     goHome() {
-      if (!this.view) return;
-      this.selectedId = null;
-      this.selectedCountry = null;
-      this.syncPills(null);
-      this.syncGoalPinState();
-      this.view.goTo(HOME_CAMERA, { duration: 1000 }).catch(() => {});
-      if (global.MapUI) global.MapUI.closeDetail();
+      if (!this.map) return;
+      this.clearSelection();
+      this.fitFeatures(this.visibleFeatures(), { duration: 700, maxZoom: 3 });
     },
 
-    goToCountry(country, options) {
-      const extent = this.countryExtent(country);
-      if (!extent || !this.view) return;
+    goToCountry(country) {
+      const features = this.visibleFeatures().filter((feature) => feature.country === country);
+      if (!features.length || !this.map) return;
       this.selectedId = null;
       this.selectedCountry = country;
       this.syncPills(country);
-      this.syncGoalPinState();
+      this.syncMarkerState();
+      if (this.group && typeof this.group.unspiderfy === "function") this.group.unspiderfy();
       if (global.MapUI) global.MapUI.closeDetail();
-      const duration = options && typeof options.duration === "number" ? options.duration : 1100;
-      this.flyToExtent(extent, duration);
+      this.fitFeatures(features, { duration: 800, maxZoom: 6 });
     },
 
     onSelect(id) {
       const feature = this.features.find((item) => item.id === id);
-      if (!feature) return;
+      const marker = this.byId && this.byId.get(id);
+      if (!feature || !marker || !this.map) return;
       this.selectedId = id;
       this.selectedCountry = feature.country;
       this.syncPills(feature.country);
-      this.syncGoalPinState();
+      this.syncMarkerState();
 
       document.querySelectorAll("#locationList button").forEach((btn) => {
         btn.classList.toggle("is-active", btn.getAttribute("data-loc") === id);
       });
 
-      if (this.view) {
-        this.view
-          .goTo(
-            {
-              target: [feature.longitude, feature.latitude],
-              zoom: 7,
-              tilt: 48,
-              heading: 20
-            },
-            { duration: 1100 }
-          )
-          .catch(() => {});
-      }
+      const reveal = () => {
+        if (this.map.getZoom() < 7) this.map.flyTo(marker.getLatLng(), 7, { duration: 0.7 });
+        this.syncMarkerState();
+      };
+      if (this.group.hasLayer(marker)) this.group.zoomToShowLayer(marker, reveal);
+      else reveal();
 
       const body =
         `<div class="map-stat-grid">
           <div class="map-stat"><div class="k">Type</div><div class="v">${categoryLabel(feature.category)}</div></div>
-          <div class="map-stat"><div class="k">When</div><div class="v">${feature.period}</div></div>
+          <div class="map-stat"><div class="k">When</div><div class="v">${escapeHtml(feature.period)}</div></div>
         </div>
-        <p>${feature.subtitle}</p>
-        <button type="button" class="detail-action" data-open-mapped-project="${feature.projectId}">Open project</button>`;
+        <p>${escapeHtml(feature.subtitle)}</p>
+        <button type="button" class="detail-action" data-open-mapped-project="${escapeHtml(feature.projectId)}">Open project</button>`;
 
       if (global.MapUI) global.MapUI.openDetail(categoryLabel(feature.category), feature.name, body);
     },

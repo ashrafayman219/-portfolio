@@ -4,11 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Ashraf Ayman, GIS software developer in Mansoura, Egypt. ArcGIS API for JavaScript, spatial analysis, and web GIS." />
-    <title>Ashraf Ayman | GIS Software Developer</title>
+    <title>Ashraf Ayman | GIS Solutions Engineer</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://js.arcgis.com/4.32/esri/themes/light/main.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
     <link rel="stylesheet" href="css/tokens.css" />
     <link rel="stylesheet" href="css/layout.css" />
     <link rel="stylesheet" href="css/components.css" />
@@ -128,7 +129,7 @@
             <div id="mapView"></div>
             <div id="map-pins" aria-label="Project goals"></div>
 
-            <div id="map-legend" class="open">
+            <div id="map-legend">
               <div class="legend-title">Projects</div>
               <div id="legendContent">
                 <div class="legend-item"><span class="legend-swatch professional-swatch"></span><span class="legend-text">Professional</span></div>
@@ -151,7 +152,7 @@
                   <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg>
                   <span>Locations</span>
                 </button>
-                <button class="tool" type="button" id="btn-legend" aria-pressed="true">
+                <button class="tool" type="button" id="btn-legend" aria-pressed="false">
                   <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5.5" cy="6.5" r="2"/><circle cx="5.5" cy="12" r="2"/><circle cx="5.5" cy="17.5" r="2"/><path d="M10 5.5h10v2H10v-2zm0 5.5h10v2H10v-2zm0 5.5h8v2h-8v-2z"/></svg>
                   <span>Legend</span>
                 </button>
@@ -201,9 +202,9 @@
               <div class="flyout-item" data-labels="name">Name</div>
             </div>
             <div class="flyout" id="basemap-menu">
-              <div class="flyout-item" data-basemap="gray">Gray</div>
+              <div class="flyout-item active" data-basemap="gray">Gray</div>
               <div class="flyout-item" data-basemap="streets">Streets</div>
-              <div class="flyout-item active" data-basemap="satellite">Satellite</div>
+              <div class="flyout-item" data-basemap="satellite">Satellite</div>
             </div>
 
             <aside id="detail-panel">
@@ -227,9 +228,9 @@
             <h2 class="section-title">Projects</h2>
             <p class="section-sub">Professional and academic GIS applications.</p>
           </header>
-        </div>
-        <div class="projects-marquee" id="projectsMarquee">
-          <div class="projects-track" id="projectsGrid"></div>
+          <div class="projects-marquee" id="projectsMarquee">
+            <div class="projects-track" id="projectsGrid"></div>
+          </div>
         </div>
       </section>
 
@@ -273,7 +274,6 @@
           <header class="section-header">
             <p class="section-kicker">Say hello</p>
             <h2 class="section-title">Contact</h2>
-            <p class="section-sub" id="contactGoal"></p>
           </header>
           <div class="contact-grid">
             <div class="contact-card">
@@ -385,7 +385,8 @@
       </div>
     </div>
 
-    <script src="https://js.arcgis.com/4.32/"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
     <script src="js/config.js"></script>
     <script src="js/projects.js"></script>
     <script src="js/map-ui.js"></script>
