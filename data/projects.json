@@ -263,6 +263,93 @@
   ],
   "projects": [
     {
+      "id": "adey-arcgis-sync",
+      "title": "ArcGIS Server Sync",
+      "subtitle": "The layer was a polygon",
+      "category": "professional",
+      "year": "2024",
+      "company": "Adey Adewuyi",
+      "status": "completed",
+      "featured": true,
+      "showOnMap": true,
+      "description": "My first freelance project. Adey needed his server kept in step with ArcGIS Server. The REST calls were failing because they were aimed at the wrong layer.",
+      "longDescription": "On 13 March 2024 Adey Adewuyi asked if I could synchronize ArcGIS Server with his server. I said yes. This was my first freelance project, and getting it was the hard part. Another freelance developer, working from India, was already on the REST API, trying to get, edit, and update the GIS layer that fed the system. Those calls kept failing. I went through the requests with him. He was sending addFeatures as a point: latitude, longitude, and a state code. The layer on the server was a polygon. He had the wrong layer. Once the call hit the right one, the same request came back successful. Difficult to land, straightforward to solve.",
+      "technologies": [
+        "ArcGIS Server",
+        "ArcGIS REST API",
+        "Feature service"
+      ],
+      "features": [
+        "Synchronize ArcGIS Server with the client server",
+        "REST addFeatures for the GIS layer",
+        "The published layer was a polygon, not the point layer being called",
+        "A successful add once the request used the right layer"
+      ],
+      "images": [
+        "images/adey-project.jpeg"
+      ],
+      "demoUrl": null,
+      "githubUrl": null,
+      "tags": [
+        "ArcGIS Server",
+        "REST API",
+        "Feature layer"
+      ],
+      "filters": ["ArcGIS"],
+      "location": {
+        "latitude": 6.5244,
+        "longitude": 3.3792,
+        "name": "Lagos, Nigeria",
+        "country": "Nigeria"
+      },
+      "mapLabel": "Adey"
+    },
+    {
+      "id": "sabah-water-map-series",
+      "title": "Sabah Water Network, 51 Map Sheets",
+      "subtitle": "Dynamic layouts in ArcGIS Pro",
+      "category": "professional",
+      "year": "2026",
+      "company": "Jabatan Air Sabah",
+      "status": "completed",
+      "featured": true,
+      "showOnMap": true,
+      "description": "A dynamic layout in ArcGIS Pro that builds 51 map sheets from the utility water network. Each sheet is its own zone and reads different attribute data.",
+      "longDescription": "I built a dynamic layout in ArcGIS Pro for Jabatan Air Sabah that produces 51 map sheets automatically. Each sheet is a district metered zone in the utility water network, and the layout pulls that zone's own attribute data, so pipe material, diameter, and length change from one map to the next. The layers on the sheet are the water network: distribution mains, hydrants, normal valves, boundary valves, meter points, and the DMZ boundary. The sample sheet is DMZ 05-0101, Taman Sri Perdana, in Sabah, Malaysia.",
+      "technologies": [
+        "ArcGIS Pro",
+        "Map series",
+        "Dynamic layout",
+        "Utility water network"
+      ],
+      "features": [
+        "51 map sheets produced from one dynamic layout",
+        "Each sheet reads its own zone attribute data",
+        "Utility water network layers: mains, hydrants, valves, and meter points",
+        "DMZ boundary and pipes outside the zone drawn separately",
+        "Sample sheet: DMZ 05-0101, Taman Sri Perdana, Sabah"
+      ],
+      "images": [
+        "images/LD-Layout.png"
+      ],
+      "demoUrl": null,
+      "githubUrl": null,
+      "tags": [
+        "ArcGIS Pro",
+        "Map series",
+        "Water network",
+        "Dynamic layout"
+      ],
+      "filters": ["ArcGIS"],
+      "location": {
+        "latitude": 5.8894,
+        "longitude": 118.0608,
+        "name": "Sandakan, Sabah",
+        "country": "Malaysia"
+      },
+      "mapLabel": "Sabah water"
+    },
+    {
       "id": "od-travel-time-matrix",
       "title": "OD Travel Time Matrix, 97 US Cities",
       "subtitle": "ArcGIS Pro Network Analyst",
@@ -424,21 +511,64 @@
       "mapLabel": "Agroptics"
     },
     {
-      "id": "gt-indoor-map",
-      "title": "Gulf Terminal Indoor Map",
-      "subtitle": "Plaza and Mall floors, plus a DXF converter",
+      "id": "gt-cad-indoor",
+      "title": "CAD to Indoor Map",
+      "subtitle": "Floor plans into GeoJSON",
       "category": "professional",
       "year": "2026",
       "company": "Gulf Terminal",
       "status": "completed",
       "featured": true,
       "showOnMap": true,
-      "description": "A browser indoor map of the Plaza and Mall, with floors, rooms, shops, and pathways in 3D, plus a DXF page that builds the GeoJSON the map uses.",
-      "longDescription": "I built this indoor map at Gulf Terminal in 2026. It is a browser map of the Plaza and Mall: floors, rooms, shops, and pathways in 3D, with Explore, directions, and a 360 viewer. On open it uses the phone as the start when you are near the building and asks only for the destination. Routes draw above the buildings, can be replayed, and can be built by typing, tapping the map, or using your location. The phone layout is Explore, Directions, 360, and More. Labels no longer pile on top of each other. A separate browser page reads a DXF floor plan and turns it into the indoor GeoJSON the map uses. Closed doors are not treated as walls, floor names and stair or elevator types follow the drawing, and floors line up. DWG files cannot be read in the browser. Open in map hands the result to the indoor map.",
+      "description": "The step before the indoor map. A browser tool that reads a CAD floor plan and builds the GeoJSON the map uses.",
+      "longDescription": "I built this at Gulf Terminal as the first step for the indoor map. You load a CAD drawing, then set the units, floors, layers, rooms, and places before export. Walking paths come from the pathway layer when the drawing has one. Otherwise the tool builds them. A check has to pass first: every place must be reachable. The sample plan is six floors, from the ground retail level through the penthouse, with 121 places, 470 paths, 84 doors, and 2 links between floors. You can download Indoor.geojson, copy it, or open it directly on the indoor map. The preview draws rooms, corridors, stairs, elevators, doors, and the walk paths for the floor you select.",
       "technologies": [
         "JavaScript",
         "GeoJSON",
-        "DXF",
+        "CAD"
+      ],
+      "features": [
+        "Seven steps: Files, Units, Floors, Layers, Rooms, Place, and Export",
+        "Map preview of each floor next to the CAD drawing",
+        "Walking paths from the pathway layer, or built when that layer is missing",
+        "Reachability check before export",
+        "Sample plan: 6 floors, 121 places, 470 paths, 84 doors, 2 floor links",
+        "Download Indoor.geojson, copy it, or open it on the indoor map"
+      ],
+      "images": [
+        "images/CAD-Converter.png"
+      ],
+      "demoUrl": null,
+      "githubUrl": null,
+      "tags": [
+        "Indoor mapping",
+        "CAD",
+        "GeoJSON"
+      ],
+      "filters": ["Web maps", "Indoor"],
+      "location": {
+        "latitude": 31.469260857518687,
+        "longitude": 31.45541358624358,
+        "name": "Mansoura, Egypt",
+        "country": "Egypt"
+      },
+      "mapLabel": "CAD indoor"
+    },
+    {
+      "id": "gt-indoor-map",
+      "title": "Gulf Terminal Indoor Map",
+      "subtitle": "Plaza and Mall floors in the browser",
+      "category": "professional",
+      "year": "2026",
+      "company": "Gulf Terminal",
+      "status": "completed",
+      "featured": true,
+      "showOnMap": true,
+      "description": "A browser indoor map of the Plaza and Mall, with floors, rooms, shops, and pathways in 3D.",
+      "longDescription": "I built this indoor map at Gulf Terminal in 2026. It is a browser map of the Plaza and Mall: floors, rooms, shops, and pathways in 3D, with Explore, directions, and a 360 viewer. On open it uses the phone as the start when you are near the building and asks only for the destination. Routes draw above the buildings, can be replayed, and can be built by typing, tapping the map, or using your location. The phone layout is Explore, Directions, 360, and More. Labels no longer pile on top of each other. The floor plan it reads comes from the CAD to Indoor Map tool.",
+      "technologies": [
+        "JavaScript",
+        "GeoJSON",
         "3D indoor mapping",
         "OpenStreetMap"
       ],
@@ -449,11 +579,7 @@
         "Routes drawn above the buildings, with replay",
         "Routes by typing, tapping the map, or using your location",
         "Phone layout: Explore, Directions, 360, and More",
-        "Labels that stay apart instead of stacking",
-        "DXF floor plans converted to indoor GeoJSON in the browser",
-        "Closed doors kept out of the wall network",
-        "Floor names and stair or elevator types taken from the drawing",
-        "Open in map sends the converted plan to the indoor map"
+        "Labels that stay apart instead of stacking"
       ],
       "leadMedia": "video",
       "images": [
@@ -467,13 +593,12 @@
       "tags": [
         "Indoor mapping",
         "Wayfinding",
-        "DXF",
         "3D"
       ],
       "filters": ["Web maps", "Indoor"],
       "location": {
-        "latitude": 31.0409,
-        "longitude": 31.3785,
+        "latitude": 31.481092228451526,
+        "longitude": 31.433307954632703,
         "name": "Mansoura, Egypt",
         "country": "Egypt"
       },

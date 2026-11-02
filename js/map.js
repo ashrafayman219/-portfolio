@@ -5,16 +5,20 @@
     "United States": "#1565A8",
     "United Kingdom": "#012169",
     Egypt: "#C45C26",
-    Kuwait: "#6D28D9"
+    Kuwait: "#6D28D9",
+    Malaysia: "#0F766E",
+    Nigeria: "#008751"
   };
 
-  const COUNTRY_ORDER = ["United States", "United Kingdom", "Egypt", "Kuwait"];
+  const COUNTRY_ORDER = ["United States", "United Kingdom", "Egypt", "Kuwait", "Malaysia", "Nigeria"];
 
   const COUNTRY_ABBR = {
     "United States": "US",
     "United Kingdom": "UK",
     Egypt: "EG",
-    Kuwait: "KW"
+    Kuwait: "KW",
+    Malaysia: "MY",
+    Nigeria: "NG"
   };
 
   const TILES = {
@@ -37,7 +41,7 @@
     const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
       Math.cos(toRad(HOME[0])) * Math.cos(toRad(latitude)) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
-    return 2 * 6371 * Math.asin(Math.min(1, Math.sqrt(a))) < 80;
+    return 2 * 6371 * Math.asin(Math.min(1, Math.sqrt(a))) < 2;
   }
 
   function routeArc(from, to, lift) {
