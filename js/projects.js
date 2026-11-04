@@ -303,8 +303,8 @@
             <h3>${escapeHtml(project.title)}</h3>
             <p>${escapeHtml(project.description)}</p>
             <div class="card-actions">
-              <button type="button" class="btn btn-primary" data-open-project="${escapeHtml(project.id)}">Details</button>
-              ${project.showOnMap === false ? "" : `<button type="button" class="btn btn-outline" data-map-project="${escapeHtml(project.id)}">Show on map</button>`}
+              <button type="button" class="btn btn-primary" data-open-project="${escapeHtml(project.id)}"${clone ? " tabindex=\"-1\"" : ""}>Details</button>
+              ${project.showOnMap === false ? "" : `<button type="button" class="btn btn-outline" data-map-project="${escapeHtml(project.id)}"${clone ? " tabindex=\"-1\"" : ""}>Show on map</button>`}
             </div>
           </div>
         </article>`;
@@ -314,10 +314,13 @@
       const marquee = document.getElementById("projectsMarquee");
       if (!marquee || this.projectClicksBound) return;
       this.projectClicksBound = true;
+      marquee.addEventListener("mousedown", (event) => {
+        if (event.target.closest("[aria-hidden='true']")) event.preventDefault();
+      });
       marquee.addEventListener("click", (event) => {
         const open = event.target.closest("[data-open-project]");
         if (open) {
-          this.openModal(open.getAttribute("data-open-project"));
+          this.openModal(open.getAttribute("data-open-project"), open.closest(".project-card") || open);
           return;
         }
         const mapBtn = event.target.closest("[data-map-project]");
@@ -366,6 +369,9 @@
       loop.querySelectorAll(".project-card").forEach((card) => {
         card.setAttribute("aria-hidden", "true");
       });
+      loop.querySelectorAll("button, a").forEach((control) => {
+        control.tabIndex = -1;
+      });
       track.appendChild(loop);
 
       const duration = Math.max(28, Math.round((set.scrollWidth || limit) / 42));
@@ -379,6 +385,7 @@
       if (!marquee) return true;
       if (this.marqueeDragging) return true;
       if (marquee.classList.contains("is-paused")) return true;
+      if (marquee.classList.contains("is-modal-paused")) return true;
       if (marquee.matches(":focus-within")) return true;
       const canHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
       if (canHover && marquee.matches(":hover")) return true;
@@ -605,7 +612,7 @@
       }
     },
 
-    openModal(projectId) {
+    openModal(projectId, origin) {
       const project = this.data.projects.find((item) => item.id === projectId);
       if (!project) return;
       const body = document.getElementById("modalBody");
@@ -655,9 +662,11 @@
         ? `<p><strong>With:</strong> ${escapeHtml(project.collaborators.join(", "))}</p>`
         : "";
 
+      const title = document.getElementById("modalTitle");
+      const subtitle = document.getElementById("modalSubtitle");
+      if (title) title.textContent = project.title;
+      if (subtitle) subtitle.textContent = project.company + " · " + project.year + " · " + project.location.name;
       body.innerHTML = `
-        <h2 id="modalTitle">${escapeHtml(project.title)}</h2>
-        <p class="project-meta">${escapeHtml(project.company)} · ${escapeHtml(project.year)} · ${escapeHtml(project.location.name)}</p>
         <div class="modal-gallery">
           ${hero}
           ${leadVideo ? "" : galleryNav}
@@ -673,6 +682,7 @@
         <ul class="tag-list">${techs}</ul>
         <div class="modal-links">${links.join("")}</div>
       `;
+      body.scrollTop = 0;
 
       this.galleryImages = images;
       this.galleryIndex = 0;
@@ -686,9 +696,79 @@
       });
 
       const modal = document.getElementById("projectModal");
+      const panel = modal.querySelector(".modal-panel");
+      const marquee = document.getElementById("projectsMarquee");
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      this.modalEpoch = (this.modalEpoch || 0) + 1;
+      if (this.modalCloseTimer) {
+        window.clearTimeout(this.modalCloseTimer);
+        this.modalCloseTimer = null;
+      }
+      if (this.modalClosePanel && this.modalCloseHandler) {
+        this.modalClosePanel.removeEventListener("transitionend", this.modalCloseHandler);
+        this.modalClosePanel = null;
+        this.modalCloseHandler = null;
+      }
+      if (marquee) marquee.classList.add("is-modal-paused");
+      const focused = document.activeElement;
+      if (focused && focused.closest && focused.closest("[aria-hidden='true']")) focused.blur();
+      this.lockPageScroll();
+      modal.classList.remove("is-closing", "is-settled");
       modal.hidden = false;
       modal.classList.add("is-open");
+      body.scrollTop = 0;
+      if (panel && !reduced && origin) {
+        panel.style.transform = "none";
+        const panelRect = panel.getBoundingClientRect();
+        const cardRect = origin.getBoundingClientRect();
+        panel.style.transform = "";
+        this.setModalOrigin(panel, panelRect, cardRect);
+        const epoch = this.modalEpoch;
+        window.requestAnimationFrame(() => {
+          if (this.modalEpoch !== epoch || modal.classList.contains("is-closing")) return;
+          modal.classList.add("is-settled");
+        });
+      } else {
+        if (panel) {
+          panel.style.removeProperty("--from-x");
+          panel.style.removeProperty("--from-y");
+          panel.style.removeProperty("--from-s");
+        }
+        modal.classList.add("is-settled");
+      }
+    },
+
+    setModalOrigin(panel, panelRect, cardRect) {
+      const usable = cardRect && cardRect.width > 20 && cardRect.height > 20 && panelRect.width > 20;
+      if (!usable) {
+        panel.style.setProperty("--from-x", "0px");
+        panel.style.setProperty("--from-y", "20px");
+        panel.style.setProperty("--from-s", "0.96");
+        return;
+      }
+      const dx = cardRect.left + cardRect.width / 2 - (panelRect.left + panelRect.width / 2);
+      const dy = cardRect.top + cardRect.height / 2 - (panelRect.top + panelRect.height / 2);
+      const scale = Math.max(0.2, Math.min(0.72, cardRect.width / panelRect.width));
+      panel.style.setProperty("--from-x", dx.toFixed(1) + "px");
+      panel.style.setProperty("--from-y", dy.toFixed(1) + "px");
+      panel.style.setProperty("--from-s", scale.toFixed(3));
+    },
+
+    lockPageScroll() {
+      if (document.body.classList.contains("modal-open")) return;
+      const before = document.documentElement.clientWidth;
       document.body.classList.add("modal-open");
+      const gap = document.documentElement.clientWidth - before;
+      if (gap > 0) {
+        document.documentElement.style.setProperty("--modal-scrollbar-gap", gap + "px");
+        document.body.style.paddingRight = gap + "px";
+      }
+    },
+
+    unlockPageScroll() {
+      document.body.classList.remove("modal-open");
+      document.body.style.paddingRight = "";
+      document.documentElement.style.removeProperty("--modal-scrollbar-gap");
     },
 
     showGallery(index) {
@@ -720,15 +800,49 @@
 
     closeModal() {
       const modal = document.getElementById("projectModal");
+      if (!modal || !modal.classList.contains("is-open") || modal.classList.contains("is-closing")) return;
       modal.querySelectorAll("video").forEach((video) => {
         video.pause();
       });
-      modal.classList.remove("is-open");
-      modal.hidden = true;
-      document.body.classList.remove("modal-open");
-      this.galleryImages = [];
-      this.galleryIndex = 0;
-      this.galleryTitle = "";
+      const epoch = this.modalEpoch || 0;
+      const panel = modal.querySelector(".modal-panel");
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const onEnd = (event) => {
+        if (event.target !== panel || event.propertyName !== "transform") return;
+        finish();
+      };
+      const finish = () => {
+        if (epoch !== this.modalEpoch) return;
+        if (this.modalCloseTimer) {
+          window.clearTimeout(this.modalCloseTimer);
+          this.modalCloseTimer = null;
+        }
+        if (panel) panel.removeEventListener("transitionend", onEnd);
+        this.modalClosePanel = null;
+        this.modalCloseHandler = null;
+        const closedEpoch = epoch + 1;
+        this.modalEpoch = closedEpoch;
+        modal.classList.remove("is-open", "is-settled", "is-closing");
+        modal.hidden = true;
+        this.unlockPageScroll();
+        this.galleryImages = [];
+        this.galleryIndex = 0;
+        this.galleryTitle = "";
+        window.requestAnimationFrame(() => {
+          if (this.modalEpoch !== closedEpoch) return;
+          const marquee = document.getElementById("projectsMarquee");
+          if (marquee) marquee.classList.remove("is-modal-paused");
+        });
+      };
+      if (reduced || !modal.classList.contains("is-settled")) {
+        finish();
+        return;
+      }
+      modal.classList.add("is-closing");
+      this.modalClosePanel = panel;
+      this.modalCloseHandler = onEnd;
+      if (panel) panel.addEventListener("transitionend", onEnd);
+      this.modalCloseTimer = window.setTimeout(finish, 800);
     },
 
     renderWork() {
@@ -810,13 +924,14 @@
       const root = document.getElementById("eduTimeline");
       root.innerHTML = this.data.education
         .map((edu) => {
-          const honors = edu.honors ? `<p>${escapeHtml(edu.honors.join(" · "))}</p>` : "";
+          const honors = edu.honors ? `<p class="edu-honors">${escapeHtml(edu.honors.join(" · "))}</p>` : "";
           return `
           <article class="timeline-item reveal">
             <img src="${escapeHtml(edu.logo)}" alt="${escapeHtml(edu.institution)}" width="72" height="72" loading="lazy" decoding="async" />
             <div>
               <h3>${escapeHtml(edu.institution)}</h3>
-              <p class="when">${escapeHtml(edu.degree)} · ${escapeHtml(edu.field)} · ${escapeHtml(edu.graduationDate)}</p>
+              <p class="edu-degree">${escapeHtml(edu.degree)}</p>
+              <p class="when">${escapeHtml(edu.field)} · ${escapeHtml(edu.graduationDate)}</p>
               ${honors}
             </div>
           </article>`;

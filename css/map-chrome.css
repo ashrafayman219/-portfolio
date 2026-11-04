@@ -22,8 +22,8 @@
   --pin-project: #1a7a8c;
   --pin-education: #8a7a62;
   position: relative;
-  height: 520px;
-  min-height: 520px;
+  height: 700px;
+  min-height: 700px;
   overflow: hidden;
   overscroll-behavior: contain;
   border-radius: var(--radius);
@@ -980,8 +980,8 @@ body.map-fullscreen .back-to-top {
 
 @media (max-width: 1024px) {
   #map-wrap {
-    height: 420px;
-    min-height: 420px;
+    height: 560px;
+    min-height: 560px;
   }
 }
 
@@ -1017,8 +1017,8 @@ body.map-fullscreen .back-to-top {
 
 @media (max-width: 767px) {
   #map-wrap {
-    height: 380px;
-    min-height: 380px;
+    height: 500px;
+    min-height: 500px;
   }
 
   #map-wrap .tool {

@@ -44,38 +44,65 @@
     return 2 * 6371 * Math.asin(Math.min(1, Math.sqrt(a))) < 2;
   }
 
-  function routeArc(from, to, lift) {
-    const midLat = (from[0] + to[0]) / 2;
-    const midLng = (from[1] + to[1]) / 2;
-    const dx = to[1] - from[1];
-    const dy = to[0] - from[0];
-    const len = Math.hypot(dx, dy) || 1;
-    const cLat = midLat + (-dx / len) * lift;
-    const cLng = midLng + (dy / len) * lift;
+  function routeArc(from, to) {
+    const toRad = (degrees) => (degrees * Math.PI) / 180;
+    const toDeg = (radians) => (radians * 180) / Math.PI;
+    const lat1 = toRad(from[0]);
+    const lon1 = toRad(from[1]);
+    const lat2 = toRad(to[0]);
+    const lon2 = toRad(to[1]);
+    const distance = 2 * Math.asin(Math.min(1, Math.sqrt(
+      Math.sin((lat2 - lat1) / 2) * Math.sin((lat2 - lat1) / 2) +
+      Math.cos(lat1) * Math.cos(lat2) * Math.sin((lon2 - lon1) / 2) * Math.sin((lon2 - lon1) / 2)
+    )));
+    if (distance < 1e-6) return [from, to];
+    const steps = 72;
     const points = [];
-    for (let i = 0; i <= 40; i++) {
-      const t = i / 40;
-      const u = 1 - t;
-      points.push([
-        u * u * from[0] + 2 * u * t * cLat + t * t * to[0],
-        u * u * from[1] + 2 * u * t * cLng + t * t * to[1]
-      ]);
+    for (let i = 0; i <= steps; i++) {
+      const f = i / steps;
+      const a = Math.sin((1 - f) * distance) / Math.sin(distance);
+      const b = Math.sin(f * distance) / Math.sin(distance);
+      const x = a * Math.cos(lat1) * Math.cos(lon1) + b * Math.cos(lat2) * Math.cos(lon2);
+      const y = a * Math.cos(lat1) * Math.sin(lon1) + b * Math.cos(lat2) * Math.sin(lon2);
+      const z = a * Math.sin(lat1) + b * Math.sin(lat2);
+      const lat = Math.atan2(z, Math.sqrt(x * x + y * y));
+      let lon = Math.atan2(y, x);
+      if (points.length) {
+        const prev = points[points.length - 1][1];
+        let deg = toDeg(lon);
+        while (deg - prev > 180) deg -= 360;
+        while (prev - deg > 180) deg += 360;
+        lon = toRad(deg);
+      }
+      points.push([toDeg(lat), toDeg(lon)]);
     }
-    return points;
+    let destLng = to[1];
+    while (destLng - from[1] > 180) destLng -= 360;
+    while (from[1] - destLng > 180) destLng += 360;
+    const bend = 0.62;
+    const dLat = to[0] - from[0];
+    const dLng = destLng - from[1];
+    return points.map((point, index) => {
+      const f = index / steps;
+      return [
+        from[0] + dLat * f + (point[0] - (from[0] + dLat * f)) * bend,
+        from[1] + dLng * f + (point[1] - (from[1] + dLng * f)) * bend
+      ];
+    });
   }
 
   function collectFeatures(data) {
     return (data.projects || []).map((project, index) => ({
-      id: "project-" + project.id,
+        id: "project-" + project.id,
       projectId: project.id,
-      name: project.title,
+        name: project.title,
       mapLabel: project.mapLabel || project.title,
-      subtitle: project.company,
+        subtitle: project.company,
       category: project.category || "professional",
-      period: String(project.year),
+        period: String(project.year),
       country: (project.location && project.location.country) || "Unknown",
-      latitude: project.location.latitude,
-      longitude: project.location.longitude,
+        latitude: project.location.latitude,
+        longitude: project.location.longitude,
       color: CIRCLE_COLORS[index % CIRCLE_COLORS.length]
     }));
   }
@@ -134,11 +161,12 @@
           .then((geo) => {
             this.coverageData = geo;
             this.refreshOverlays();
+            this.playIntro();
           })
           .catch(() => {
             this.coverageData = null;
+            this.playIntro();
           });
-        this.playIntro();
       } catch (error) {
         console.error(error);
         this.showError("The map could not load. Check your connection and try again.");
@@ -183,8 +211,11 @@
         scrollWheelZoom: true,
         minZoom: 2,
         maxZoom: 13,
-        worldCopyJump: true
-      }).setView([28, -62], 2);
+        worldCopyJump: false,
+        maxBounds: [[-85, -180], [85, 180]],
+        maxBoundsViscosity: 1
+      });
+      this.applyOpeningView(true);
 
       this.map.createPane("place-labels");
       const labelPane = this.map.getPane("place-labels");
@@ -250,6 +281,11 @@
 
       this.refreshMarkers();
       this.map.addLayer(this.group);
+      this.group.on("spiderfied unspiderfied", () => this.refreshOverlays());
+      this.map.on("resize", () => this.applyOpeningView(false));
+      this.map.on("dragstart wheel", () => {
+        this.mapDragged = true;
+      });
       this.setBasemap(this.currentBasemap);
 
       this.map.on("click", () => {
@@ -449,6 +485,8 @@
       this.tileLayers = urls.map((url, index) => {
         const layer = L.tileLayer(url, {
           maxZoom: 13,
+          noWrap: true,
+          bounds: [[-85, -180], [85, 180]],
           attribution: index === 0 ? "Tiles &copy; Esri" : "",
           pane: index === 1 ? "place-labels" : "tilePane"
         });
@@ -540,15 +578,14 @@
       }
 
       if (this.routesOn) {
-        features.forEach((feature, index) => {
-          if (nearHome(feature.latitude, feature.longitude)) return;
-          const dx = feature.longitude - HOME[1];
-          const dy = feature.latitude - HOME[0];
-          const len = Math.hypot(dx, dy) || 1;
-          const lift = len * (index % 2 === 0 ? 0.16 : -0.16);
-          L.polyline(routeArc(HOME, [feature.latitude, feature.longitude], lift), {
+        features.forEach((feature) => {
+          const marker = this.byId && this.byId.get(feature.id);
+          const at = marker ? marker.getLatLng() : L.latLng(feature.latitude, feature.longitude);
+          if (nearHome(at.lat, at.lng)) return;
+          L.polyline(routeArc(HOME, [at.lat, at.lng]), {
             pane: "routes",
             className: "route-line",
+            smoothFactor: 0,
             color: "#1a7a8c",
             weight: 1.5,
             opacity: 0.85,
@@ -613,7 +650,7 @@
           if (document.fullscreenElement === wrap || document.webkitFullscreenElement === wrap) {
             if (document.exitFullscreen) document.exitFullscreen();
             else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-            return;
+        return;
           }
           const request = wrap.requestFullscreen || wrap.webkitRequestFullscreen;
           if (!request) return;
@@ -688,10 +725,62 @@
       if (global.MapUI) global.MapUI.closeDetail();
     },
 
-    playIntro() {
+    fitCountries(duration) {
       if (!this.map) return;
+      const countries = new Set(this.visibleFeatures().map((feature) => feature.country));
+      const bounds = L.latLngBounds([]);
+      const push = (lng, lat, country) => {
+        if (country === "United States" && (lat > 50 || lng < -130 || lng > 170)) return;
+        bounds.extend([lat, lng]);
+      };
+      const walk = (coords, country) => {
+        if (!coords) return;
+        if (typeof coords[0] === "number") {
+          push(coords[0], coords[1], country);
+          return;
+        }
+        coords.forEach((part) => walk(part, country));
+      };
+      if (this.coverageData && this.coverageData.features) {
+        this.coverageData.features.forEach((feat) => {
+          const country = feat.properties && feat.properties.country;
+          if (!countries.has(country)) return;
+          walk(feat.geometry && feat.geometry.coordinates, country);
+        });
+      }
+      if (!bounds.isValid()) {
+        this.visibleFeatures().forEach((feature) => bounds.extend([feature.latitude, feature.longitude]));
+      }
+      if (!bounds.isValid()) return;
+      this.map.invalidateSize();
+      const ms = typeof duration === "number" ? duration : 0;
+      const snap = this.map.options.zoomSnap;
+      this.map.options.zoomSnap = 0;
+      this.map.fitBounds(bounds, {
+        paddingTopLeft: [28, 64],
+        paddingBottomRight: [28, 118],
+        animate: ms > 0,
+        duration: ms / 1000,
+        maxZoom: 6
+      });
+      const restoreSnap = () => {
+        if (this.map) this.map.options.zoomSnap = snap == null ? 1 : snap;
+      };
+      this.map.once("moveend", restoreSnap);
+      window.setTimeout(restoreSnap, ms + 80);
+    },
+
+    playIntro() {
+      if (!this.map || this.mapDragged) return;
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      this.fitFeatures(this.visibleFeatures(), { duration: reduced ? 0 : 900, maxZoom: 3 });
+      this.fitCountries(reduced ? 0 : 800);
+    },
+
+    applyOpeningView(resetCenter) {
+      if (!this.map) return;
+      this.map.setMinZoom(2);
+      if (!resetCenter) return;
+      this.map.setView([22, 0], 4);
     },
 
     goHome() {

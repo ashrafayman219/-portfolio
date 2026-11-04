@@ -7,7 +7,8 @@
       "Sr. GIS Solutions Engineer",
       "GIS Software Developer",
       "GIS Analyst",
-      "GIS Specialist",
+      "GIS Instructor",
+      "GIS Professional",
       "Spatial Analyst"
     ],
     "location": "Mansoura, Dakahlia, Egypt",
@@ -29,7 +30,7 @@
     {
       "id": "mansoura-university",
       "institution": "Mansoura University",
-      "degree": "Bachelor of Arts",
+      "degree": "BSc in Geomatics (1st for the first 3 years, 2nd in the final year)",
       "field": "Surveying, Remote Sensing & GIS",
       "graduationDate": "June 2021",
       "logo": "images/MU-logo.jpg",
@@ -37,10 +38,7 @@
         "latitude": 31.0409,
         "longitude": 31.3785,
         "name": "Mansoura, Egypt"
-      },
-      "honors": [
-        "Honours in GIS and Remote Sensing, 2021"
-      ]
+      }
     },
     {
       "id": "iti",

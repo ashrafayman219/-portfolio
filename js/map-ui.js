@@ -10,10 +10,10 @@
       legendOn: false,
       dockOpen: false,
       dockPanel: "layers",
-      labelMode: "name",
+      labelMode: "off",
       coverageOn: true,
       routesOn: true,
-      prefsVersion: 2
+      prefsVersion: 3
     },
 
     dockTitles: {
@@ -34,10 +34,10 @@
         legendExplicit: false,
         dockOpen: false,
         dockPanel: "layers",
-        labelMode: "name",
+        labelMode: "off",
         coverageOn: true,
         routesOn: true,
-        prefsVersion: 2
+        prefsVersion: 3
       };
       let savedVersion = 0;
       try {
@@ -50,18 +50,20 @@
       } catch (err) {
         /* ignore */
       }
-      if (savedVersion !== 2) {
-        prefs.theme = "light";
-        prefs.legendOn = false;
-        prefs.legendExplicit = false;
-        prefs.labelMode = "name";
-        prefs.coverageOn = true;
-        prefs.routesOn = true;
-        prefs.prefsVersion = 2;
+      if (savedVersion !== 3) {
+        prefs.labelMode = "off";
+        prefs.prefsVersion = 3;
+        if (savedVersion !== 2) {
+          prefs.theme = "light";
+          prefs.legendOn = false;
+          prefs.legendExplicit = false;
+          prefs.coverageOn = true;
+          prefs.routesOn = true;
+        }
       } else if (!prefs.legendExplicit) {
         prefs.legendOn = false;
       }
-      if (savedVersion === 2) {
+      if (savedVersion === 2 || savedVersion === 3) {
         try {
           const theme = localStorage.getItem(THEME_KEY);
           if (theme === "glass" || theme === "light") prefs.theme = theme;
@@ -70,7 +72,7 @@
         }
       }
       this.state = prefs;
-      if (savedVersion !== 2) this.savePrefs();
+      if (savedVersion !== 3) this.savePrefs();
       return prefs;
     },
 
@@ -88,7 +90,7 @@
             labelMode: this.state.labelMode || "off",
             coverageOn: !!this.state.coverageOn,
             routesOn: !!this.state.routesOn,
-            prefsVersion: this.state.prefsVersion || 2
+            prefsVersion: this.state.prefsVersion || 3
           })
         );
       } catch (err) {
