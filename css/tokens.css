@@ -17,6 +17,7 @@
   --radius: 12px;
   --radius-sm: 8px;
   --nav-h: 4.25rem;
+  --container: 1120px;
   --font: "Noto Sans", "Segoe UI", sans-serif;
   --font-display: var(--font);
   --ease: 0.22s ease;
@@ -98,9 +99,8 @@ h3,
 }
 
 .container {
-  width: 100%;
+  width: min(var(--container), calc(100% - 2rem));
   margin-inline: auto;
-  padding-inline: clamp(2rem, 3.5vw, 4rem);
 }
 
 .visually-hidden {
