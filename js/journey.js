@@ -186,14 +186,14 @@
     stops[0].ly = 488;
     stops[0].anchor = "start";
     stops[0].rail = "left";
-    stops[1].lx = 845;
+    stops[1].lx = 510;
     stops[1].ly = 830;
-    stops[1].anchor = "middle";
+    stops[1].anchor = "start";
     stops[1].lineSize = 30;
     stops[1].rail = "left";
-    stops[2].lx = 375;
+    stops[2].lx = 270;
     stops[2].ly = 128;
-    stops[2].anchor = "middle";
+    stops[2].anchor = "start";
     stops[2].lineSize = 28;
     stops[2].rail = "left";
   }
