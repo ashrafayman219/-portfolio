@@ -215,7 +215,8 @@
     marqueeRaf: null,
     marqueeShift: 0,
     marqueeLoop: 0,
-    marqueeSpeed: 42,
+    marqueeSpeed: 70,
+    marqueeVelocity: 70,
     marqueeDragging: false,
     marqueeDidDrag: false,
     marqueeDragBound: false,
@@ -293,20 +294,9 @@
             `alt="${clone ? "" : escapeHtml(project.title)}" loading="lazy" decoding="async" width="640" height="360" onerror="${IMG_FALLBACK}"`
           );
       return `
-        <article class="project-card" data-project-id="${escapeHtml(project.id)}"${hidden}>
+        <article class="project-card" data-project-id="${escapeHtml(project.id)}" data-open-project="${escapeHtml(project.id)}" role="button" tabindex="${clone ? "-1" : "0"}" aria-label="${clone ? "" : escapeHtml(project.title)}"${hidden}>
           <div class="project-card-media">${media}</div>
-          <div class="project-card-body">
-            <div class="project-meta">
-              <span>${escapeHtml(project.category)}</span>
-              <span>${escapeHtml(project.year)} · ${escapeHtml(project.company)}</span>
-            </div>
-            <h3>${escapeHtml(project.title)}</h3>
-            <p>${escapeHtml(project.description)}</p>
-            <div class="card-actions">
-              <button type="button" class="btn btn-primary" data-open-project="${escapeHtml(project.id)}"${clone ? " tabindex=\"-1\"" : ""}>Details</button>
-              ${project.showOnMap === false ? "" : `<button type="button" class="btn btn-outline" data-map-project="${escapeHtml(project.id)}"${clone ? " tabindex=\"-1\"" : ""}>Show on map</button>`}
-            </div>
-          </div>
+          <h3 class="project-card-title">${escapeHtml(project.title)}</h3>
         </article>`;
     },
 
@@ -319,15 +309,15 @@
       });
       marquee.addEventListener("click", (event) => {
         const open = event.target.closest("[data-open-project]");
-        if (open) {
-          this.openModal(open.getAttribute("data-open-project"), open.closest(".project-card") || open);
-          return;
-        }
-        const mapBtn = event.target.closest("[data-map-project]");
-        if (!mapBtn) return;
-        const id = mapBtn.getAttribute("data-map-project");
-        document.dispatchEvent(new CustomEvent("portfolio:goto", { detail: { id: "project-" + id } }));
-        document.getElementById("map").scrollIntoView({ behavior: "smooth", block: "start" });
+        if (!open || this.marqueeDidDrag) return;
+        this.openModal(open.getAttribute("data-open-project"), open.closest(".project-card") || open);
+      });
+      marquee.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter" && event.key !== " ") return;
+        const open = event.target.closest("[data-open-project]");
+        if (!open || open.getAttribute("aria-hidden") === "true") return;
+        event.preventDefault();
+        this.openModal(open.getAttribute("data-open-project"), open);
       });
     },
 
@@ -374,7 +364,7 @@
       });
       track.appendChild(loop);
 
-      const duration = Math.max(28, Math.round((set.scrollWidth || limit) / 42));
+      const duration = Math.max(18, Math.round((set.scrollWidth || limit) / 70));
       track.style.animationDuration = duration + "s";
       this.bindCardVideos();
       this.startMarquee();
@@ -386,9 +376,7 @@
       if (this.marqueeDragging) return true;
       if (marquee.classList.contains("is-paused")) return true;
       if (marquee.classList.contains("is-modal-paused")) return true;
-      if (marquee.matches(":focus-within")) return true;
-      const canHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-      if (canHover && marquee.matches(":hover")) return true;
+      if (marquee.querySelector(":focus-visible")) return true;
       return false;
     },
 
@@ -409,6 +397,15 @@
         track.classList.remove("is-js");
         track.style.transform = "";
       }
+      const marquee = document.getElementById("projectsMarquee");
+      if (marquee) marquee.scrollLeft = 0;
+    },
+
+    applyMarqueeFrame() {
+      const marquee = document.getElementById("projectsMarquee");
+      if (!marquee) return;
+      const dpr = window.devicePixelRatio || 1;
+      marquee.scrollLeft = Math.round(-this.marqueeShift * dpr) / dpr;
     },
 
     startMarquee() {
@@ -419,19 +416,28 @@
       if (!track || !marquee || !set) return;
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
       this.marqueeLoop = set.scrollWidth;
-      this.marqueeSpeed = 42;
+      this.marqueeSpeed = 70;
+      this.marqueeVelocity = 70;
       this.marqueeShift = -this.marqueeLoop;
       track.classList.add("is-js");
+      this.applyMarqueeFrame();
       let last = performance.now();
       const tick = (now) => {
         this.marqueeRaf = requestAnimationFrame(tick);
         const dt = Math.min(0.048, (now - last) / 1000);
         last = now;
-        if (this.marqueeLoop && !this.marqueeAutoplayPaused()) {
-          this.marqueeShift += this.marqueeSpeed * dt;
+        if (!this.marqueeLoop) {
+          this.applyMarqueeFrame();
+          return;
         }
+        const hovering = window.matchMedia("(hover: hover) and (pointer: fine)").matches && marquee.matches(":hover");
+        const target = this.marqueeAutoplayPaused() || hovering ? 0 : this.marqueeSpeed;
+        const diff = target - this.marqueeVelocity;
+        const step = Math.sign(diff) * this.marqueeSpeed * dt;
+        this.marqueeVelocity = Math.abs(step) >= Math.abs(diff) ? target : this.marqueeVelocity + step;
+        if (!this.marqueeDragging && this.marqueeVelocity) this.marqueeShift += this.marqueeVelocity * dt;
         this.wrapMarqueeShift();
-        track.style.transform = "translateX(" + this.marqueeShift + "px)";
+        this.applyMarqueeFrame();
       };
       this.marqueeRaf = requestAnimationFrame(tick);
     },
@@ -471,8 +477,7 @@
         }
         this.marqueeShift = startShift + dx;
         this.wrapMarqueeShift();
-        const track = document.getElementById("projectsGrid");
-        if (track) track.style.transform = "translateX(" + this.marqueeShift + "px)";
+        this.applyMarqueeFrame();
       });
 
       const endDrag = () => {
@@ -488,6 +493,8 @@
       };
       marquee.addEventListener("pointerup", endDrag);
       marquee.addEventListener("pointercancel", endDrag);
+      window.addEventListener("pointerup", endDrag);
+      window.addEventListener("pointercancel", endDrag);
 
       marquee.addEventListener(
         "click",
@@ -632,6 +639,7 @@
       if (project.githubUrl) links.push(`<a class="btn btn-outline" href="${escapeHtml(project.githubUrl)}" target="_blank" rel="noopener noreferrer">GitHub</a>`);
       if (project.documentationUrl) links.push(`<a class="btn btn-outline" href="${escapeHtml(project.documentationUrl)}" target="_blank" rel="noopener noreferrer">API docs</a>`);
       if (project.presentationUrl) links.push(`<a class="btn btn-outline" href="${escapeHtml(project.presentationUrl)}" target="_blank" rel="noopener noreferrer">Presentation</a>`);
+      if (project.showOnMap !== false) links.push(`<button type="button" class="btn btn-outline" data-map-project="${escapeHtml(project.id)}">Show on map</button>`);
 
       const leadVideo = project.leadMedia === "video" && !!project.videoUrl;
       const video = project.videoUrl
@@ -693,6 +701,15 @@
       });
       body.querySelectorAll("[data-thumb-index]").forEach((btn) => {
         btn.addEventListener("click", () => this.showGallery(Number(btn.getAttribute("data-thumb-index"))));
+      });
+      body.querySelectorAll("[data-map-project]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const id = btn.getAttribute("data-map-project");
+          this.closeModal();
+          document.dispatchEvent(new CustomEvent("portfolio:goto", { detail: { id: "project-" + id } }));
+          const map = document.getElementById("map");
+          if (map) map.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
       });
 
       const modal = document.getElementById("projectModal");
@@ -930,7 +947,7 @@
             <img src="${escapeHtml(edu.logo)}" alt="${escapeHtml(edu.institution)}" width="72" height="72" loading="lazy" decoding="async" />
             <div>
               <h3>${escapeHtml(edu.institution)}</h3>
-              <p class="edu-degree">${escapeHtml(edu.degree)}</p>
+              <p class="edu-degree">${escapeHtml(edu.degree).replace("1st", "1<sup>st</sup>")}</p>
               <p class="when">${escapeHtml(edu.field)} · ${escapeHtml(edu.graduationDate)}</p>
               ${honors}
             </div>
@@ -946,6 +963,7 @@
         remoteSensing: "Remote sensing"
       };
       const root = document.getElementById("skillsGrid");
+      if (!root) return;
       root.innerHTML = Object.keys(this.data.skills)
         .map((key) => {
           const tags = this.data.skills[key].map((s) => `<li>${escapeHtml(s.name)}</li>`).join("");

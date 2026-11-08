@@ -237,7 +237,7 @@
 .skill-rail-track {
   display: flex;
   width: max-content;
-  animation: skillRail 46s linear infinite;
+  animation: skillRail 28s linear infinite;
 }
 
 .skill-rail:hover .skill-rail-track,

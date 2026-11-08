@@ -7,15 +7,41 @@
     <title>Ashraf Ayman | GIS Solutions Engineer</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700&family=Noto+Sans:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
     <link rel="stylesheet" href="css/tokens.css" />
     <link rel="stylesheet" href="css/layout.css" />
     <link rel="stylesheet" href="css/components.css" />
     <link rel="stylesheet" href="css/map-chrome.css" />
+    <link rel="stylesheet" href="css/journey.css" />
   </head>
-  <body>
+  <body class="is-loading">
+    <div class="journey-loader" id="journeyLoader">
+      <div class="journey">
+        <svg id="j-scene" viewBox="-110 70 1900 640" role="group" aria-label="Career journey of Ashraf Ayman, from a geomatics degree in Mansoura, through ITI and Edge Pro, to Gulf Terminal.">
+          <defs>
+            <filter id="j-blur" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="14"/></filter>
+            <filter id="j-soft" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="6"/></filter>
+            <linearGradient id="j-rg" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#6b7280"/><stop offset="1" stop-color="#4b5563"/></linearGradient>
+            <filter id="j-grain" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 .35 0 0 0 0 .4 0 0 0 0 .46 0 0 0 .22 0" result="g"/><feComposite in="g" in2="SourceAlpha" operator="in"/></filter>
+            <mask id="j-mask" maskUnits="userSpaceOnUse" x="-200" y="-200" width="1700" height="1700"><path id="j-rv" fill="none" stroke="#fff" stroke-width="420" stroke-linecap="butt"/></mask>
+          </defs>
+          <path id="j-road" d="M560 1020 C460 950 300 880 100 880 C53 880 15 842 15 795 C15 748 53 710 100 710 C190 710 235 662 320 640 C520 598 690 590 790 540 C890 490 845 390 750 360 C680 338 580 366 545 305 C515 252 580 228 640 222 C750 211 860 225 940 165 C988 129 1020 48 1040 -30" fill="none" stroke="none"/>
+          <g id="j-roadg" mask="url(#j-mask)"></g>
+          <g id="j-arrows"></g>
+          <rect x="1076" y="115" width="184" height="8" rx="4" fill="#3f9a36" visibility="hidden"/>
+          <g id="j-pins"></g>
+          <g id="j-cols" text-anchor="middle"></g>
+        </svg>
+        <p class="journey-caption">
+          <span class="journey-name">Ashraf Ayman</span>
+          <span class="journey-role">GIS Solutions Engineer</span>
+        </p>
+        <p class="journey-enter">Click to enter</p>
+      </div>
+    </div>
+
     <a class="skip-link" href="#home">Skip to content</a>
 
     <header class="site-header">
@@ -31,7 +57,6 @@
             <li><a href="#map" data-section="map">Map</a></li>
             <li><a href="#projects" data-section="projects">Featured projects</a></li>
             <li><a href="#experience" data-section="experience">Experience</a></li>
-            <li><a href="#skills" data-section="skills">Skills</a></li>
             <li><a href="#contact" data-section="contact">Contact</a></li>
           </ul>
           <span class="nav-indicator" id="navIndicator" aria-hidden="true"></span>
@@ -245,9 +270,9 @@
             <p class="section-sub">Professional and academic GIS applications.</p>
           </header>
           <div class="project-filters" id="projectFilters" role="toolbar" aria-label="Filter projects"></div>
-          <div class="projects-marquee" id="projectsMarquee">
-            <div class="projects-track" id="projectsGrid"></div>
-          </div>
+        </div>
+        <div class="projects-marquee" id="projectsMarquee">
+          <div class="projects-track" id="projectsGrid"></div>
         </div>
       </section>
 
@@ -257,7 +282,10 @@
             <li><img src="skills/ArcGIS-Pro.png" alt="ArcGIS Pro" width="220" height="220"><span>ArcGIS Pro</span></li>
             <li><img src="skills/ArcGIS-Enterprise.png" alt="ArcGIS Enterprise" width="220" height="220"><span>ArcGIS Enterprise</span></li>
             <li><img src="skills/arcgis-online-banner-icon_0.png.webp" alt="ArcGIS Online" width="385" height="391"><span>ArcGIS Online</span></li>
+            <li><img src="skills/arcgis-survey123.png" alt="ArcGIS Survey123" width="512" height="512"><span>ArcGIS Survey123</span></li>
             <li><img src="skills/QGIS_logo_new.svg.webp" alt="QGIS" width="3840" height="3840"><span>QGIS</span></li>
+            <li><img src="skills/leaflet-logo.png" alt="Leaflet" width="600" height="159"><span>Leaflet</span></li>
+            <li><img src="skills/maplibre-logo-dark-transparent-bg.png" alt="MapLibre" width="1454" height="417"><span>MapLibre</span></li>
             <li><img src="skills/geoserver.png" alt="GeoServer" width="280" height="280"><span>GeoServer</span></li>
             <li><img src="skills/Google_Earth_Studio.png" alt="Google Earth Studio" width="300" height="300"><span>Google Earth Studio</span></li>
             <li><img src="skills/ffmpeg.png" alt="FFmpeg" width="2500" height="670"><span>FFmpeg</span></li>
@@ -277,7 +305,10 @@
             <li><img src="skills/ArcGIS-Pro.png" alt="" width="220" height="220"><span>ArcGIS Pro</span></li>
             <li><img src="skills/ArcGIS-Enterprise.png" alt="" width="220" height="220"><span>ArcGIS Enterprise</span></li>
             <li><img src="skills/arcgis-online-banner-icon_0.png.webp" alt="" width="385" height="391"><span>ArcGIS Online</span></li>
+            <li><img src="skills/arcgis-survey123.png" alt="" width="512" height="512"><span>ArcGIS Survey123</span></li>
             <li><img src="skills/QGIS_logo_new.svg.webp" alt="" width="3840" height="3840"><span>QGIS</span></li>
+            <li><img src="skills/leaflet-logo.png" alt="" width="600" height="159"><span>Leaflet</span></li>
+            <li><img src="skills/maplibre-logo-dark-transparent-bg.png" alt="" width="1454" height="417"><span>MapLibre</span></li>
             <li><img src="skills/geoserver.png" alt="" width="280" height="280"><span>GeoServer</span></li>
             <li><img src="skills/Google_Earth_Studio.png" alt="" width="300" height="300"><span>Google Earth Studio</span></li>
             <li><img src="skills/ffmpeg.png" alt="" width="2500" height="670"><span>FFmpeg</span></li>
@@ -317,17 +348,6 @@
               </p>
             </div>
           </div>
-        </div>
-      </section>
-
-      <section class="section" id="skills">
-        <div class="container">
-          <header class="section-header">
-            <p class="section-kicker">Toolkit</p>
-            <h2 class="section-title">Skills</h2>
-            <p class="section-sub">GIS platforms, programming, and remote sensing. No fake percentage bars.</p>
-          </header>
-          <div class="skills-grid" id="skillsGrid"></div>
         </div>
       </section>
 
@@ -403,12 +423,6 @@
           </span>
           <span class="mobile-nav-label">Experience</span>
         </a>
-        <a href="#skills" class="mobile-nav-item" data-section="skills" style="--d: 210ms">
-          <span class="mobile-nav-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2M4 12a8 8 0 1 0 16 0 8 8 0 0 0-16 0z"/></svg>
-          </span>
-          <span class="mobile-nav-label">Skills</span>
-        </a>
         <a href="#contact" class="mobile-nav-item" data-section="contact" style="--d: 250ms">
           <span class="mobile-nav-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16v12H4z"/><path stroke-linecap="round" stroke-linejoin="round" d="m4 7 8 6 8-6"/></svg>
@@ -460,5 +474,6 @@
     <script src="js/map-ui.js"></script>
     <script src="js/map.js"></script>
     <script src="js/main.js"></script>
+    <script src="js/journey.js"></script>
   </body>
 </html>

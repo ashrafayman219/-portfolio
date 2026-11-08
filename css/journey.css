@@ -1,0 +1,403 @@
+body.is-loading {
+  overflow: hidden;
+}
+
+body.is-loading .site-header,
+body.is-loading main,
+body.is-loading .site-footer,
+body.is-loading .mobile-nav {
+  opacity: 0;
+}
+
+body.is-entering .site-header {
+  animation: enter-down 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+body.is-entering .profile-photo {
+  animation: enter-profile 0.95s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
+}
+
+body.is-entering .hero-grid > div:first-child > * {
+  animation: enter-up 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+body.is-entering .hero-grid > div:first-child > *:nth-child(1) { animation-delay: 0.16s; }
+body.is-entering .hero-grid > div:first-child > *:nth-child(2) { animation-delay: 0.24s; }
+body.is-entering .hero-grid > div:first-child > *:nth-child(3) { animation-delay: 0.32s; }
+body.is-entering .hero-grid > div:first-child > *:nth-child(4) { animation-delay: 0.4s; }
+body.is-entering .hero-grid > div:first-child > *:nth-child(5) { animation-delay: 0.48s; }
+body.is-entering .hero-grid > div:first-child > *:nth-child(6) { animation-delay: 0.56s; }
+
+body.is-entering main > :not(.hero),
+body.is-entering .site-footer,
+body.is-entering .mobile-nav {
+  animation: enter-up 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.28s both;
+}
+
+.journey-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(0.75rem, 2vh, 1.5rem);
+  background: var(--bg);
+  cursor: pointer;
+  transition: opacity 0.9s ease, visibility 0.9s ease;
+}
+
+.journey-loader .journey {
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7rem;
+  transform: translateX(3.5vw);
+  transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.journey-loader .journey svg {
+  width: min(92vw, calc(78vh * 1900 / 640));
+}
+
+.journey-caption,
+.journey-enter {
+  margin: 0;
+  text-align: center;
+  font-family: var(--font);
+}
+
+.journey-name,
+.journey-role {
+  opacity: 0;
+  animation: journey-line 0.7s ease forwards;
+}
+
+.journey-name {
+  display: block;
+  color: var(--text);
+  font-size: 1.05rem;
+  font-weight: 700;
+  animation-delay: 1.55s;
+}
+
+.journey-role {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  animation-delay: 2s;
+}
+
+.journey-enter {
+  color: var(--navy);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0;
+  animation: journey-line 0.7s ease 3.5s forwards, enter-wait 1.8s ease 4.25s infinite;
+}
+
+.journey-loader.is-done {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.journey-loader.is-done .journey {
+  transform: translateX(3.5vw) scale(1.05);
+}
+
+.journey {
+  display: flex;
+  justify-content: center;
+  background: var(--bg);
+  font-family: Cairo, "Segoe UI", Tahoma, Arial, sans-serif;
+}
+
+.journey svg {
+  width: min(96vw, calc(90vh * 1900 / 640));
+  height: auto;
+  display: block;
+}
+
+.journey text {
+  fill: var(--text);
+  font-weight: 700;
+  font-family: Cairo, "Segoe UI", Tahoma, Arial, sans-serif;
+}
+
+.journey .pin text {
+  fill: #fff;
+  font-family: Poppins, var(--font);
+  font-weight: 700;
+}
+
+.journey .pin {
+  cursor: pointer;
+  outline: none;
+  transition: transform 0.3s cubic-bezier(0.3, 1.5, 0.5, 1);
+  animation: j-drop 0.8s cubic-bezier(0.2, 1.4, 0.4, 1) backwards;
+  animation-delay: var(--d);
+}
+
+.journey .pin:hover,
+.journey .pin:focus-visible {
+  transform: translateY(-8px);
+}
+
+.journey .pin:focus-visible .ring {
+  stroke: #fff;
+  stroke-width: 4;
+}
+
+.journey .lab-plate,
+.journey .lab-rail {
+  fill: var(--mark);
+  pointer-events: none;
+}
+
+.journey .lab-plate {
+  opacity: 0;
+  animation:
+    lab-in 0.55s ease calc(var(--d) + 0.45s) forwards,
+    lab-ready 0.9s ease 3.45s forwards;
+}
+
+.journey .lab-rail {
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scaleY(0);
+  animation: rail-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--d) + 0.45s) forwards;
+}
+
+.journey .lab-group {
+  transform-box: fill-box;
+  transform-origin: left center;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.journey .lab-group.is-middle {
+  transform-origin: center;
+}
+
+.journey .lab-group.is-hot {
+  transform: scale(1.08);
+}
+
+.journey .arr {
+  fill: #fff;
+  animation: j-fade 0.6s ease var(--d) backwards, j-flow 3.4s ease-in-out calc(var(--d) + 0.6s) infinite;
+}
+
+.journey .rip,
+.journey .rip-once {
+  fill: none;
+  stroke-width: 3;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.journey .rip-once {
+  stroke-width: 3.5;
+  animation: j-arrive 0.9s ease-out calc(var(--d) + 0.5s) 1 both;
+}
+
+.journey .rip {
+  animation: j-rip 3.2s ease-out calc(var(--d) + 1.7s) infinite;
+}
+
+.journey #j-rv {
+  animation: j-draw 3.3s cubic-bezier(0.45, 0.05, 0.3, 1) 0.1s backwards;
+}
+
+@keyframes enter-down {
+  from {
+    opacity: 0;
+    transform: translateY(-18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes enter-up {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes enter-profile {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.86);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes j-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-60px) scale(0.7);
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes j-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes j-flow {
+  0%,
+  100% {
+    opacity: 0.9;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes j-arrive {
+  0% {
+    opacity: 0.9;
+    transform: scale(0.85);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.65);
+  }
+}
+
+@keyframes j-rip {
+  0% {
+    opacity: 0.32;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.5);
+  }
+}
+
+@keyframes journey-line {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes lab-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.16;
+  }
+}
+
+@keyframes rail-in {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes enter-wait {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@keyframes lab-ready {
+  0% {
+    opacity: 0.16;
+  }
+  45% {
+    opacity: 0.42;
+  }
+  100% {
+    opacity: 0.26;
+  }
+}
+
+@keyframes j-draw {
+  from {
+    stroke-dashoffset: var(--L);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (max-width: 767px) {
+  .journey-loader {
+    padding: 0.75rem 0 1rem;
+  }
+
+  .journey-loader .journey {
+    gap: 0.85rem;
+    transform: none;
+  }
+
+  .journey-loader.is-done .journey {
+    transform: scale(1.03);
+  }
+
+  .journey-loader .journey svg {
+    width: min(100vw, calc(64vh * 1180 / 930));
+    height: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .journey,
+  .journey * {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .journey-name,
+  .journey-role,
+  .journey-enter {
+    opacity: 1;
+    transform: none;
+  }
+
+  .journey .lab-plate {
+    opacity: 0.16;
+  }
+
+  .journey .lab-rail {
+    transform: none;
+  }
+}

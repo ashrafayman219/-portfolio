@@ -185,14 +185,12 @@
       PortfolioApp.initCounters();
       const groups = [
         ".section-header",
-        ".hero-grid > div",
         "#map-wrap",
         "#projectFilters",
-        "#projectsMarquee",
         ".contact-grid > *"
       ];
       document.querySelectorAll(groups.join(",")).forEach((el) => el.classList.add("reveal"));
-      ["#workTimeline .timeline-item", "#eduTimeline .timeline-item", "#skillsGrid .skill-card", ".hero-stats .stat"].forEach((sel) => {
+      ["#workTimeline .timeline-item", "#eduTimeline .timeline-item"].forEach((sel) => {
         document.querySelectorAll(sel).forEach((el, index) => {
           el.classList.add("reveal");
           el.style.setProperty("--reveal-delay", Math.min(index, 6) * 70 + "ms");
