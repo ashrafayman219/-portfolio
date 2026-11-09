@@ -293,6 +293,25 @@
         btn.addEventListener("click", () => this.toggleDock(btn.dataset.dock));
       });
 
+      const moreBtn = document.getElementById("btn-more");
+      const toolbar = document.getElementById("map-toolbar");
+      const setMore = (open) => {
+        if (!toolbar || !moreBtn) return;
+        toolbar.classList.toggle("is-more-open", open);
+        moreBtn.classList.toggle("active", open);
+        moreBtn.setAttribute("aria-expanded", open ? "true" : "false");
+      };
+      if (moreBtn && toolbar) {
+        moreBtn.addEventListener("click", () => {
+          setMore(!toolbar.classList.contains("is-more-open"));
+        });
+        document.addEventListener("click", (event) => {
+          if (!toolbar.classList.contains("is-more-open")) return;
+          if (toolbar.contains(event.target)) return;
+          setMore(false);
+        });
+      }
+
       const closeDock = document.getElementById("btn-close-dock");
       if (closeDock) closeDock.addEventListener("click", () => this.setDock(this.state.dockPanel, false));
 
@@ -333,6 +352,13 @@
           return;
         }
         this.closeFlyouts();
+        const more = document.getElementById("btn-more");
+        const bar = document.getElementById("map-toolbar");
+        if (bar) bar.classList.remove("is-more-open");
+        if (more) {
+          more.classList.remove("active");
+          more.setAttribute("aria-expanded", "false");
+        }
         const dock = document.getElementById("dock");
         if (dock && dock.classList.contains("open")) this.setDock(this.state.dockPanel, false);
       });

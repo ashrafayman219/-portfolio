@@ -147,6 +147,7 @@
 
 .hero {
   padding: 2.5rem 0 1.75rem;
+  scroll-margin-top: var(--nav-h);
 }
 
 .hero-grid {
@@ -187,8 +188,19 @@
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 0.75rem;
   margin-bottom: 1.75rem;
+}
+
+.hero-text-link {
+  color: var(--text-muted);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.hero-text-link:hover {
+  color: var(--accent);
 }
 
 .hero-stats {
@@ -229,7 +241,7 @@
 .skill-rail {
   overflow: hidden;
   margin: 0 0 0.35rem;
-  padding: 0.5rem 0 2.6rem;
+  padding: 0.85rem 0 1rem;
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 3.5rem, #000 calc(100% - 3.5rem), transparent);
   mask-image: linear-gradient(90deg, transparent, #000 3.5rem, #000 calc(100% - 3.5rem), transparent);
 }
@@ -237,7 +249,7 @@
 .skill-rail-track {
   display: flex;
   width: max-content;
-  animation: skillRail 28s linear infinite;
+  animation: skillRail 110s linear infinite;
 }
 
 .skill-rail:hover .skill-rail-track,
@@ -255,11 +267,10 @@
 }
 
 .skill-rail-set li {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: 2.55rem;
-  height: 2.55rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
   flex: 0 0 auto;
 }
 
@@ -270,25 +281,16 @@
 }
 
 .skill-rail-set span {
-  position: absolute;
-  left: 50%;
-  top: calc(100% + 0.45rem);
-  z-index: 2;
-  transform: translateX(-50%);
-  padding: 0.2rem 0.55rem;
-  border-radius: 999px;
-  background: var(--navy);
-  color: #fff;
-  font-size: 0.75rem;
-  line-height: 1.35;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.2;
   white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
 }
 
 .skill-rail-set li:hover span,
 .skill-rail-set li:focus-within span {
-  opacity: 1;
+  color: var(--accent);
 }
 
 @keyframes skillRail {
@@ -362,7 +364,7 @@
 
 .contact-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 36rem);
   gap: 2rem;
   align-items: start;
 }
@@ -594,9 +596,26 @@
     order: -1;
   }
 
+  .hero-roles {
+    display: none;
+  }
+
+  .profile-photo {
+    width: 204px;
+    height: 204px;
+    max-width: 204px;
+    aspect-ratio: 1;
+    flex-shrink: 0;
+  }
+
   .section {
     padding: 1.75rem 0;
   }
+}
+
+#projects,
+.knowledge {
+  padding-top: 0;
 }
 
 @media (max-width: 767px) and (prefers-reduced-motion: reduce) {

@@ -647,6 +647,10 @@
   pointer-events: auto;
 }
 
+#btn-more {
+  display: none;
+}
+
 #map-toolbar {
   display: flex;
   align-items: stretch;
@@ -1021,9 +1025,57 @@ body.map-fullscreen .back-to-top {
     min-height: 500px;
   }
 
+  #project-pills {
+    flex-wrap: wrap;
+    justify-content: center;
+    overflow: visible;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+
+  #project-pills::-webkit-scrollbar {
+    display: none;
+  }
+
+  #map-toolbar,
+  #map-toolbar > .liquidGlass-content {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    width: min(100%, 420px);
+    overflow: visible;
+    justify-items: center;
+    scrollbar-width: none;
+  }
+
+  #map-toolbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  #map-toolbar .tool-sep {
+    display: none;
+  }
+
+  #map-toolbar .tool-more {
+    display: none;
+  }
+
+  #map-toolbar.is-more-open .tool-more {
+    display: flex;
+  }
+
+  #map-toolbar .tool[data-dock="layers"] { order: 20; }
+  #map-toolbar .tool[data-dock="locations"] { order: 21; }
+  #btn-search { order: 22; }
+  #btn-more { order: 23; }
+
+  #btn-more {
+    display: flex;
+  }
+
   #map-wrap .tool {
-    min-width: 52px;
-    padding: 6px 6px;
+    min-width: 0;
+    width: 100%;
+    padding: 6px 4px;
   }
 
   #map-wrap[data-map-theme="glass"] .bookmark-pill,

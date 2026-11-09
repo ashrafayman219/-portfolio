@@ -10,6 +10,8 @@
     loader.classList.add("is-done");
     document.body.classList.add("is-entering");
     document.body.classList.remove("is-loading");
+    window.__journeyDone = true;
+    document.dispatchEvent(new CustomEvent("journey:done"));
     window.setTimeout(function () {
       document.body.classList.remove("is-entering");
     }, reduced ? 0 : 1500);
@@ -26,6 +28,13 @@
       window.clearTimeout(timer);
       closeJourneyLoader();
     });
+    var skip = document.querySelector(".skip-link");
+    if (skip) {
+      skip.addEventListener("click", function () {
+        window.clearTimeout(timer);
+        closeJourneyLoader();
+      });
+    }
     document.addEventListener("keydown", function onKey(event) {
       if (event.key !== "Escape") return;
       document.removeEventListener("keydown", onKey);

@@ -37,52 +37,6 @@
   color: var(--accent);
 }
 
-.project-filters {
-  display: flex;
-  gap: 0.5rem;
-  overflow-x: auto;
-  margin-bottom: 1rem;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
-}
-
-.project-filters::-webkit-scrollbar {
-  display: none;
-}
-
-.filter-chip {
-  height: 2.25rem;
-  padding: 0 0.9rem;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  background: #fff;
-  color: var(--text);
-  font-weight: 600;
-  font-size: 0.85rem;
-  flex: 0 0 auto;
-  cursor: pointer;
-  transition: background var(--ease), color var(--ease), transform var(--ease), border-color var(--ease);
-}
-
-.filter-chip:hover {
-  transform: translateY(-1px);
-}
-
-.filter-chip[aria-pressed="true"] {
-  background: #1a7a8c;
-  border-color: #1a7a8c;
-  color: #fff;
-}
-
-.filter-count {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-}
-
-.filter-chip[aria-pressed="true"] .filter-count {
-  color: rgba(255, 255, 255, 0.8);
-}
-
 .projects-marquee {
   overflow: hidden;
   width: 100%;
@@ -233,6 +187,24 @@
   font-size: 0.8rem;
   color: var(--text-muted);
   text-transform: capitalize;
+}
+
+.project-card-chip {
+  position: absolute;
+  left: 0.65rem;
+  bottom: 0.65rem;
+  z-index: 1;
+  max-width: calc(100% - 1.3rem);
+  padding: 0.22rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--navy);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .project-card-title {
@@ -448,7 +420,8 @@
 .job-copy h3,
 .job-copy .job-headline,
 .job-copy .when {
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
+  word-break: normal;
 }
 
 .expando-btn {
@@ -474,6 +447,33 @@
 
 .is-open .expando-btn svg {
   transform: rotate(180deg);
+}
+
+@media (max-width: 767px) {
+  .job-head,
+  .company-head {
+    grid-template-columns: minmax(0, 1fr) 2rem;
+    row-gap: 0.75rem;
+  }
+
+  .job-head > .logo-frame,
+  .job-head > .logo-pair,
+  .company-head > .logo-frame,
+  .company-head > .logo-pair {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: start;
+  }
+
+  .job-copy {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .expando-btn {
+    grid-row: 1;
+    align-self: center;
+  }
 }
 
 .is-collapsed .job-body,
@@ -690,6 +690,15 @@
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.06em;
+}
+
+.contact-card .hero-actions {
+  margin-bottom: 0.85rem;
+}
+
+.contact-note {
+  margin: 0;
+  color: var(--text-muted);
 }
 
 .modal {

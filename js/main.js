@@ -110,7 +110,7 @@
       const els = document.querySelectorAll("[data-count]");
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       const finish = (el) => {
-        el.textContent = el.dataset.count + el.dataset.suffix;
+        el.textContent = (el.dataset.prefix || "") + el.dataset.count + el.dataset.suffix;
       };
       if (reduced || !("IntersectionObserver" in window)) {
         els.forEach(finish);
@@ -123,7 +123,7 @@
         const tick = (now) => {
           const t = Math.min(1, (now - start) / dur);
           const eased = 1 - Math.pow(1 - t, 3);
-          el.textContent = Math.round(to * eased) + el.dataset.suffix;
+          el.textContent = (el.dataset.prefix || "") + Math.round(to * eased) + el.dataset.suffix;
           if (t < 1) requestAnimationFrame(tick);
         };
         requestAnimationFrame(tick);
@@ -181,12 +181,9 @@
     try {
       const data = await PortfolioApp.loadData();
       window.PortfolioUI.render(data);
-      window.PortfolioUI.startRoleCycle();
-      PortfolioApp.initCounters();
       const groups = [
         ".section-header",
         "#map-wrap",
-        "#projectFilters",
         ".contact-grid > *"
       ];
       document.querySelectorAll(groups.join(",")).forEach((el) => el.classList.add("reveal"));
@@ -196,7 +193,14 @@
           el.style.setProperty("--reveal-delay", Math.min(index, 6) * 70 + "ms");
         });
       });
-      PortfolioApp.observeReveals();
+      const startSite = () => {
+        window.PortfolioUI.startRoleCycle();
+        const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        window.setTimeout(() => PortfolioApp.initCounters(), reduced ? 0 : 600);
+        PortfolioApp.observeReveals();
+      };
+      if (window.__journeyDone || !document.body.classList.contains("is-loading")) startSite();
+      else document.addEventListener("journey:done", startSite, { once: true });
       await window.GISMap.init(data);
     } catch (error) {
       console.error(error);

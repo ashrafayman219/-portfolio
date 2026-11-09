@@ -19,8 +19,6 @@
     return list;
   }
 
-  const FILTER_ORDER = ["ArcGIS", "GeoAI", "Web maps", "Remote sensing", "Google Earth", "Indoor"];
-
   function escapeHtml(value) {
     return String(value ?? "")
       .replace(/&/g, "&amp;")
@@ -29,12 +27,13 @@
       .replace(/"/g, "&quot;");
   }
 
-  function setCount(id, value, suffix) {
+  function setCount(id, value, suffix, prefix) {
     const el = document.getElementById(id);
     if (!el) return;
     el.dataset.count = String(value);
     el.dataset.suffix = suffix || "";
-    el.textContent = "0" + (suffix || "");
+    el.dataset.prefix = prefix || "";
+    el.textContent = (prefix || "") + "0" + (suffix || "");
   }
 
   function webpPath(src) {
@@ -220,8 +219,6 @@
     marqueeDragging: false,
     marqueeDidDrag: false,
     marqueeDragBound: false,
-    activeFilter: "all",
-    filtersBound: false,
 
     render(data) {
       this.data = data;
@@ -230,13 +227,11 @@
 
       document.getElementById("heroAbout").textContent = info.about;
       document.getElementById("heroEmail").href = "mailto:" + info.email;
-      document.getElementById("heroEmail").textContent = info.email;
       document.getElementById("heroPhoto").src = info.profileImage;
       document.getElementById("heroPhoto").alt = info.fullName || info.name;
-      const countries = new Set((data.projects || []).map((project) => project.location && project.location.country).filter(Boolean)).size;
       setCount("statYears", years, "+ years");
-      setCount("statProjects", data.projects.length, "");
-      setCount("statCountries", countries, "");
+      setCount("statProjects", 90, "", "+");
+      setCount("statCountries", 7, "", "+");
       document.getElementById("statNow").textContent = info.currentCompany;
       document.getElementById("heroRoles").textContent = info.roles[0];
 
@@ -246,6 +241,7 @@
       document.getElementById("contactLinkedin").href = info.social.linkedin;
       document.getElementById("contactEmail").href = "mailto:" + info.email;
       document.getElementById("contactEmail").textContent = info.email;
+      document.getElementById("contactMail").href = "mailto:" + info.email;
       document.getElementById("contactLocation").textContent = info.location;
       document.getElementById("contactRole").textContent =
         info.currentPosition + " at " + info.currentCompany;
@@ -255,7 +251,6 @@
         "© " + (data.metadata && data.metadata.lastUpdated ? data.metadata.lastUpdated : "2026") +
         " " + info.name;
 
-      this.renderFilters();
       this.renderProjects();
       this.renderWork();
       this.renderEducation();
@@ -283,9 +278,17 @@
       el.style.transition = "opacity 0.2s ease";
     },
 
+    projectChip(project) {
+      const loc = project.location || {};
+      const place = loc.country || loc.name || "";
+      return [project.year, place].filter(Boolean).join(" · ");
+    },
+
     projectCardHtml(project, clone) {
       const image = project.images && project.images[0] ? project.images[0] : "";
       const hidden = clone ? ' aria-hidden="true"' : "";
+      const chip = this.projectChip(project);
+      const label = chip ? project.title + ", " + chip : project.title;
       const leadVideo = project.videoUrl && (project.leadMedia === "video" || !image);
       const media = leadVideo
         ? `<video class="project-card-video" data-lazy-video src="${escapeHtml(encodeURI(project.videoUrl))}" muted loop playsinline preload="none" disablepictureinpicture width="640" height="360"></video>`
@@ -293,9 +296,10 @@
             image,
             `alt="${clone ? "" : escapeHtml(project.title)}" loading="lazy" decoding="async" width="640" height="360" onerror="${IMG_FALLBACK}"`
           );
+      const chipHtml = chip ? `<span class="project-card-chip">${escapeHtml(chip)}</span>` : "";
       return `
-        <article class="project-card" data-project-id="${escapeHtml(project.id)}" data-open-project="${escapeHtml(project.id)}" role="button" tabindex="${clone ? "-1" : "0"}" aria-label="${clone ? "" : escapeHtml(project.title)}"${hidden}>
-          <div class="project-card-media">${media}</div>
+        <article class="project-card" data-project-id="${escapeHtml(project.id)}" data-open-project="${escapeHtml(project.id)}" role="button" tabindex="${clone ? "-1" : "0"}" aria-label="${clone ? "" : escapeHtml(label)}"${hidden}>
+          <div class="project-card-media">${media}${chipHtml}</div>
           <h3 class="project-card-title">${escapeHtml(project.title)}</h3>
         </article>`;
     },
@@ -325,7 +329,7 @@
       const track = document.getElementById("projectsGrid");
       const marquee = document.getElementById("projectsMarquee");
       if (!track) return;
-      const list = shuffle(this.filteredProjects());
+      const list = shuffle(this.data.projects || []);
 
       if (!list.length) {
         track.innerHTML = "";
@@ -555,54 +559,7 @@
       videos.forEach((video) => this.cardVideoObserver.observe(video));
     },
 
-    filteredProjects() {
-      const all = this.data.projects || [];
-      if (this.activeFilter === "all") return all;
-      return all.filter((project) => (project.filters || []).indexOf(this.activeFilter) !== -1);
-    },
-
-    renderFilters() {
-      const root = document.getElementById("projectFilters");
-      if (!root) return;
-      const all = this.data.projects || [];
-      const chips = [{ key: "all", label: "All", count: all.length }].concat(
-        FILTER_ORDER.map((key) => ({
-          key: key,
-          label: key,
-          count: all.filter((project) => (project.filters || []).indexOf(key) !== -1).length
-        })).filter((chip) => chip.count > 0)
-      );
-      root.innerHTML = chips
-        .map(
-          (chip) =>
-            `<button type="button" class="filter-chip" data-filter="${escapeHtml(chip.key)}" aria-pressed="${chip.key === this.activeFilter}">
-              ${escapeHtml(chip.label)} <span class="filter-count">${chip.count}</span>
-            </button>`
-        )
-        .join("");
-      if (!this.filtersBound) {
-        this.filtersBound = true;
-        root.addEventListener("click", (event) => {
-          const btn = event.target.closest("[data-filter]");
-          if (btn) this.setFilter(btn.getAttribute("data-filter"));
-        });
-      }
-    },
-
-    setFilter(key) {
-      this.activeFilter = key || "all";
-      document.querySelectorAll("#projectFilters [data-filter]").forEach((btn) => {
-        btn.setAttribute("aria-pressed", String(btn.getAttribute("data-filter") === this.activeFilter));
-      });
-      this.renderProjects();
-      const ids = this.activeFilter === "all" ? null : this.filteredProjects().map((project) => project.id);
-      document.dispatchEvent(new CustomEvent("portfolio:filter", { detail: { key: this.activeFilter, ids: ids } }));
-    },
-
     highlightProject(projectId, options) {
-      if (projectId && this.activeFilter !== "all" && !this.filteredProjects().some((project) => project.id === projectId)) {
-        this.setFilter("all");
-      }
       const marquee = document.getElementById("projectsMarquee");
       document.querySelectorAll(".project-card").forEach((card) => {
         card.classList.toggle("is-highlighted", card.getAttribute("data-project-id") === projectId);

@@ -1,0 +1,109 @@
+.knowledge-tree {
+  width: min(100%, 1180px);
+  height: auto;
+  display: block;
+  margin-inline: auto;
+  overflow: visible;
+}
+
+.knowledge-tree text {
+  font-family: var(--font);
+  font-weight: 700;
+}
+
+.knowledge-mobile {
+  display: none;
+}
+
+.knowledge-tree .draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+.knowledge-tree.play .draw {
+  animation: kt-draw var(--t, 1.6s) ease var(--d, 0s) forwards;
+}
+
+.knowledge-tree .pop {
+  opacity: 0;
+  transform: scale(0.4);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.knowledge-tree.play .pop {
+  animation: kt-pop 0.6s cubic-bezier(0.2, 1.5, 0.4, 1) var(--d, 0s) forwards;
+}
+
+.knowledge-tree .fade {
+  opacity: 0;
+}
+
+.knowledge-tree.play .fade {
+  animation: kt-fade 0.8s ease var(--d, 0s) forwards;
+}
+
+.knowledge-tree .hov {
+  transition: transform 0.25s cubic-bezier(0.3, 1.5, 0.5, 1);
+  transform-box: fill-box;
+  transform-origin: center;
+  outline: none;
+}
+
+.knowledge-tree .hov:hover,
+.knowledge-tree .hov:focus-visible {
+  transform: translateY(-6px) scale(1.04);
+}
+
+.knowledge-tree .hov:hover .bx,
+.knowledge-tree .hov:focus-visible .bx {
+  fill: var(--accent);
+}
+
+.knowledge-tree .hov:hover .bt,
+.knowledge-tree .hov:focus-visible .bt {
+  fill: #fff;
+}
+
+@keyframes kt-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes kt-pop {
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes kt-fade {
+  to { opacity: 1; }
+}
+
+@media (max-width: 767px) {
+  .knowledge-desktop {
+    display: none;
+  }
+
+  .knowledge-mobile {
+    display: block;
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .knowledge-tree .draw {
+    stroke-dashoffset: 0;
+  }
+
+  .knowledge-tree .pop,
+  .knowledge-tree .fade {
+    opacity: 1;
+    transform: none;
+  }
+
+  .knowledge-tree .kt-fx {
+    display: none;
+  }
+
+  .knowledge-tree .hov {
+    transition: none;
+  }
+}
