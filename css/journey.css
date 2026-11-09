@@ -9,14 +9,34 @@ body.is-loading .skip-link {
 }
 
 body.is-loading .site-header,
+body.is-loading .nav-tabs,
 body.is-loading main,
 body.is-loading .site-footer,
 body.is-loading .mobile-nav {
   opacity: 0;
 }
 
+body.is-entering .nav-tabs {
+  animation: enter-fade 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 body.is-entering .site-header {
   animation: enter-down 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (max-width: 767px) {
+  body.is-entering .site-header {
+    animation-name: enter-fade;
+  }
+}
+
+@keyframes enter-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 body.is-entering .profile-photo {

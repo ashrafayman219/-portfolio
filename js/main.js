@@ -12,13 +12,28 @@
       const plus = document.getElementById("mobileNavToggle");
       let hoverLink = null;
 
+      const phoneQuery = window.matchMedia("(max-width: 767px)");
+      let activeId = "";
+
       const moveIndicator = (link) => {
         if (!tabs || !indicator || !link) return;
-        if (window.matchMedia("(max-width: 767px)").matches) return;
-        const tabsBox = tabs.getBoundingClientRect();
-        const box = link.getBoundingClientRect();
-        indicator.style.width = box.width + "px";
-        indicator.style.transform = "translateX(" + (box.left - tabsBox.left - tabs.clientLeft) + "px)";
+        if (phoneQuery.matches) {
+          const tabsBox = tabs.getBoundingClientRect();
+          const box = link.getBoundingClientRect();
+          indicator.style.left = "0";
+          indicator.style.top = "0";
+          indicator.style.width = box.width + "px";
+          indicator.style.height = box.height + "px";
+          indicator.style.transform = "translate(" + (box.left - tabsBox.left - tabs.clientLeft) + "px," + (box.top - tabsBox.top - tabs.clientTop) + "px)";
+        } else {
+          const tabsBox = tabs.getBoundingClientRect();
+          const box = link.getBoundingClientRect();
+          indicator.style.left = "";
+          indicator.style.top = "";
+          indicator.style.height = "";
+          indicator.style.width = box.width + "px";
+          indicator.style.transform = "translateX(" + (box.left - tabsBox.left - tabs.clientLeft) + "px)";
+        }
         indicator.classList.add("is-ready");
       };
 
@@ -59,6 +74,7 @@
       if (links) {
         links.querySelectorAll("a").forEach((link) => {
           link.addEventListener("mouseenter", () => {
+            if (phoneQuery.matches) return;
             hoverLink = link;
             links.querySelectorAll("a.is-preview").forEach((item) => item.classList.remove("is-preview"));
             link.classList.add("is-preview");
@@ -77,23 +93,150 @@
 
       const sections = [...document.querySelectorAll("main section[id]")];
       const setActive = (id) => {
+        const changed = id !== activeId;
+        activeId = id;
         document.querySelectorAll("[data-section]").forEach((el) => {
-          el.classList.toggle("is-active", el.getAttribute("data-section") === id);
+          const on = el.getAttribute("data-section") === id;
+          el.classList.toggle("is-active", on);
+          if (el.closest("#navLinks")) {
+            if (on) el.setAttribute("aria-current", "true");
+            else el.removeAttribute("aria-current");
+          }
         });
+        if (changed && phoneQuery.matches && links) {
+          const current = links.querySelector('[data-section="' + id + '"]');
+          if (current && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+            current.classList.remove("is-pop");
+            void current.offsetWidth;
+            current.classList.add("is-pop");
+          }
+        }
         syncIndicator();
       };
       const updateSpy = () => {
         const header = document.querySelector(".site-header");
         const offset = (header ? header.offsetHeight : 0) + 12;
+        const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+        const atEnd = scrollable > 0 && window.scrollY >= scrollable - 24;
         let current = sections[0] ? sections[0].id : "home";
-        sections.forEach((section) => {
-          if (section.getBoundingClientRect().top - offset <= 0) current = section.id;
-        });
+        if (atEnd && sections.length) {
+          current = sections[sections.length - 1].id;
+        } else {
+          sections.forEach((section) => {
+            if (section.getBoundingClientRect().top - offset <= 0) current = section.id;
+          });
+        }
+        const progress = scrollable > 0 ? Math.min(1, Math.max(0, window.scrollY / scrollable)) : 0;
+        if (tabs) tabs.style.setProperty("--p", String(progress));
         setActive(current);
       };
+      const followIndicator = () => {
+        const started = performance.now();
+        const step = (now) => {
+          syncIndicator();
+          if (now - started < 460) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      };
+      const expandBtn = document.getElementById("navExpand");
+      if (expandBtn && tabs) {
+        expandBtn.addEventListener("click", () => {
+          const open = !tabs.classList.contains("is-expanded");
+          tabs.classList.toggle("is-expanded", open);
+          expandBtn.setAttribute("aria-expanded", String(open));
+          expandBtn.setAttribute("aria-label", open ? "Hide section names" : "Show section names");
+          followIndicator();
+        });
+      }
+      let drag = null;
+      let blockClick = false;
+      const clampNav = () => {
+        if (!tabs || !tabs.style.left) return;
+        const left = Math.min(window.innerWidth - tabs.offsetWidth - 8, Math.max(8, parseFloat(tabs.style.left)));
+        const top = Math.min(window.innerHeight - tabs.offsetHeight - 8, Math.max(8, parseFloat(tabs.style.top)));
+        tabs.style.left = left + "px";
+        tabs.style.top = top + "px";
+      };
+      const placeDrag = () => {
+        if (!drag) return;
+        const left = Math.min(window.innerWidth - drag.w - 8, Math.max(8, drag.left + drag.dx));
+        const top = Math.min(window.innerHeight - drag.h - 8, Math.max(8, drag.top + drag.dy));
+        drag.nextLeft = left;
+        drag.nextTop = top;
+        tabs.style.transform = "translate3d(" + (left - drag.left) + "px," + (top - drag.top) + "px,0)";
+      };
+      if (tabs) {
+        tabs.addEventListener("pointerdown", (event) => {
+          if (!phoneQuery.matches || event.button !== 0) return;
+          blockClick = false;
+          const box = tabs.getBoundingClientRect();
+          tabs.style.right = "auto";
+          tabs.style.left = box.left + "px";
+          tabs.style.top = box.top + "px";
+          tabs.style.transform = "none";
+          drag = {
+            id: event.pointerId,
+            x: event.clientX,
+            y: event.clientY,
+            left: box.left,
+            top: box.top,
+            w: box.width,
+            h: box.height,
+            dx: 0,
+            dy: 0,
+            moved: false,
+            frame: 0
+          };
+          tabs.setPointerCapture(event.pointerId);
+        });
+        tabs.addEventListener("pointermove", (event) => {
+          if (!drag || event.pointerId !== drag.id) return;
+          drag.dx = event.clientX - drag.x;
+          drag.dy = event.clientY - drag.y;
+          if (!drag.moved && Math.hypot(drag.dx, drag.dy) < 8) return;
+          if (!drag.moved) {
+            drag.moved = true;
+            tabs.classList.add("is-dragging");
+          }
+          if (drag.frame) return;
+          drag.frame = requestAnimationFrame(() => {
+            if (!drag) return;
+            drag.frame = 0;
+            placeDrag();
+          });
+        });
+        const endDrag = (event) => {
+          if (!drag || event.pointerId !== drag.id) return;
+          if (drag.frame) cancelAnimationFrame(drag.frame);
+          if (drag.moved) {
+            placeDrag();
+            tabs.style.left = drag.nextLeft + "px";
+            tabs.style.top = drag.nextTop + "px";
+            tabs.style.transform = "none";
+            blockClick = true;
+          }
+          tabs.classList.remove("is-dragging");
+          drag = null;
+        };
+        tabs.addEventListener("pointerup", endDrag);
+        tabs.addEventListener("pointercancel", endDrag);
+        tabs.addEventListener("click", (event) => {
+          if (!blockClick) return;
+          blockClick = false;
+          event.preventDefault();
+          event.stopPropagation();
+        }, true);
+        tabs.addEventListener("transitionend", (event) => {
+          if (event.propertyName === "width") clampNav();
+        });
+      }
       window.addEventListener("scroll", updateSpy, { passive: true });
-      window.addEventListener("resize", syncIndicator);
+      window.addEventListener("resize", () => {
+        clampNav();
+        syncIndicator();
+      });
       updateSpy();
+      followIndicator();
     },
 
     initBackToTop() {

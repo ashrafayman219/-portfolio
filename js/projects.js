@@ -229,6 +229,7 @@
 
       document.getElementById("heroAbout").textContent = info.about;
       document.getElementById("heroEmail").href = "mailto:" + info.email;
+      document.getElementById("navEmail").href = "mailto:" + info.email;
       document.getElementById("heroPhoto").src = info.profileImage;
       document.getElementById("heroPhoto").alt = info.fullName || info.name;
       setCount("statYears", years, "+ years");
@@ -680,7 +681,7 @@
               ${heroImg(main, project.title)}
               ${galleryNav}
             </div>`
-          : "";
+        : "";
 
       const features = (project.features || []).map((f) => `<li>${escapeHtml(f)}</li>`).join("");
       const techs = (project.technologies || []).map((t) => `<li>${escapeHtml(t)}</li>`).join("");
@@ -858,7 +859,7 @@
         const closedEpoch = epoch + 1;
         this.modalEpoch = closedEpoch;
         modal.classList.remove("is-open", "is-settled", "is-closing");
-        modal.hidden = true;
+      modal.hidden = true;
         this.unlockPageScroll();
         this.galleryImages = [];
         this.galleryIndex = 0;
@@ -892,7 +893,7 @@
             <header class="job-head">
               ${jobLogos(job)}
               <div class="job-copy">
-                <h3>${escapeHtml(job.position)}</h3>
+              <h3>${escapeHtml(job.position)}</h3>
                 ${jobHeadline(job)}
                 ${jobWhen(job)}
               </div>
