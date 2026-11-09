@@ -342,7 +342,12 @@
       });
 
       const closeDetail = document.getElementById("btn-close-detail");
-      if (closeDetail) closeDetail.addEventListener("click", () => this.closeDetail());
+      if (closeDetail) {
+        closeDetail.addEventListener("click", () => {
+          if (global.GISMap) global.GISMap.goHome();
+          else this.closeDetail();
+        });
+      }
 
       document.addEventListener("keydown", (event) => {
         if (event.key !== "Escape") return;

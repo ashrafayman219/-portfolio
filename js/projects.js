@@ -216,7 +216,9 @@
     marqueeLoop: 0,
     marqueeSpeed: 70,
     marqueeVelocity: 70,
-    marqueeDragging: false,
+    marqueeHolding: false,
+    marqueeNudged: false,
+    marqueeNudging: false,
     marqueeDidDrag: false,
     marqueeDragBound: false,
 
@@ -377,7 +379,7 @@
     marqueeAutoplayPaused() {
       const marquee = document.getElementById("projectsMarquee");
       if (!marquee) return true;
-      if (this.marqueeDragging) return true;
+      if (this.marqueeHolding || this.marqueeDragging) return true;
       if (marquee.classList.contains("is-paused")) return true;
       if (marquee.classList.contains("is-modal-paused")) return true;
       if (marquee.querySelector(":focus-visible")) return true;
@@ -439,11 +441,43 @@
         const diff = target - this.marqueeVelocity;
         const step = Math.sign(diff) * this.marqueeSpeed * dt;
         this.marqueeVelocity = Math.abs(step) >= Math.abs(diff) ? target : this.marqueeVelocity + step;
-        if (!this.marqueeDragging && this.marqueeVelocity) this.marqueeShift += this.marqueeVelocity * dt;
+        if (!this.marqueeDragging && !this.marqueeNudging && this.marqueeVelocity) this.marqueeShift += this.marqueeVelocity * dt;
         this.wrapMarqueeShift();
         this.applyMarqueeFrame();
       };
       this.marqueeRaf = requestAnimationFrame(tick);
+      this.nudgeMarqueeOnce();
+    },
+
+    nudgeMarqueeOnce() {
+      if (this.marqueeNudged) return;
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      if (!window.matchMedia("(max-width: 767px)").matches) return;
+      const marquee = document.getElementById("projectsMarquee");
+      if (!marquee || !("IntersectionObserver" in window)) return;
+      const watcher = new IntersectionObserver((entries) => {
+        if (!entries[0].isIntersecting || this.marqueeNudged) return;
+        this.marqueeNudged = true;
+        watcher.disconnect();
+        const start = this.marqueeShift;
+        const distance = 46;
+        const duration = 720;
+        const began = performance.now();
+        this.marqueeNudging = true;
+        const step = (now) => {
+          const t = Math.min(1, (now - began) / duration);
+          this.marqueeShift = start - distance * Math.sin(t * Math.PI);
+          this.wrapMarqueeShift();
+          this.applyMarqueeFrame();
+          if (t < 1) {
+            requestAnimationFrame(step);
+            return;
+          }
+          this.marqueeNudging = false;
+        };
+        requestAnimationFrame(step);
+      }, { threshold: 0.45 });
+      watcher.observe(marquee);
     },
 
     bindMarqueeDrag() {
@@ -459,6 +493,7 @@
         if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
         if (!this.marqueeLoop) return;
         holding = true;
+        this.marqueeHolding = true;
         this.marqueeDragging = false;
         this.marqueeDidDrag = false;
         startX = event.clientX;
@@ -486,6 +521,7 @@
 
       const endDrag = () => {
         holding = false;
+        this.marqueeHolding = false;
         if (!this.marqueeDragging) return;
         this.marqueeDragging = false;
         marquee.classList.remove("is-dragging");
@@ -559,12 +595,37 @@
       videos.forEach((video) => this.cardVideoObserver.observe(video));
     },
 
+    focusProjectCard(projectId) {
+      const marquee = document.getElementById("projectsMarquee");
+      const track = document.getElementById("projectsGrid");
+      if (!marquee || !track || !projectId) return;
+      let card = null;
+      track.querySelectorAll(".project-card").forEach((item) => {
+        if (card || item.getAttribute("aria-hidden") === "true") return;
+        if (item.getAttribute("data-project-id") === projectId) card = item;
+      });
+      if (!card) return;
+      const marqueeRect = marquee.getBoundingClientRect();
+      const cardRect = card.getBoundingClientRect();
+      const delta = cardRect.left - marqueeRect.left - Math.max(16, (marquee.clientWidth - cardRect.width) / 2);
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduced || !track.classList.contains("is-js") || !this.marqueeLoop) {
+        marquee.scrollTo({ left: Math.max(0, marquee.scrollLeft + delta), behavior: reduced ? "auto" : "smooth" });
+        return;
+      }
+      this.marqueeShift -= delta;
+      this.marqueeVelocity = 0;
+      this.wrapMarqueeShift();
+      this.applyMarqueeFrame();
+    },
+
     highlightProject(projectId, options) {
       const marquee = document.getElementById("projectsMarquee");
       document.querySelectorAll(".project-card").forEach((card) => {
         card.classList.toggle("is-highlighted", card.getAttribute("data-project-id") === projectId);
       });
       if (marquee) marquee.classList.toggle("is-paused", !!projectId);
+      if (options && options.scroll) this.focusProjectCard(projectId);
       if (this.highlightTimer) window.clearTimeout(this.highlightTimer);
       if (projectId) {
         this.highlightTimer = window.setTimeout(() => {
@@ -837,11 +898,13 @@
               </div>
               ${expandButton()}
             </header>
+            <div class="job-slide">
             <div class="job-body">
               ${jobInsights(job)}
               ${jobSummary(job)}
               <ul>${job.responsibilities.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
               ${roleSkills(job)}
+            </div>
             </div>
           </article>`;
           }
@@ -863,7 +926,9 @@
               </div>
               ${expandButton()}
             </header>
+            <div class="job-slide">
             <ol class="role-path">${roles}</ol>
+            </div>
           </article>`;
         })
         .join("");

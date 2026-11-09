@@ -278,6 +278,10 @@
   #map-wrap .route-line {
     animation: none;
   }
+
+  .detail-go.is-cue {
+    animation: none;
+  }
 }
 
 #top-bar {
@@ -915,6 +919,69 @@
   color: var(--map-text-2);
 }
 
+.detail-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.detail-meta {
+  margin: 0;
+  min-width: 0;
+}
+
+.detail-go {
+  margin-left: auto;
+  flex: 0 0 auto;
+  height: 36px;
+  padding: 0 12px 0 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: none;
+  border-radius: 999px;
+  background: var(--pin-project);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+}
+
+.detail-go span {
+  line-height: 1;
+}
+
+.detail-go svg {
+  width: 16px;
+  height: 16px;
+}
+
+.detail-go.is-cue {
+  animation: detailGoCue 0.9s ease;
+}
+
+@keyframes detailGoCue {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(26, 122, 140, 0.45);
+  }
+  45% {
+    transform: scale(1.06);
+    box-shadow: 0 0 0 8px rgba(26, 122, 140, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(26, 122, 140, 0);
+  }
+}
+
+.detail-go:hover,
+.detail-go:focus-visible {
+  background: var(--navy);
+}
+
 #map-wrap .map-stat-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -972,6 +1039,29 @@
   margin: 0 0 4px 4px;
 }
 
+.map-drag-hint {
+  display: none;
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  z-index: 6;
+  margin: 0;
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #1b2a4a;
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.3;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.4s ease;
+}
+
+.map-drag-hint.is-gone {
+  opacity: 0;
+}
+
 #liquid-glass-svg {
   position: absolute;
   width: 0;
@@ -1021,8 +1111,55 @@ body.map-fullscreen .back-to-top {
 
 @media (max-width: 767px) {
   #map-wrap {
-    height: 500px;
-    min-height: 500px;
+    height: 70vh;
+    min-height: 420px;
+  }
+
+  .map-drag-hint {
+    display: block;
+  }
+
+  #detail-panel {
+    top: auto;
+    bottom: 108px;
+    left: 8px;
+    right: 8px;
+    width: auto;
+    max-height: min(42vh, calc(100% - 156px));
+    min-height: 0;
+  }
+
+  #map-wrap:has(#map-toolbar.is-more-open) #detail-panel {
+    bottom: 196px;
+    max-height: min(34vh, calc(100% - 244px));
+  }
+
+  #detail-panel .detail-head {
+    gap: 0.5rem;
+    padding: 10px 12px 8px;
+  }
+
+  #detail-panel .detail-head h3 {
+    font-size: 15px;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+  }
+
+  #detail-panel .detail-body {
+    padding: 8px 12px 10px;
+  }
+
+  #detail-panel .detail-meta {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+  }
+
+  #detail-panel .map-icon-btn {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
   }
 
   #project-pills {
@@ -1063,9 +1200,9 @@ body.map-fullscreen .back-to-top {
     display: flex;
   }
 
-  #map-toolbar .tool[data-dock="layers"] { order: 20; }
-  #map-toolbar .tool[data-dock="locations"] { order: 21; }
-  #btn-search { order: 22; }
+  #btn-tour { order: 20; }
+  #btn-legend { order: 21; }
+  #btn-home { order: 22; }
   #btn-more { order: 23; }
 
   #btn-more {

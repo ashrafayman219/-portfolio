@@ -847,13 +847,15 @@
       if (this.touring || !this.group.hasLayer(marker)) reveal();
       else this.group.zoomToShowLayer(marker, reveal);
 
+      const facts = [feature.period, feature.subtitle].filter(Boolean).join(" · ");
       const body =
-        `<div class="map-stat-grid">
-          <div class="map-stat"><div class="k">Type</div><div class="v">${categoryLabel(feature.category)}</div></div>
-          <div class="map-stat"><div class="k">When</div><div class="v">${escapeHtml(feature.period)}</div></div>
-        </div>
-        <p>${escapeHtml(feature.subtitle)}</p>
-        <button type="button" class="detail-action" data-open-mapped-project="${escapeHtml(feature.projectId)}">Open project</button>`;
+        `<div class="detail-row">
+          <p class="detail-meta">${escapeHtml(facts)}</p>
+          <button type="button" class="detail-go is-cue" data-open-mapped-project="${escapeHtml(feature.projectId)}" aria-label="Show this project">
+            <span>Project</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h12M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>`;
 
       if (global.MapUI) global.MapUI.openDetail(categoryLabel(feature.category), feature.name, body);
     },

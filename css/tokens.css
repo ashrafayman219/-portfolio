@@ -34,6 +34,7 @@
 html {
   scroll-behavior: smooth;
   color-scheme: light;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html,
@@ -118,6 +119,10 @@ h3,
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
   border: 0;
+}
+
+:focus {
+  outline: none;
 }
 
 :focus-visible {

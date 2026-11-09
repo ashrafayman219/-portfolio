@@ -98,12 +98,53 @@
 
     initBackToTop() {
       const button = document.getElementById("backToTop");
+      const hero = document.getElementById("home");
+      const phone = window.matchMedia("(max-width: 767px)");
+      const show = (on) => button.classList.toggle("is-visible", on);
+      if (hero && "IntersectionObserver" in window) {
+        const watcher = new IntersectionObserver((entries) => {
+          if (!phone.matches) return;
+          show(!entries[0].isIntersecting);
+        });
+        watcher.observe(hero);
+      }
       window.addEventListener("scroll", () => {
-        button.classList.toggle("is-visible", window.scrollY > 480);
-      });
+        if (phone.matches) return;
+        show(window.scrollY > 480);
+      }, { passive: true });
+      if (phone.addEventListener) {
+        phone.addEventListener("change", () => {
+          if (!phone.matches) show(window.scrollY > 480);
+        });
+      }
       button.addEventListener("click", () => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        window.scrollTo({ top: 0, behavior: reduced ? "auto" : "smooth" });
       });
+    },
+
+    initTouchHints() {
+      const rail = document.querySelector(".skill-rail");
+      if (rail) {
+        const hold = (on) => rail.classList.toggle("is-held", on);
+        rail.addEventListener("pointerdown", () => hold(true));
+        const release = () => hold(false);
+        rail.addEventListener("pointerup", release);
+        rail.addEventListener("pointercancel", release);
+        window.addEventListener("pointerup", release);
+        window.addEventListener("pointercancel", release);
+      }
+
+      const hint = document.getElementById("mapDragHint");
+      const map = document.getElementById("mapView");
+      if (hint && map) {
+        const hide = (event) => {
+          if (event.target.closest("button, a, #map-toolbar, #top-bar, #dock, #map-legend")) return;
+          hint.classList.add("is-gone");
+          map.removeEventListener("pointerdown", hide);
+        };
+        map.addEventListener("pointerdown", hide);
+      }
     },
 
     initCounters() {
@@ -177,6 +218,7 @@
   document.addEventListener("DOMContentLoaded", async () => {
     PortfolioApp.initNav();
     PortfolioApp.initBackToTop();
+    PortfolioApp.initTouchHints();
 
     try {
       const data = await PortfolioApp.loadData();

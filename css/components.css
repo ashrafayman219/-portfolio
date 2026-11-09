@@ -476,10 +476,21 @@
   }
 }
 
-.is-collapsed .job-body,
-.is-collapsed .role-path,
-.is-collapsed .job-link {
-  display: none;
+.is-collapsed .job-slide {
+  grid-template-rows: 0fr;
+  opacity: 0;
+}
+
+.job-slide {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 0.34s ease, opacity 0.3s ease;
+}
+
+.job-slide > .job-body,
+.job-slide > .role-path {
+  overflow: hidden;
+  min-height: 0;
 }
 
 .job-card.is-collapsed,
