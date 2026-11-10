@@ -200,6 +200,25 @@
       });
     },
 
+    armPageScroll() {
+      const map = this.map;
+      if (!map) return;
+      const touch = window.matchMedia("(pointer: coarse)").matches || window.matchMedia("(max-width: 767px)").matches;
+      if (!touch) return;
+      const wrap = document.getElementById("map-wrap");
+      const wide = window.matchMedia("(orientation: landscape)");
+      const full = () => wrap && (document.fullscreenElement === wrap || document.webkitFullscreenElement === wrap);
+      const setDrag = () => {
+        if (!map.dragging) return;
+        if (full() || wide.matches) map.dragging.enable();
+        else map.dragging.disable();
+      };
+      setDrag();
+      if (wide.addEventListener) wide.addEventListener("change", setDrag);
+      document.addEventListener("fullscreenchange", setDrag);
+      document.addEventListener("webkitfullscreenchange", setDrag);
+    },
+
     createMap() {
       if (typeof L === "undefined" || typeof L.markerClusterGroup !== "function") {
         throw new Error("Leaflet did not load");
@@ -286,15 +305,14 @@
       this.map.on("dragstart wheel", () => {
         this.mapDragged = true;
       });
+      this.armPageScroll();
       this.setBasemap(this.currentBasemap);
 
       this.map.on("click", () => {
-        this.selectedId = null;
-        this.selectedCountry = null;
-        this.syncPills(null);
-        this.syncMarkerState();
-        document.querySelectorAll("#locationList button").forEach((btn) => btn.classList.remove("is-active"));
-        if (global.MapUI) global.MapUI.closeDetail();
+        const panel = document.getElementById("detail-panel");
+        const open = this.selectedId || (panel && panel.classList.contains("open"));
+        if (!open) return;
+        this.goHome();
       });
 
       this.map.on("mousemove", (event) => {

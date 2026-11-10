@@ -63,8 +63,44 @@
   var length = road.getTotalLength();
   var reveal = document.getElementById("j-rv");
   reveal.setAttribute("d", road.getAttribute("d"));
-  reveal.style.strokeDasharray = length;
-  reveal.style.setProperty("--L", length);
+  reveal.setAttribute("stroke-dasharray", String(length));
+  reveal.setAttribute("stroke-dashoffset", String(length));
+
+  function roadEase(x) {
+    var p1x = 0.45;
+    var p1y = 0.05;
+    var p2x = 0.3;
+    var p2y = 1;
+    function sample(t, a1, a2) {
+      return ((1 - 3 * a2 + 3 * a1) * t + (3 * a2 - 6 * a1)) * t * t + 3 * a1 * t;
+    }
+    function slope(t, a1, a2) {
+      return 3 * (1 - 3 * a2 + 3 * a1) * t * t + 2 * (3 * a2 - 6 * a1) * t + 3 * a1;
+    }
+    if (x <= 0) return 0;
+    if (x >= 1) return 1;
+    var t = x;
+    for (var i = 0; i < 6; i++) {
+      var s = slope(t, p1x, p2x);
+      if (Math.abs(s) < 0.0001) break;
+      t = Math.max(0, Math.min(1, t - (sample(t, p1x, p2x) - x) / s));
+    }
+    return sample(t, p1y, p2y);
+  }
+
+  if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    var drawStart = null;
+    var draw = function (now) {
+      if (drawStart === null) drawStart = now;
+      var elapsed = now - drawStart - 100;
+      var progress = elapsed <= 0 ? 0 : roadEase(Math.min(1, elapsed / 3300));
+      reveal.setAttribute("stroke-dashoffset", String(length * (1 - progress)));
+      if (progress < 1) window.requestAnimationFrame(draw);
+    };
+    window.requestAnimationFrame(draw);
+  } else {
+    reveal.setAttribute("stroke-dashoffset", "0");
+  }
 
   var width = 118;
 

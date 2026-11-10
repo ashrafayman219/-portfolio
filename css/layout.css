@@ -320,12 +320,6 @@
   animation: skillRail 110s linear infinite;
 }
 
-.skill-rail.is-held .skill-rail-track,
-.skill-rail:hover .skill-rail-track,
-.skill-rail:focus-within .skill-rail-track {
-  animation-play-state: paused;
-}
-
 .skill-rail-set {
   display: flex;
   align-items: center;
@@ -355,11 +349,6 @@
   font-weight: 600;
   line-height: 1.2;
   white-space: nowrap;
-}
-
-.skill-rail-set li:hover span,
-.skill-rail-set li:focus-within span {
-  color: var(--accent);
 }
 
 @keyframes skillRail {
@@ -433,8 +422,8 @@
 
 .contact-grid {
   display: grid;
-  grid-template-columns: minmax(0, 36rem);
-  gap: 2rem;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1.25rem;
   align-items: start;
 }
 
@@ -894,6 +883,10 @@
 #projects,
 .knowledge {
   padding-top: 0;
+}
+
+#projects {
+  padding-bottom: 0;
 }
 
 @keyframes navItemIn {

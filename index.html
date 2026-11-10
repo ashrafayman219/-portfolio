@@ -191,7 +191,7 @@
             </aside>
 
             <div id="mapView"></div>
-            <p class="map-drag-hint" id="mapDragHint">Drag to explore</p>
+            <p class="map-orient-hint">Turn your phone sideways for a wider map.</p>
             <div id="map-pins" aria-label="Project goals"></div>
 
             <div id="map-legend">
@@ -292,14 +292,45 @@
 
       <section class="section" id="projects">
         <div class="container">
-          <header class="section-header">
-            <p class="section-kicker">Selected work</p>
-            <h2 class="section-title">Featured projects</h2>
-            <p class="section-sub">Professional and academic GIS applications.</p>
+          <header class="section-header projects-head">
+            <div>
+              <p class="section-kicker">Selected work</p>
+              <h2 class="section-title">Featured projects</h2>
+            </div>
+            <div class="projects-hint" id="projectsHint" aria-hidden="true">
+              <div class="projects-hint-row">
+                <span class="projects-hint-side is-left" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M15 5 8 12l7 7"/></svg>
+                  <svg viewBox="0 0 24 24"><path d="M15 5 8 12l7 7"/></svg>
+                  <svg viewBox="0 0 24 24"><path d="M15 5 8 12l7 7"/></svg>
+                </span>
+                <svg class="projects-hint-hand" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M18 11v-1a2 2 0 0 0-2-2 2 2 0 0 0-2 2"/>
+                  <path d="M14 10V9a2 2 0 0 0-2-2 2 2 0 0 0-2 2v1"/>
+                  <path d="M10 9.5V5a2 2 0 0 0-2-2 2 2 0 0 0-2 2v8"/>
+                  <path d="M18 11a2 2 0 1 1 4 0v2a6 6 0 0 1-6 6h-1.5c-2 0-3.2-.6-4.2-1.6L6 16.2a1.6 1.6 0 0 1 2.2-2.3L10 15"/>
+                </svg>
+                <span class="projects-hint-side is-right" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg>
+                  <svg viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg>
+                  <svg viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg>
+                </span>
+              </div>
+              <span class="projects-hint-cap">Drag right or left</span>
+            </div>
+            <div class="projects-actions">
+              <button class="projects-ctl" id="projectsPlay" type="button" aria-pressed="false">
+                <svg class="projects-ctl-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.2v14H7zM13.8 5H17v14h-3.2z"/></svg>
+                <span id="projectsPlayLabel">Pause</span>
+              </button>
+              <button class="projects-ctl projects-ctl-primary" id="projectsAll" type="button">View all</button>
+            </div>
           </header>
         </div>
-        <div class="projects-marquee" id="projectsMarquee">
-          <div class="projects-track" id="projectsGrid"></div>
+        <div class="projects-stage">
+          <div class="projects-marquee" id="projectsMarquee">
+            <div class="projects-track" id="projectsGrid"></div>
+          </div>
         </div>
       </section>
 
@@ -394,7 +425,7 @@
         <div class="container">
           <header class="section-header">
             <p class="section-kicker">Say hello</p>
-            <h2 class="section-title">Contact</h2>
+            <h2 class="section-title">Contact and feedback</h2>
           </header>
           <div class="contact-grid">
             <div class="contact-card">
@@ -419,6 +450,37 @@
               </div>
               <p class="contact-note">References are available on request.</p>
             </div>
+            <form class="contact-card site-feedback" id="siteFeedback" data-email="ashrafayman219@gmail.com" novalidate>
+              <input class="site-honey" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true">
+              <p class="section-kicker">Private</p>
+              <h3 class="site-feedback-title">Site feedback</h3>
+              <p class="contact-note">Only I see this. It is not posted on the site. Use it for a message or an idea to improve the site.</p>
+              <label class="site-field">
+                <span>Name <em>optional</em></span>
+                <input type="text" name="name" maxlength="60" autocomplete="name">
+              </label>
+              <fieldset class="site-field">
+                <legend>What is this?</legend>
+                <div class="site-kinds">
+                  <label><input type="radio" name="kind" value="Message" checked> Message</label>
+                  <label><input type="radio" name="kind" value="Suggestion"> Suggestion</label>
+                </div>
+              </fieldset>
+              <label class="site-field" id="siteNoteField">
+                <span>Your note</span>
+                <textarea name="note" maxlength="800" rows="4" aria-describedby="siteNoteStatus" placeholder="A message, or something the site could do better"></textarea>
+                <p class="site-note-status" id="siteNoteStatus">At least a short sentence.</p>
+              </label>
+              <button class="btn btn-primary" type="submit">Send</button>
+              <div class="site-sent" id="siteSent" hidden>
+                <svg class="site-sent-mark" viewBox="0 0 84 84" aria-hidden="true">
+                  <circle cx="42" cy="42" r="36" pathLength="1"/>
+                  <path d="M26 43l11 11 21-23" pathLength="1"/>
+                </svg>
+                <p class="site-sent-title">Sent</p>
+                <p class="contact-note">Thank you. Only I see this note.</p>
+              </div>
+            </form>
           </div>
         </div>
       </section>
@@ -487,6 +549,21 @@
       </defs>
     </svg>
 
+    <div class="modal all-modal" id="projectsAllModal" role="dialog" aria-modal="true" aria-labelledby="projectsAllTitle" hidden>
+      <div class="modal-backdrop" data-close-all></div>
+      <div class="modal-panel all-panel">
+        <div class="modal-head">
+          <div class="modal-head-copy">
+            <h2 id="projectsAllTitle">All projects</h2>
+            <p class="project-meta" id="projectsAllCount"></p>
+          </div>
+          <button class="modal-close" type="button" data-close-all><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6 9 12l6 6"/></svg><span>Back</span></button>
+        </div>
+        <div class="all-chips" id="projectsAllChips" role="group" aria-label="Filter projects"></div>
+        <div class="all-grid" id="projectsAllGrid"></div>
+      </div>
+    </div>
+
     <div class="modal" id="projectModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" hidden>
       <div class="modal-backdrop" data-close-modal></div>
       <div class="modal-panel">
@@ -495,7 +572,7 @@
             <h2 id="modalTitle"></h2>
             <p class="project-meta" id="modalSubtitle"></p>
           </div>
-          <button class="modal-close" type="button" data-close-modal aria-label="Close">×</button>
+          <button class="modal-close" type="button" data-close-modal><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6 9 12l6 6"/></svg><span>Back</span></button>
         </div>
         <div id="modalBody"></div>
       </div>

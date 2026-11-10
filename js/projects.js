@@ -214,13 +214,119 @@
     marqueeRaf: null,
     marqueeShift: 0,
     marqueeLoop: 0,
-    marqueeSpeed: 70,
+    marqueeSpeed: 72,
     marqueeVelocity: 70,
     marqueeHolding: false,
     marqueeNudged: false,
     marqueeNudging: false,
     marqueeDidDrag: false,
     marqueeDragBound: false,
+    marqueeFling: 0,
+    marqueePlaying: true,
+    allFilter: "all",
+
+    bindSiteFeedback(email) {
+      const form = document.getElementById("siteFeedback");
+      if (!form) return;
+      if (email) form.dataset.email = email;
+      if (form.dataset.bound === "true") return;
+      form.dataset.bound = "true";
+      const field = form.querySelector("[name='note']");
+      const wrap = document.getElementById("siteNoteField");
+      const status = document.getElementById("siteNoteStatus");
+      let touched = false;
+      const paint = () => {
+        const note = field ? field.value.trim() : "";
+        if (wrap) wrap.classList.remove("is-bad", "is-good");
+        if (!touched) {
+          if (status) status.textContent = "At least a short sentence.";
+          if (field) field.removeAttribute("aria-invalid");
+          return note.length >= 8;
+        }
+        if (!note) {
+          if (wrap) wrap.classList.add("is-bad");
+          if (status) status.textContent = "Write a short note.";
+          if (field) field.setAttribute("aria-invalid", "true");
+          return false;
+        }
+        if (note.length < 8) {
+          if (wrap) wrap.classList.add("is-bad");
+          if (status) status.textContent = "A little more, please.";
+          if (field) field.setAttribute("aria-invalid", "true");
+          return false;
+        }
+        if (wrap) wrap.classList.add("is-good");
+        if (status) status.textContent = "Ready to send.";
+        if (field) field.setAttribute("aria-invalid", "false");
+        return true;
+      };
+      if (field) {
+        field.addEventListener("input", () => {
+          touched = true;
+          paint();
+        });
+      }
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        touched = true;
+        if (!paint()) {
+          if (field) field.focus();
+          return;
+        }
+        const data = new FormData(form);
+        if (String(data.get("_honey") || "").trim()) return;
+        const note = String(data.get("note") || "").trim();
+        const name = String(data.get("name") || "").trim();
+        const kind = String(data.get("kind") || "Message");
+        const to = form.dataset.email || "ashrafayman219@gmail.com";
+        const button = form.querySelector("[type='submit']");
+        if (button) {
+          button.disabled = true;
+          button.textContent = "Sending…";
+        }
+        try {
+          const response = await fetch("https://formsubmit.co/ajax/" + encodeURIComponent(to), {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json"
+            },
+            body: JSON.stringify({
+              name: name || "Site visitor",
+              message: note,
+              type: kind,
+              _subject: "Site feedback: " + kind,
+              _template: "box",
+              _captcha: "false"
+            })
+          });
+          const result = await response.json().catch(() => ({}));
+          if (!response.ok || String(result.success) === "false") {
+            const message = String(result.message || "");
+            throw new Error(message);
+          }
+          const sent = document.getElementById("siteSent");
+          if (sent) sent.hidden = false;
+          form.classList.add("is-sent");
+        } catch (err) {
+          const message = String(err && err.message || "");
+          if (wrap) {
+            wrap.classList.remove("is-good");
+            wrap.classList.add("is-bad");
+          }
+          if (status) {
+            status.textContent = /activat/i.test(message)
+              ? "Check your Gmail and confirm the form once. Then send the note again."
+              : "Could not send it. Please try again.";
+          }
+        } finally {
+          if (button) {
+            button.disabled = false;
+            button.textContent = "Send";
+          }
+        }
+      });
+    },
 
     render(data) {
       this.data = data;
@@ -245,6 +351,7 @@
       document.getElementById("contactEmail").href = "mailto:" + info.email;
       document.getElementById("contactEmail").textContent = info.email;
       document.getElementById("contactMail").href = "mailto:" + info.email;
+      this.bindSiteFeedback(info.email);
       document.getElementById("contactLocation").textContent = info.location;
       document.getElementById("contactRole").textContent =
         info.currentPosition + " at " + info.currentCompany;
@@ -259,6 +366,7 @@
       this.renderEducation();
       this.renderSkills();
       this.bindProjectActions();
+      this.bindFlowControls();
       this.bindMarqueeDrag();
     },
 
@@ -305,6 +413,180 @@
           <div class="project-card-media">${media}${chipHtml}</div>
           <h3 class="project-card-title">${escapeHtml(project.title)}</h3>
         </article>`;
+    },
+
+    dismissPanHint() {
+      const hint = document.getElementById("projectsHint");
+      if (hint) hint.classList.add("is-gone");
+    },
+
+    syncPlayButton() {
+      const button = document.getElementById("projectsPlay");
+      const label = document.getElementById("projectsPlayLabel");
+      const icon = button && button.querySelector(".projects-ctl-icon");
+      if (!button || !label || !icon) return;
+      const playing = this.marqueePlaying;
+      button.setAttribute("aria-pressed", playing ? "false" : "true");
+      label.textContent = playing ? "Pause" : "Play";
+      icon.innerHTML = playing
+        ? '<path d="M7 5h3.2v14H7zM13.8 5H17v14h-3.2z"/>'
+        : '<path d="M8 5v14l11-7z"/>';
+    },
+
+    renderAllProjects() {
+      const grid = document.getElementById("projectsAllGrid");
+      const count = document.getElementById("projectsAllCount");
+      const chips = document.getElementById("projectsAllChips");
+      if (!grid || !this.data) return;
+      const projects = this.data.projects || [];
+      const filter = this.allFilter || "all";
+      const list = projects.filter((project) => filter === "all" || (project.category || "professional") === filter);
+      if (chips && !chips.childElementCount) {
+        [
+          ["all", "All"],
+          ["professional", "Professional"],
+          ["academic", "Academic"]
+        ].forEach(([id, name]) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "all-chip" + (id === filter ? " is-on" : "");
+          button.textContent = name;
+          button.addEventListener("click", () => {
+            this.allFilter = id;
+            chips.querySelectorAll(".all-chip").forEach((chip) => {
+              chip.classList.toggle("is-on", chip === button);
+            });
+            this.renderAllProjects();
+          });
+          chips.appendChild(button);
+        });
+      }
+      grid.innerHTML = list.map((project) => this.projectCardHtml(project, false)).join("");
+      grid.querySelectorAll(".project-card").forEach((card, index) => {
+        card.style.setProperty("--i", String(index));
+      });
+      if (count) count.textContent = list.length + (list.length === 1 ? " project" : " projects");
+      this.bindCardVideos();
+    },
+
+    openAllProjects() {
+      const modal = document.getElementById("projectsAllModal");
+      const marquee = document.getElementById("projectsMarquee");
+      if (!modal) return;
+      if (this.allCloseTimer) {
+        window.clearTimeout(this.allCloseTimer);
+        this.allCloseTimer = null;
+      }
+      if (this.allClosePanel && this.allCloseHandler) {
+        this.allClosePanel.removeEventListener("transitionend", this.allCloseHandler);
+        this.allClosePanel = null;
+        this.allCloseHandler = null;
+      }
+      this.allFilter = "all";
+      const chips = document.getElementById("projectsAllChips");
+      if (chips) chips.innerHTML = "";
+      this.renderAllProjects();
+      if (marquee) marquee.classList.add("is-modal-paused");
+      this.lockPageScroll();
+      modal.classList.remove("is-closing", "is-settled");
+      modal.hidden = false;
+      modal.classList.add("is-open");
+      const grid = document.getElementById("projectsAllGrid");
+      if (grid) grid.scrollTop = 0;
+      window.requestAnimationFrame(() => this.bindCardVideos());
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduced) {
+        modal.classList.add("is-settled");
+        return;
+      }
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => {
+          if (modal.hidden || modal.classList.contains("is-closing")) return;
+          modal.classList.add("is-settled");
+        });
+      });
+    },
+
+    closeAllProjects(options) {
+      const modal = document.getElementById("projectsAllModal");
+      const marquee = document.getElementById("projectsMarquee");
+      if (!modal || modal.hidden || modal.classList.contains("is-closing")) return;
+      const keepLock = options && options.keepLock;
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const panel = modal.querySelector(".modal-panel");
+      const finish = () => {
+        if (modal.hidden) return;
+        if (this.allCloseTimer) {
+          window.clearTimeout(this.allCloseTimer);
+          this.allCloseTimer = null;
+        }
+        if (panel && this.allCloseHandler) panel.removeEventListener("transitionend", this.allCloseHandler);
+        this.allClosePanel = null;
+        this.allCloseHandler = null;
+        modal.querySelectorAll("video").forEach((video) => video.pause());
+        modal.classList.remove("is-open", "is-settled", "is-closing");
+        modal.hidden = true;
+        if (!keepLock) {
+          this.unlockPageScroll();
+          if (marquee) marquee.classList.remove("is-modal-paused");
+        }
+      };
+      if (keepLock || reduced || !modal.classList.contains("is-settled")) {
+        finish();
+        return;
+      }
+      const onEnd = (event) => {
+        if (event.target !== panel || event.propertyName !== "transform") return;
+        finish();
+      };
+      this.allClosePanel = panel;
+      this.allCloseHandler = onEnd;
+      modal.classList.add("is-closing");
+      if (panel) panel.addEventListener("transitionend", onEnd);
+      this.allCloseTimer = window.setTimeout(finish, 420);
+    },
+
+    bindFlowControls() {
+      if (this.flowBound) return;
+      this.flowBound = true;
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      this.marqueePlaying = !reduced;
+      const play = document.getElementById("projectsPlay");
+      if (play) {
+        if (reduced) play.hidden = true;
+        else {
+          play.addEventListener("click", () => {
+            this.marqueePlaying = !this.marqueePlaying;
+            if (!this.marqueePlaying) {
+              this.marqueeVelocity = 0;
+              this.marqueeFling = 0;
+            }
+            this.syncPlayButton();
+          });
+        }
+      }
+      this.syncPlayButton();
+      const all = document.getElementById("projectsAll");
+      if (all) all.addEventListener("click", () => this.openAllProjects());
+      const modal = document.getElementById("projectsAllModal");
+      if (modal) {
+        modal.addEventListener("click", (event) => {
+          if (event.target.closest("[data-close-all]")) {
+            this.closeAllProjects();
+            return;
+          }
+          const card = event.target.closest("[data-open-project]");
+          if (!card || !modal.contains(card)) return;
+          const id = card.getAttribute("data-open-project");
+          this.closeAllProjects({ keepLock: true });
+          this.openModal(id, card);
+        });
+      }
+      document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+        const allModal = document.getElementById("projectsAllModal");
+        if (allModal && !allModal.hidden) this.closeAllProjects();
+      });
     },
 
     bindProjectActions() {
@@ -380,6 +662,7 @@
     marqueeAutoplayPaused() {
       const marquee = document.getElementById("projectsMarquee");
       if (!marquee) return true;
+      if (!this.marqueePlaying) return true;
       if (this.marqueeHolding || this.marqueeDragging) return true;
       if (marquee.classList.contains("is-paused")) return true;
       if (marquee.classList.contains("is-modal-paused")) return true;
@@ -423,8 +706,8 @@
       if (!track || !marquee || !set) return;
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
       this.marqueeLoop = set.scrollWidth;
-      this.marqueeSpeed = 70;
-      this.marqueeVelocity = 70;
+      this.marqueeSpeed = 72;
+      this.marqueeVelocity = this.marqueePlaying ? 72 : 0;
       this.marqueeShift = -this.marqueeLoop;
       track.classList.add("is-js");
       this.applyMarqueeFrame();
@@ -438,11 +721,21 @@
           return;
         }
         const hovering = window.matchMedia("(hover: hover) and (pointer: fine)").matches && marquee.matches(":hover");
-        const target = this.marqueeAutoplayPaused() || hovering ? 0 : this.marqueeSpeed;
-        const diff = target - this.marqueeVelocity;
-        const step = Math.sign(diff) * this.marqueeSpeed * dt;
-        this.marqueeVelocity = Math.abs(step) >= Math.abs(diff) ? target : this.marqueeVelocity + step;
-        if (!this.marqueeDragging && !this.marqueeNudging && this.marqueeVelocity) this.marqueeShift += this.marqueeVelocity * dt;
+        if (!this.marqueePlaying || hovering) {
+          this.marqueeVelocity = 0;
+          if (hovering) this.marqueeFling = 0;
+        } else {
+          const target = this.marqueeAutoplayPaused() ? 0 : this.marqueeSpeed;
+          this.marqueeVelocity += (target - this.marqueeVelocity) * (1 - Math.exp(-dt * 2.2));
+        }
+        if (!this.marqueeDragging && !this.marqueeNudging) {
+          if (this.marqueeFling) {
+            this.marqueeShift += this.marqueeFling * dt;
+            this.marqueeFling *= Math.exp(-dt * 3);
+            if (Math.abs(this.marqueeFling) < 80) this.marqueeFling = 0;
+          }
+          if (this.marqueeVelocity) this.marqueeShift += this.marqueeVelocity * dt;
+        }
         this.wrapMarqueeShift();
         this.applyMarqueeFrame();
       };
@@ -488,6 +781,18 @@
       let startX = 0;
       let startShift = 0;
       let holding = false;
+      let lastX = 0;
+      let lastTime = 0;
+      let pointerSpeed = 0;
+
+      const dragGain = (dx) => {
+        const span = Math.max(window.innerWidth, 320);
+        const travel = Math.min(1.35, Math.abs(dx) / span);
+        const coarse = window.matchMedia("(pointer: coarse)").matches;
+        const base = coarse ? 3.1 : 1.55;
+        const boost = coarse ? 7.5 : 2.8;
+        return base + travel * travel * boost;
+      };
 
       marquee.addEventListener("pointerdown", (event) => {
         if (event.button !== 0) return;
@@ -497,13 +802,21 @@
         this.marqueeHolding = true;
         this.marqueeDragging = false;
         this.marqueeDidDrag = false;
+        this.marqueeFling = 0;
         startX = event.clientX;
         startShift = this.marqueeShift;
+        lastX = event.clientX;
+        lastTime = event.timeStamp;
+        pointerSpeed = 0;
       });
 
       marquee.addEventListener("pointermove", (event) => {
         if (!holding) return;
         const dx = event.clientX - startX;
+        const stepTime = event.timeStamp - lastTime;
+        if (stepTime > 0 && stepTime < 80) pointerSpeed = ((event.clientX - lastX) / stepTime) * 1000;
+        lastX = event.clientX;
+        lastTime = event.timeStamp;
         if (!this.marqueeDragging) {
           if (Math.abs(dx) < 8) return;
           this.marqueeDragging = true;
@@ -515,12 +828,20 @@
             /* ignore */
           }
         }
-        this.marqueeShift = startShift + dx;
+        const gain = dragGain(dx);
+        if (Math.abs(dx) > 12) this.dismissPanHint();
+        this.marqueeShift = startShift + dx * gain;
         this.wrapMarqueeShift();
         this.applyMarqueeFrame();
       });
 
       const endDrag = () => {
+        if (holding && this.marqueeDragging) {
+          const dx = lastX - startX;
+          const gain = dragGain(dx);
+          const fling = Math.max(-4000, Math.min(4000, pointerSpeed * gain));
+          if (Math.abs(fling) > 500) this.marqueeFling = fling;
+        }
         holding = false;
         this.marqueeHolding = false;
         if (!this.marqueeDragging) return;
@@ -567,33 +888,45 @@
         this.cardVideoObserver.disconnect();
         this.cardVideoObserver = null;
       }
-      const videos = document.querySelectorAll(".project-card-video");
-      if (!videos.length) return;
+      if (this.allVideoObserver) {
+        this.allVideoObserver.disconnect();
+        this.allVideoObserver = null;
+      }
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      videos.forEach((video) => {
+      const prepare = (video) => {
         video.muted = true;
         video.defaultMuted = true;
         video.playsInline = true;
         video.loop = true;
         if (reduced) video.pause();
-      });
-      if (reduced) return;
+      };
+      const watch = (videos, root) => {
+        if (!videos.length || reduced) return null;
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              const video = entry.target;
+              if (entry.isIntersecting) {
+                const play = video.play();
+                if (play && typeof play.catch === "function") play.catch(() => {});
+              } else {
+                video.pause();
+              }
+            });
+          },
+          { root: root || null, threshold: 0.35 }
+        );
+        videos.forEach((video) => observer.observe(video));
+        return observer;
+      };
       const marquee = document.getElementById("projectsMarquee");
-      this.cardVideoObserver = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            const video = entry.target;
-            if (entry.isIntersecting) {
-              const play = video.play();
-              if (play && typeof play.catch === "function") play.catch(() => {});
-            } else {
-              video.pause();
-            }
-          });
-        },
-        { root: marquee || null, threshold: 0.2 }
-      );
-      videos.forEach((video) => this.cardVideoObserver.observe(video));
+      const grid = document.getElementById("projectsAllGrid");
+      const marqueeVideos = marquee ? Array.from(marquee.querySelectorAll(".project-card-video")) : [];
+      const gridVideos = grid ? Array.from(grid.querySelectorAll(".project-card-video")) : [];
+      marqueeVideos.forEach(prepare);
+      gridVideos.forEach(prepare);
+      this.cardVideoObserver = watch(marqueeVideos, marquee);
+      this.allVideoObserver = watch(gridVideos, grid);
     },
 
     focusProjectCard(projectId) {

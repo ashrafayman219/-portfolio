@@ -238,7 +238,7 @@ body.is-entering .mobile-nav {
 }
 
 .journey #j-rv {
-  animation: j-draw 3.3s cubic-bezier(0.45, 0.05, 0.3, 1) 0.1s backwards;
+  fill: none;
 }
 
 @keyframes enter-down {

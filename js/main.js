@@ -139,9 +139,19 @@
         requestAnimationFrame(step);
       };
       const expandBtn = document.getElementById("navExpand");
+      const holdEdge = () => {
+        if (!tabs || !phoneQuery.matches || !tabs.style.left || tabs.style.left === "auto") return;
+        const box = tabs.getBoundingClientRect();
+        if (window.innerWidth - box.right > box.left) return;
+        tabs.style.left = "auto";
+        tabs.style.right = Math.max(8, window.innerWidth - box.right) + "px";
+        tabs.style.top = box.top + "px";
+        tabs.style.transform = "none";
+      };
       if (expandBtn && tabs) {
         expandBtn.addEventListener("click", () => {
           const open = !tabs.classList.contains("is-expanded");
+          holdEdge();
           tabs.classList.toggle("is-expanded", open);
           expandBtn.setAttribute("aria-expanded", String(open));
           expandBtn.setAttribute("aria-label", open ? "Hide section names" : "Show section names");
@@ -151,9 +161,9 @@
       let drag = null;
       let blockClick = false;
       const clampNav = () => {
-        if (!tabs || !tabs.style.left) return;
+        if (!tabs || !tabs.style.left || tabs.style.left === "auto") return;
         const left = Math.min(window.innerWidth - tabs.offsetWidth - 8, Math.max(8, parseFloat(tabs.style.left)));
-        const top = Math.min(window.innerHeight - tabs.offsetHeight - 8, Math.max(8, parseFloat(tabs.style.top)));
+        const top = Math.min(window.innerHeight - tabs.offsetHeight - 8, Math.max(8, parseFloat(tabs.style.top) || 0));
         tabs.style.left = left + "px";
         tabs.style.top = top + "px";
       };
@@ -170,10 +180,6 @@
           if (!phoneQuery.matches || event.button !== 0) return;
           blockClick = false;
           const box = tabs.getBoundingClientRect();
-          tabs.style.right = "auto";
-          tabs.style.left = box.left + "px";
-          tabs.style.top = box.top + "px";
-          tabs.style.transform = "none";
           drag = {
             id: event.pointerId,
             x: event.clientX,
@@ -197,6 +203,10 @@
           if (!drag.moved) {
             drag.moved = true;
             tabs.classList.add("is-dragging");
+            tabs.style.right = "auto";
+            tabs.style.left = drag.left + "px";
+            tabs.style.top = drag.top + "px";
+            tabs.style.transform = "none";
           }
           if (drag.frame) return;
           drag.frame = requestAnimationFrame(() => {
@@ -226,9 +236,6 @@
           event.preventDefault();
           event.stopPropagation();
         }, true);
-        tabs.addEventListener("transitionend", (event) => {
-          if (event.propertyName === "width") clampNav();
-        });
       }
       window.addEventListener("scroll", updateSpy, { passive: true });
       window.addEventListener("resize", () => {
@@ -264,30 +271,6 @@
         const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         window.scrollTo({ top: 0, behavior: reduced ? "auto" : "smooth" });
       });
-    },
-
-    initTouchHints() {
-      const rail = document.querySelector(".skill-rail");
-      if (rail) {
-        const hold = (on) => rail.classList.toggle("is-held", on);
-        rail.addEventListener("pointerdown", () => hold(true));
-        const release = () => hold(false);
-        rail.addEventListener("pointerup", release);
-        rail.addEventListener("pointercancel", release);
-        window.addEventListener("pointerup", release);
-        window.addEventListener("pointercancel", release);
-      }
-
-      const hint = document.getElementById("mapDragHint");
-      const map = document.getElementById("mapView");
-      if (hint && map) {
-        const hide = (event) => {
-          if (event.target.closest("button, a, #map-toolbar, #top-bar, #dock, #map-legend")) return;
-          hint.classList.add("is-gone");
-          map.removeEventListener("pointerdown", hide);
-        };
-        map.addEventListener("pointerdown", hide);
-      }
     },
 
     initCounters() {
@@ -361,7 +344,6 @@
   document.addEventListener("DOMContentLoaded", async () => {
     PortfolioApp.initNav();
     PortfolioApp.initBackToTop();
-    PortfolioApp.initTouchHints();
 
     try {
       const data = await PortfolioApp.loadData();
