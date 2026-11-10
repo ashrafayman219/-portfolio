@@ -62,9 +62,25 @@
 
   var length = road.getTotalLength();
   var reveal = document.getElementById("j-rv");
-  reveal.setAttribute("d", road.getAttribute("d"));
-  reveal.setAttribute("stroke-dasharray", String(length));
-  reveal.setAttribute("stroke-dashoffset", String(length));
+  var roadSamples = [];
+  var roadSampleCount = 140;
+  for (var sampleIndex = 0; sampleIndex <= roadSampleCount; sampleIndex++) {
+    roadSamples.push(road.getPointAtLength((length * sampleIndex) / roadSampleCount));
+  }
+  function revealPath(progress) {
+    var last = Math.max(1, Math.round(roadSampleCount * Math.max(0, Math.min(1, progress))));
+    var parts = [];
+    for (var sample = 0; sample <= last; sample++) {
+      var point = roadSamples[sample];
+      parts.push((sample ? "L" : "M") + point.x.toFixed(1) + " " + point.y.toFixed(1));
+    }
+    return parts.join("");
+  }
+  reveal.setAttribute("fill", "none");
+  reveal.setAttribute("stroke", "#fff");
+  reveal.setAttribute("stroke-width", "420");
+  reveal.setAttribute("stroke-linecap", "round");
+  reveal.setAttribute("d", revealPath(0));
 
   function roadEase(x) {
     var p1x = 0.45;
@@ -86,20 +102,6 @@
       t = Math.max(0, Math.min(1, t - (sample(t, p1x, p2x) - x) / s));
     }
     return sample(t, p1y, p2y);
-  }
-
-  if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    var drawStart = null;
-    var draw = function (now) {
-      if (drawStart === null) drawStart = now;
-      var elapsed = now - drawStart - 100;
-      var progress = elapsed <= 0 ? 0 : roadEase(Math.min(1, elapsed / 3300));
-      reveal.setAttribute("stroke-dashoffset", String(length * (1 - progress)));
-      if (progress < 1) window.requestAnimationFrame(draw);
-    };
-    window.requestAnimationFrame(draw);
-  } else {
-    reveal.setAttribute("stroke-dashoffset", "0");
   }
 
   var width = 118;
@@ -355,5 +357,18 @@
   }
 
   var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!reducedMotion) {
+    var drawStart = null;
+    var drawRoad = function (now) {
+      if (drawStart === null) drawStart = now;
+      var elapsed = now - drawStart - 100;
+      var progress = elapsed <= 0 ? 0 : roadEase(Math.min(1, elapsed / 3300));
+      reveal.setAttribute("d", progress >= 1 ? road.getAttribute("d") : revealPath(progress));
+      if (progress < 1) window.requestAnimationFrame(drawRoad);
+    };
+    window.requestAnimationFrame(drawRoad);
+  } else {
+    reveal.setAttribute("d", road.getAttribute("d"));
+  }
   armJourneyLoader(reducedMotion ? 1200 : 5300);
 })();
