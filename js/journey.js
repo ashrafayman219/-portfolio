@@ -60,7 +60,17 @@
     return node;
   }
 
-  var length = road.getTotalLength();
+  var stored = window.ROAD_GEOMETRY;
+  if (!stored) {
+    closeJourneyLoader();
+    return;
+  }
+  var length = stored.length;
+  var outer = stored.outer;
+  var mid = stored.mid;
+  var inner = stored.inner;
+  var left = outer[0];
+  var right = outer[1];
 
   function roadEase(x) {
     var p1x = 0.45;
@@ -84,28 +94,6 @@
     return sample(t, p1y, p2y);
   }
 
-  var width = 118;
-
-  function edges(scale) {
-    var left = [];
-    var right = [];
-    for (var i = 0; i <= 260; i++) {
-      var distance = (i / 260) * length;
-      var point = road.getPointAtLength(distance);
-      var ahead = road.getPointAtLength(Math.min(distance + 1, length));
-      var behind = road.getPointAtLength(Math.max(distance - 1, 0));
-      var dx = ahead.x - behind.x;
-      var dy = ahead.y - behind.y;
-      var mag = Math.hypot(dx, dy) || 1;
-      dx /= mag;
-      dy /= mag;
-      var half = (width * scale) / 2;
-      left.push([point.x - dy * half, point.y + dx * half]);
-      right.push([point.x + dy * half, point.y - dx * half]);
-    }
-    return [left, right];
-  }
-
   function formatPoints(points, offset) {
     var ox = offset ? offset[0] : 0;
     var oy = offset ? offset[1] : 0;
@@ -115,12 +103,6 @@
       })
       .join(" ");
   }
-
-  var outer = edges(1);
-  var mid = edges(0.9);
-  var inner = edges(0.84);
-  var left = outer[0];
-  var right = outer[1];
 
   function revealRibbon(progress) {
     var last = Math.max(1, Math.round((left.length - 1) * Math.max(0, Math.min(1, progress))));
@@ -162,36 +144,19 @@
   });
 
   var arrows = document.getElementById("j-arrows");
-  for (var distance = 150; distance < length - 60; distance += 110) {
-    var point = road.getPointAtLength(distance);
-    var next = road.getPointAtLength(distance + 2);
-    var angle = (Math.atan2(next.y - point.y, next.x - point.x) * 180) / Math.PI;
+  stored.arrows.forEach(function (arrowPoint) {
     var arrow = el(
       "path",
       {
         d: "M-12 -13 L14 0 L-12 13 L-5 0Z",
         fill: "#fff",
-        transform: "translate(" + point.x + " " + point.y + ") rotate(" + angle + ")",
+        transform: "translate(" + arrowPoint.x + " " + arrowPoint.y + ") rotate(" + arrowPoint.a + ")",
         class: "arr"
       },
       arrows
     );
-    arrow.style.setProperty("--d", (0.1 + (3.3 * distance) / length).toFixed(2) + "s");
-  }
-
-  function nearest(x, y) {
-    var best = 0;
-    var bestDist = Infinity;
-    for (var step = 0; step <= length; step += 3) {
-      var sample = road.getPointAtLength(step);
-      var dist = (sample.x - x) * (sample.x - x) + (sample.y - y) * (sample.y - y);
-      if (dist < bestDist) {
-        bestDist = dist;
-        best = step;
-      }
-    }
-    return road.getPointAtLength(best);
-  }
+    arrow.style.setProperty("--d", arrowPoint.d + "s");
+  });
 
   function fit(node, base, max) {
     node.setAttribute("font-size", base);
@@ -240,8 +205,8 @@
   }
 
   window.setTimeout(function () {
-  stops.forEach(function (stop) {
-    var center = nearest(stop.tip[0], stop.tip[1]);
+  stops.forEach(function (stop, stopIndex) {
+    var center = { x: stored.pins[stopIndex][0], y: stored.pins[stopIndex][1] };
     var x = center.x;
     var y = center.y;
     var group = el("g", { class: "pin", tabindex: "0", role: "button", "aria-label": stop.name }, pins);

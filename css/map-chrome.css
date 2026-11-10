@@ -22,8 +22,8 @@
   --pin-project: #1a7a8c;
   --pin-education: #8a7a62;
   position: relative;
-  height: 700px;
-  min-height: 700px;
+  height: 560px;
+  min-height: 560px;
   overflow: hidden;
   overscroll-behavior: contain;
   border-radius: var(--radius);
@@ -651,7 +651,7 @@
   pointer-events: auto;
 }
 
-#btn-more {
+#map-wrap #btn-more {
   display: none;
 }
 
@@ -1055,8 +1055,8 @@ body.map-fullscreen .back-to-top {
 
 @media (max-width: 1024px) {
   #map-wrap {
-    height: 560px;
-    min-height: 560px;
+    height: 480px;
+    min-height: 480px;
   }
 }
 
@@ -1092,8 +1092,8 @@ body.map-fullscreen .back-to-top {
 
 @media (max-width: 767px) {
   #map-wrap {
-    height: 70vh;
-    min-height: 420px;
+    height: 56vh;
+    min-height: 340px;
   }
 
   #map-wrap,
@@ -1222,7 +1222,7 @@ body.map-fullscreen .back-to-top {
   #btn-home { order: 22; }
   #btn-more { order: 23; }
 
-  #btn-more {
+  #map-wrap #btn-more {
     display: flex;
   }
 
