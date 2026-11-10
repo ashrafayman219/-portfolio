@@ -95,6 +95,10 @@ body.is-entering .mobile-nav {
 .journey-name,
 .journey-role {
   opacity: 0;
+}
+
+.journey-loader.is-armed .journey-name,
+.journey-loader.is-armed .journey-role {
   animation: journey-line 0.7s ease forwards;
 }
 
@@ -124,6 +128,9 @@ body.is-entering .mobile-nav {
   letter-spacing: 0.16em;
   text-transform: uppercase;
   opacity: 0;
+}
+
+.journey-loader.is-armed .journey-enter {
   animation: journey-line 0.7s ease 3.5s forwards, enter-wait 1.8s ease 4.25s infinite;
 }
 

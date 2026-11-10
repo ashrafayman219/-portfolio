@@ -239,6 +239,7 @@
     stops[2].rail = "left";
   }
 
+  window.setTimeout(function () {
   stops.forEach(function (stop) {
     var center = nearest(stop.tip[0], stop.tip[1]);
     var x = center.x;
@@ -349,8 +350,11 @@
       });
     });
   }
+  }, 0);
 
   var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var journeyLoader = document.getElementById("journeyLoader");
+  if (journeyLoader) journeyLoader.classList.add("is-armed");
   if (!reducedMotion) {
     var drawStart = null;
     var drawRoad = function (now) {
