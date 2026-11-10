@@ -61,26 +61,6 @@
   }
 
   var length = road.getTotalLength();
-  var reveal = document.getElementById("j-rv");
-  var roadSamples = [];
-  var roadSampleCount = 140;
-  for (var sampleIndex = 0; sampleIndex <= roadSampleCount; sampleIndex++) {
-    roadSamples.push(road.getPointAtLength((length * sampleIndex) / roadSampleCount));
-  }
-  function revealPath(progress) {
-    var last = Math.max(1, Math.round(roadSampleCount * Math.max(0, Math.min(1, progress))));
-    var parts = [];
-    for (var sample = 0; sample <= last; sample++) {
-      var point = roadSamples[sample];
-      parts.push((sample ? "L" : "M") + point.x.toFixed(1) + " " + point.y.toFixed(1));
-    }
-    return parts.join("");
-  }
-  reveal.setAttribute("fill", "none");
-  reveal.setAttribute("stroke", "#fff");
-  reveal.setAttribute("stroke-width", "420");
-  reveal.setAttribute("stroke-linecap", "round");
-  reveal.setAttribute("d", revealPath(0));
 
   function roadEase(x) {
     var p1x = 0.45;
@@ -141,6 +121,17 @@
   var inner = edges(0.84);
   var left = outer[0];
   var right = outer[1];
+
+  function revealRibbon(progress) {
+    var last = Math.max(1, Math.round((left.length - 1) * Math.max(0, Math.min(1, progress))));
+    return formatPoints(left.slice(0, last + 1).concat(right.slice(0, last + 1).reverse()));
+  }
+
+  var sceneForClip = document.getElementById("j-scene");
+  var revealClip = el("clipPath", { id: "j-reveal", clipPathUnits: "userSpaceOnUse" }, sceneForClip.querySelector("defs"));
+  var revealPoly = el("polygon", { points: revealRibbon(0) }, revealClip);
+  roadg.removeAttribute("mask");
+  roadg.setAttribute("clip-path", "url(#j-reveal)");
 
   function ribbon(offset, fill, extra) {
     var attrs = {
@@ -225,7 +216,10 @@
       var defs = scene.querySelector("defs");
       var clip = el("clipPath", { id: "j-phone-clip" }, defs);
       el("rect", { x: "-400", y: "-200", width: "2400", height: "910" }, clip);
-      roadg.setAttribute("clip-path", "url(#j-phone-clip)");
+      var phoneWrap = document.createElementNS(NS, "g");
+      phoneWrap.setAttribute("clip-path", "url(#j-phone-clip)");
+      roadg.parentNode.insertBefore(phoneWrap, roadg);
+      phoneWrap.appendChild(roadg);
       var arrows = document.getElementById("j-arrows");
       if (arrows) arrows.setAttribute("clip-path", "url(#j-phone-clip)");
     }
@@ -363,12 +357,13 @@
       if (drawStart === null) drawStart = now;
       var elapsed = now - drawStart - 100;
       var progress = elapsed <= 0 ? 0 : roadEase(Math.min(1, elapsed / 3300));
-      reveal.setAttribute("d", progress >= 1 ? road.getAttribute("d") : revealPath(progress));
+      revealPoly.setAttribute("points", revealRibbon(progress));
+      roadg.setAttribute("clip-path", "url(#j-reveal)");
       if (progress < 1) window.requestAnimationFrame(drawRoad);
     };
     window.requestAnimationFrame(drawRoad);
   } else {
-    reveal.setAttribute("d", road.getAttribute("d"));
+    revealPoly.setAttribute("points", revealRibbon(1));
   }
   armJourneyLoader(reducedMotion ? 1200 : 5300);
 })();
