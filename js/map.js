@@ -330,6 +330,7 @@
         }
         if (wrap.parentNode !== land) land.appendChild(wrap);
         land.appendChild(back);
+        wrap.classList.add("is-side");
         lock();
         mapApi.releaseMapMotion();
         fit(true);
@@ -347,26 +348,38 @@
         lock();
         refit(true);
       };
-      const applyReal = () => {
+      const fullMap = () => {
+        const node = document.fullscreenElement || document.webkitFullscreenElement || null;
+        return !!(node && (node === wrap || node.contains(wrap)));
+      };
+      const syncSide = () => {
         const wide = realLand();
-        const fullMap = document.fullscreenElement === wrap;
-        document.body.classList.toggle("map-phone-land", (wide && (inMap || fullMap)) || fullMap);
+        const full = fullMap();
+        const side = forced || full || (wide && inMap);
+        wrap.classList.toggle("is-side", side);
+        document.body.classList.toggle("map-phone-land", !forced && (full || (wide && inMap)));
         if (forced) {
           if (back.parentNode !== land) land.appendChild(back);
-        } else if (document.body.classList.contains("map-phone-land")) {
+        } else if (side) {
           if (back.parentNode !== wrap) wrap.appendChild(back);
         } else if (back.parentNode !== land) {
           land.appendChild(back);
         }
-        if (wide || fullMap) {
+        return { wide: wide, full: full };
+      };
+      const applyReal = () => {
+        const wide = realLand();
+        const full = fullMap();
+        if (forced && wide && !full) exitForced();
+        const view = syncSide();
+        if (view.wide || view.full) {
           hidePrompt();
           mapApi.releaseMapMotion();
-          if (!fullMap) exitForced();
-          if (inMap && !wasReal && mapSec && !fullMap) window.setTimeout(() => mapSec.scrollIntoView({ block: "center" }), 60);
+          if (inMap && !wasReal && mapSec && !view.full) window.setTimeout(() => mapSec.scrollIntoView({ block: "center" }), 60);
         } else if (wasReal) {
           offerPrompt();
         }
-        wasReal = wide || fullMap;
+        wasReal = view.wide || view.full;
       };
 
       if (window.L && L.Map && L.Draggable && typeof DOMMatrix === "function") {
@@ -474,22 +487,28 @@
       };
 
       go.addEventListener("click", useLandscape);
-      back.addEventListener("click", () => {
-        if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
+        back.addEventListener("click", () => {
+        const fullNode = document.fullscreenElement || document.webkitFullscreenElement;
+        if (fullNode && document.exitFullscreen) document.exitFullscreen().catch(() => {});
+        else if (fullNode && document.webkitExitFullscreen) document.webkitExitFullscreen();
         try {
           if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock();
         } catch (error) {}
         exitForced();
+        syncSide();
         offerPrompt();
       });
       document.addEventListener("fullscreenchange", () => {
-        if (!document.fullscreenElement) {
+        if (!document.fullscreenElement && !document.webkitFullscreenElement) {
           try {
             if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock();
           } catch (error) {}
         }
         applyReal();
         refit(true);
+      });
+      document.addEventListener("webkitfullscreenchange", () => {
+        applyReal();
       });
       window.addEventListener("resize", () => {
         fit();
