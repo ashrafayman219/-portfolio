@@ -36,6 +36,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+    <link rel="preload" as="image" href="images/journey-bg.webp" type="image/webp" />
     <link rel="stylesheet" href="css/tokens.css" />
     <link rel="stylesheet" href="css/layout.css" />
     <link rel="stylesheet" href="css/components.css" />
@@ -46,7 +47,7 @@
   </head>
   <body class="is-loading">
     <div class="journey-loader" id="journeyLoader">
-      <img class="journey-bg" src="Golden Valley Mapping Landscape.png" alt="" />
+      <img class="journey-bg" src="images/journey-bg.webp" alt="" width="1672" height="941" decoding="async" fetchpriority="high" />
       <div class="journey-veil" aria-hidden="true"></div>
       <div class="journey-fx" aria-hidden="true">
         <svg class="journey-symbols" width="0" height="0" focusable="false">
