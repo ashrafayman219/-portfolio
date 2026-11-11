@@ -255,8 +255,8 @@
       const slot = wrap.parentNode;
       const mapSec = document.getElementById("map");
       const isPortraitTouch = () => window.matchMedia("(pointer: coarse)").matches && window.innerHeight > window.innerWidth && window.innerWidth <= 900;
-      const mqL = window.matchMedia("(orientation: landscape)");
-      const realLand = () => mqL.matches && window.innerHeight <= 600;
+      const phoneLike = () => window.matchMedia("(pointer: coarse)").matches && Math.min(window.innerWidth, window.innerHeight) <= 900;
+      const realLand = () => phoneLike() && window.innerWidth > window.innerHeight;
       let forced = false;
       let promptOn = false;
       let dismissed = false;
@@ -349,16 +349,24 @@
       };
       const applyReal = () => {
         const wide = realLand();
-        document.body.classList.toggle("map-phone-land", wide && inMap && !document.fullscreenElement);
-        if (wide) {
+        const fullMap = document.fullscreenElement === wrap;
+        document.body.classList.toggle("map-phone-land", (wide && (inMap || fullMap)) || fullMap);
+        if (forced) {
+          if (back.parentNode !== land) land.appendChild(back);
+        } else if (document.body.classList.contains("map-phone-land")) {
+          if (back.parentNode !== wrap) wrap.appendChild(back);
+        } else if (back.parentNode !== land) {
+          land.appendChild(back);
+        }
+        if (wide || fullMap) {
           hidePrompt();
           mapApi.releaseMapMotion();
-          exitForced();
-          if (inMap && !wasReal && mapSec) window.setTimeout(() => mapSec.scrollIntoView({ block: "center" }), 60);
+          if (!fullMap) exitForced();
+          if (inMap && !wasReal && mapSec && !fullMap) window.setTimeout(() => mapSec.scrollIntoView({ block: "center" }), 60);
         } else if (wasReal) {
           offerPrompt();
         }
-        wasReal = wide;
+        wasReal = wide || fullMap;
       };
 
       if (window.L && L.Map && L.Draggable && typeof DOMMatrix === "function") {
@@ -454,6 +462,7 @@
           try {
             await wrap.requestFullscreen();
             await screen.orientation.lock("landscape");
+            applyReal();
             return;
           } catch (error) {
             try {
@@ -479,12 +488,15 @@
             if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock();
           } catch (error) {}
         }
+        applyReal();
         refit(true);
       });
-      if (mqL.addEventListener) mqL.addEventListener("change", applyReal);
       window.addEventListener("resize", () => {
         fit();
         applyReal();
+      });
+      window.addEventListener("orientationchange", () => {
+        window.setTimeout(applyReal, 60);
       });
       if ("IntersectionObserver" in window) {
         const watcher = new IntersectionObserver((entries) => {
