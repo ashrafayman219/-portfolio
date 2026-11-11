@@ -20,28 +20,25 @@
     }, reduced ? 0 : 900);
   }
 
+  var closeTimer = 0;
   function armJourneyLoader(delay) {
-    var loader = document.getElementById("journeyLoader");
-    if (!loader) return;
-    var timer = window.setTimeout(closeJourneyLoader, delay);
-    loader.addEventListener("click", function () {
-      window.clearTimeout(timer);
-      closeJourneyLoader();
-    });
-    var skip = document.querySelector(".skip-link");
-    if (skip) {
-      skip.addEventListener("click", function () {
-        window.clearTimeout(timer);
-        closeJourneyLoader();
-      });
-    }
-    document.addEventListener("keydown", function onKey(event) {
-      if (event.key !== "Escape") return;
-      document.removeEventListener("keydown", onKey);
-      window.clearTimeout(timer);
+    window.clearTimeout(closeTimer);
+    closeTimer = window.setTimeout(closeJourneyLoader, delay);
+  }
+
+  var journeyLoaderEarly = document.getElementById("journeyLoader");
+  if (journeyLoaderEarly) {
+    journeyLoaderEarly.addEventListener("click", function () {
+      window.clearTimeout(closeTimer);
       closeJourneyLoader();
     });
   }
+  document.addEventListener("keydown", function onKey(event) {
+    if (event.key !== "Escape") return;
+    document.removeEventListener("keydown", onKey);
+    window.clearTimeout(closeTimer);
+    closeJourneyLoader();
+  });
 
   var road = document.getElementById("j-road");
   var roadg = document.getElementById("j-roadg");
@@ -167,9 +164,9 @@
   var pins = document.getElementById("j-pins");
   var labels = document.getElementById("j-cols");
   var stops = [
-    { tip: [278, 625], lx: 140, ly: 510, inner: "#4d4d4d", ring: "#8c8c8c", hot: "#d2d2d2", delay: 1.4, top: "4 yrs", sub: "", word: "Mansoura University", detail: "BSc in Geomatics (1st Honor)", name: "Mansoura University, BSc in Geomatics (1st Honor), 4 years" },
-    { tip: [857, 448], lx: 980, ly: 498, anchor: "start", inner: "#c4501a", ring: "#f0a37e", hot: "#ff9157", delay: 1.9, top: "2 yrs", sub: "", lineSize: 32, lines: ["Information Technology Institute (ITI)", "National Telecommunication Institute (NTI)", "Edge Pro for Information Systems"], name: "2 years: Information Technology Institute, National Telecommunication Institute, and Edge Pro" },
-    { tip: [555, 275], lx: 248, ly: 228, anchor: "start", rail: "left", inner: "#2f7a2a", ring: "#9fd29a", hot: "#76d567", delay: 2.4, top: "4 yrs", sub: "", lineSize: 32, lines: ["Gulf Terminal", "AIC", "Upwork"], name: "4 years: Gulf Terminal, AIC, and Upwork" },
+    { tip: [278, 625], lx: 140, ly: 510, inner: "#4a4a4a", card: "#b9bcc0", ring: "#8c8c8c", hot: "#d2d2d2", delay: 1.4, top: "4 yrs", sub: "", word: "Mansoura University", detail: "BSc in Geomatics (1st Honor)", name: "Mansoura University, BSc in Geomatics (1st Honor), 4 years" },
+    { tip: [857, 448], lx: 980, ly: 498, anchor: "start", inner: "#c4501a", card: "#e2b29e", ring: "#f0a37e", hot: "#ff9157", delay: 1.9, top: "2 yrs", sub: "", lineSize: 32, lines: ["Information Technology Institute (ITI)", "National Telecommunication Institute (NTI)", "Edge Pro for Information Systems"], name: "2 years: Information Technology Institute, National Telecommunication Institute, and Edge Pro" },
+    { tip: [555, 275], lx: 248, ly: 228, anchor: "start", rail: "left", inner: "#2e7d32", card: "#a8c8a8", ring: "#9fd29a", hot: "#76d567", delay: 2.4, top: "4 yrs", sub: "", lineSize: 32, lines: ["Gulf Terminal", "AIC", "Upwork"], name: "4 years: Gulf Terminal, AIC, and Upwork" },
     { tip: [970, 146], lx: 1168, ly: 162, inner: "#1f5d1c", ring: "#8fc88a", hot: "#5cc24e", delay: 3, top: "Now", sub: "Senior", word: "Gulf Terminal", name: "Gulf Terminal, Senior GIS Developer", hidden: true }
   ];
 
@@ -205,25 +202,33 @@
   }
 
   window.setTimeout(function () {
+  var gloss = el("radialGradient", { id: "j-gloss", cx: "0.35", cy: "0.24", r: "0.55" }, document.querySelector("#j-scene defs"));
+  el("stop", { offset: "0", "stop-color": "#ffffff", "stop-opacity": "0.7" }, gloss);
+  el("stop", { offset: "1", "stop-color": "#ffffff", "stop-opacity": "0" }, gloss);
   stops.forEach(function (stop, stopIndex) {
     var center = { x: stored.pins[stopIndex][0], y: stored.pins[stopIndex][1] };
     var x = center.x;
     var y = center.y;
     var group = el("g", { class: "pin", tabindex: "0", role: "button", "aria-label": stop.name }, pins);
     group.style.setProperty("--d", stop.delay + "s");
-    el("circle", { cx: x + 8, cy: y + 16, r: 56, fill: "#000", opacity: "0.4", filter: "url(#j-soft)" }, group);
-    var arrive = el("circle", { class: "rip-once", cx: x, cy: y, r: 57, stroke: stop.hot }, group);
+    el("circle", { cx: x + 6, cy: y + 18, r: 54, fill: "#000", opacity: "0.28", filter: "url(#j-soft)" }, group);
+    var arrive = el("circle", { class: "rip-once", cx: x, cy: y, r: 57, stroke: stop.inner }, group);
     arrive.style.setProperty("--d", stop.delay + "s");
-    var ripple = el("circle", { class: "rip", cx: x, cy: y, r: 57, stroke: stop.hot }, group);
+    var ripple = el("circle", { class: "rip", cx: x, cy: y, r: 57, stroke: stop.inner }, group);
     ripple.style.setProperty("--d", stop.delay + "s");
-    el("circle", { class: "ring", cx: x, cy: y, r: 57, fill: stop.ring }, group);
-    el("circle", { cx: x, cy: y, r: 52, fill: "#fff" }, group);
-    el("circle", { cx: x, cy: y, r: 48, fill: stop.inner }, group);
-    el("ellipse", { cx: x - 16, cy: y - 30, rx: 22, ry: 8, fill: "#fff", opacity: "0.16", transform: "rotate(-25 " + (x - 16) + " " + (y - 30) + ")" }, group);
+    el("circle", { cx: x, cy: y, r: 54, fill: stop.inner }, group);
+    el("circle", { cx: x, cy: y, r: 54, fill: "url(#j-gloss)" }, group);
+    el("circle", { class: "ring", cx: x, cy: y, r: 54, fill: "none", stroke: "#ffffffcc", "stroke-width": "7" }, group);
+    var marker = el("use", { class: "ms-pin", href: "#ji-pin", x: x - 16, y: y - 84, width: "32", height: "32" }, group);
+    marker.setAttribute("fill", "#fff");
+    marker.setAttribute("stroke", stop.inner);
+    marker.setAttribute("stroke-width", "2");
+    marker.style.setProperty("--d", stop.delay + "s");
     var top = el("text", { x: x, y: stop.sub ? y + 2 : y + 11, "text-anchor": "middle", fill: "#fff" }, group, stop.top);
     var sub = stop.sub ? el("text", { x: x, y: y + 24, "text-anchor": "middle", fill: "#fff" }, group, stop.sub) : null;
     var labGroup = el("g", { class: "lab-group" + ((stop.anchor || "middle") === "middle" ? " is-middle" : "") }, labels);
     labGroup.style.setProperty("--d", stop.delay + "s");
+    labGroup.style.setProperty("--sx", stop.lx < x ? "-28px" : "28px");
     var word = el("text", { x: stop.lx, y: stop.ly, class: "lab", "text-anchor": stop.anchor || "middle" }, labGroup);
     var line = null;
     var detail = null;
@@ -237,7 +242,7 @@
     } else {
       line = el("tspan", { x: stop.lx, dy: "0" }, word, stop.word);
       if (stop.detail) {
-        detail = el("tspan", { x: stop.lx, dy: "1.35em" }, word);
+        detail = el("tspan", { class: "lab-sub", x: stop.lx, dy: "1.35em" }, word);
         var ordinal = stop.detail.split("1st");
         if (ordinal.length === 2) {
           detail.appendChild(document.createTextNode(ordinal[0] + "1"));
@@ -248,17 +253,17 @@
         }
       }
     }
-    var plate = el("rect", { class: "lab-plate", rx: "16", "pointer-events": "none" }, labGroup);
-    var rail = el("rect", { class: "lab-rail", rx: "3", "pointer-events": "none" }, labGroup);
-    plate.style.setProperty("--mark", stop.inner);
+    var plate = el("rect", { class: "lab-plate", rx: "18", "pointer-events": "none" }, labGroup);
+    var rail = el("path", { class: "lab-rail", "pointer-events": "none" }, labGroup);
+    plate.style.setProperty("--mark", stop.card || stop.inner);
     rail.style.setProperty("--mark", stop.inner);
     labGroup.insertBefore(plate, word);
     labGroup.insertBefore(rail, word);
     function placeFrame() {
       var box = word.getBBox();
       if (!box.width) return;
-      var padX = 18;
-      var padY = 12;
+      var padX = 26;
+      var padY = 14;
       var x0 = box.x - padX;
       var y0 = box.y - padY;
       var w = box.width + padX * 2;
@@ -267,13 +272,21 @@
       plate.setAttribute("y", y0);
       plate.setAttribute("width", w);
       plate.setAttribute("height", h);
-      var railW = 5;
-      var gap = 10;
-      var onLeft = stop.rail === "left" || (stop.rail !== "right" && x <= box.x + box.width / 2);
-      rail.setAttribute("x", onLeft ? x0 - gap - railW : x0 + w + gap);
-      rail.setAttribute("y", y0);
-      rail.setAttribute("width", railW);
-      rail.setAttribute("height", h);
+      plate.setAttribute("rx", "18");
+      var radius = Math.min(18, h / 2);
+      var thickness = 9;
+      var inner = Math.max(0, radius - thickness);
+      rail.setAttribute("d", [
+        "M", x0 + radius, y0,
+        "A", radius, radius, 0, 0, 0, x0, y0 + radius,
+        "L", x0, y0 + h - radius,
+        "A", radius, radius, 0, 0, 0, x0 + radius, y0 + h,
+        "L", x0 + thickness + inner, y0 + h,
+        "A", inner, inner, 0, 0, 1, x0 + thickness, y0 + h - inner,
+        "L", x0 + thickness, y0 + inner,
+        "A", inner, inner, 0, 0, 1, x0 + thickness + inner, y0,
+        "Z"
+      ].join(" "));
     }
     function showFrame() {
       labGroup.classList.add("is-hot");
@@ -319,7 +332,13 @@
 
   var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var journeyLoader = document.getElementById("journeyLoader");
+  var opened = performance.now();
   if (journeyLoader) journeyLoader.classList.add("is-armed");
+  function holdAfterScene() {
+    var sceneReady = 4100;
+    var wait = Math.max(0, sceneReady - (performance.now() - opened)) + 5000;
+    armJourneyLoader(reducedMotion ? 1200 : wait);
+  }
   if (!reducedMotion) {
     var drawStart = null;
     var drawRoad = function (now) {
@@ -329,10 +348,11 @@
       revealPoly.setAttribute("points", revealRibbon(progress));
       roadg.setAttribute("clip-path", "url(#j-reveal)");
       if (progress < 1) window.requestAnimationFrame(drawRoad);
+      else holdAfterScene();
     };
     window.requestAnimationFrame(drawRoad);
   } else {
     revealPoly.setAttribute("points", revealRibbon(1));
+    holdAfterScene();
   }
-  armJourneyLoader(reducedMotion ? 1200 : 5300);
 })();

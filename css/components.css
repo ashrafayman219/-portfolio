@@ -668,7 +668,7 @@
 .job-head,
 .company-head {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) 2rem;
+  grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
   column-gap: 1rem;
   width: 100%;
@@ -677,8 +677,10 @@
 
 .job-head > .logo-frame,
 .job-head > .logo-pair,
+.job-head > .logo-slot,
 .company-head > .logo-frame,
-.company-head > .logo-pair {
+.company-head > .logo-pair,
+.company-head > .logo-slot {
   grid-column: 1;
   grid-row: 1;
 }
@@ -696,55 +698,74 @@
   word-break: normal;
 }
 
-.expando-btn {
-  grid-column: 3;
-  grid-row: 1;
-  width: 2rem;
-  height: 2rem;
-  justify-self: end;
+.logo-slot {
+  position: relative;
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--bg);
-  color: var(--text);
+  flex-shrink: 0;
+}
+
+.expando-btn {
+  position: absolute;
+  right: -0.15rem;
+  bottom: -0.1rem;
+  z-index: 1;
+  width: 1.2rem;
+  height: 1.2rem;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(28, 40, 52, 0.18);
   cursor: pointer;
 }
 
-.expando-btn svg {
-  display: block;
-  transition: transform var(--ease);
+.expando-mark {
+  position: relative;
+  width: 0.5rem;
+  height: 0.5rem;
 }
 
-.is-open .expando-btn svg {
-  transform: rotate(180deg);
+.expando-mark::before,
+.expando-mark::after {
+  content: "";
+  position: absolute;
+  background: currentColor;
+  border-radius: 1px;
+}
+
+.expando-mark::before {
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1.5px;
+  transform: translateY(-50%);
+}
+
+.expando-mark::after {
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1.5px;
+  transform: translateX(-50%);
+}
+
+.is-open .expando-mark::after {
+  opacity: 0;
 }
 
 @media (max-width: 767px) {
   .job-head,
   .company-head {
-    grid-template-columns: minmax(0, 1fr) 2rem;
-    row-gap: 0.75rem;
-  }
-
-  .job-head > .logo-frame,
-  .job-head > .logo-pair,
-  .company-head > .logo-frame,
-  .company-head > .logo-pair {
-    grid-column: 1;
-    grid-row: 1;
-    justify-self: start;
+    column-gap: 0.75rem;
+    align-items: center;
   }
 
   .job-copy {
-    grid-column: 1 / -1;
-    grid-row: 2;
-  }
-
-  .expando-btn {
+    grid-column: 2;
     grid-row: 1;
-    align-self: center;
   }
 }
 
@@ -1456,7 +1477,6 @@ body.modal-open {
   overflow: hidden;
 }
 
-body.modal-open .back-to-top,
 body.modal-open .mobile-nav {
   margin-right: var(--modal-scrollbar-gap, 0px);
 }

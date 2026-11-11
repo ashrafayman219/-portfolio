@@ -33,7 +33,7 @@
     <title>Ashraf Ayman | GIS Solutions Engineer</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700&family=Noto+Sans:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
     <link rel="stylesheet" href="css/tokens.css" />
@@ -42,11 +42,29 @@
     <link rel="stylesheet" href="css/map-chrome.css" />
     <link rel="stylesheet" href="css/journey.css" />
     <link rel="stylesheet" href="css/knowledge.css" />
+    <link rel="stylesheet" href="css/game-map.css" />
   </head>
   <body class="is-loading">
     <div class="journey-loader" id="journeyLoader">
+      <img class="journey-bg" src="Golden Valley Mapping Landscape.png" alt="" />
+      <div class="journey-veil" aria-hidden="true"></div>
+      <div class="journey-fx" aria-hidden="true">
+        <svg class="journey-symbols" width="0" height="0" focusable="false">
+          <symbol id="ji-pin" viewBox="0 0 24 24"><path d="M12 22s-7-6-7-12a7 7 0 0 1 14 0c0 6-7 12-7 12z"/><circle cx="12" cy="10" r="2.6"/></symbol>
+          <symbol id="ji-layers" viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 12.5l9 5 9-5"/><path d="M3 17l9 5 9-5"/></symbol>
+          <symbol id="ji-hex" viewBox="0 0 24 24"><path d="M8 3h8l4 7-4 7H8l-4-7z"/><path d="M4 10h16M8 3l4 7 4-7M8 17l4-7 4 7"/></symbol>
+          <symbol id="ji-drone" viewBox="0 0 24 24"><rect x="9.5" y="9.5" width="5" height="5" rx="1.2"/><path d="M9.8 9.8L7 7M14.2 9.8L17 7M9.8 14.2L7 17M14.2 14.2L17 17"/><circle cx="5.5" cy="5.5" r="2.5"/><circle cx="18.5" cy="5.5" r="2.5"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></symbol>
+          <symbol id="ji-sat" viewBox="0 0 24 24"><g transform="rotate(-35 12 12)"><rect x="9.5" y="9" width="5" height="6" rx="1"/><rect x="1" y="9.5" width="6.5" height="5" rx=".7"/><rect x="16.5" y="9.5" width="6.5" height="5" rx=".7"/><path d="M7.5 12h2M14.5 12h2"/></g></symbol>
+        </svg>
+        <div class="j-chip j-rot" style="--x:4%;--y:14%;--mx:2%;--my:12%"><svg class="j-ic"><use href="#ji-drone"/></svg></div>
+        <div class="j-chip" style="--x:32%;--y:11%;--mx:32%;--my:5%;--fd:-2s"><svg class="j-ic"><use href="#ji-layers"/></svg></div>
+        <div class="j-chip" style="--x:61%;--y:16%;--mx:62%;--my:13%;--fd:-4s"><svg class="j-ic"><use href="#ji-hex"/></svg></div>
+        <div class="j-chip" style="--x:88%;--y:11%;--mx:86%;--my:5%;--fd:-1s"><svg class="j-ic"><use href="#ji-pin"/></svg></div>
+        <svg class="j-sat j-ic" viewBox="0 0 24 24"><use href="#ji-sat"/></svg>
+        <div class="j-nb"><svg viewBox="0 0 24 24" class="j-ic"><circle cx="12" cy="12" r="10"/><path d="M12 4l3.5 9-3.5-2-3.5 2z" fill="#fff"/></svg><div>N<i></i>50 km</div></div>
+      </div>
       <div class="journey">
-        <svg id="j-scene" viewBox="-110 70 1900 640" role="group" aria-label="Career journey of Ashraf Ayman, from a geomatics degree in Mansoura, through ITI and Edge Pro, to Gulf Terminal.">
+        <svg id="j-scene" font-family="Source Sans 3, Segoe UI, sans-serif" viewBox="-110 70 1900 640" role="group" aria-label="Career journey of Ashraf Ayman, from a geomatics degree in Mansoura, through ITI and Edge Pro, to Gulf Terminal.">
           <defs>
             <filter id="j-blur" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="14"/></filter>
             <filter id="j-soft" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="6"/></filter>
@@ -61,39 +79,40 @@
           <g id="j-pins"></g>
           <g id="j-cols" text-anchor="middle"></g>
         </svg>
-        <p class="journey-caption">
-          <span class="journey-name">Ashraf Ayman</span>
-          <span class="journey-role">GIS Solutions Engineer</span>
-        </p>
-        <p class="journey-enter">Click to enter</p>
+        <div class="journey-id">
+          <p class="journey-caption">
+            <span class="journey-name">Ashraf Ayman</span>
+            <span class="journey-role">GIS Solutions Engineer</span>
+          </p>
+          <p class="journey-enter">Click anywhere to enter
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </p>
+        </div>
       </div>
     </div>
 
-    <a class="skip-link" href="#home">Skip to content</a>
-
-    <header class="site-header">
-      <div class="container nav-inner">
+    <header class="site-header" id="siteHeader">
+      <div class="header-shell">
+        <div class="nav-inner">
         <a class="logo" href="#home">
-          <span class="logo-mark" aria-hidden="true">AA</span>
-          <span class="logo-copy">
-            <span class="logo-name">Ashraf Ayman</span>
-            <span class="logo-role">GIS Solutions Engineer</span>
-          </span>
-        </a>
+            <span class="logo-copy">
+          <span class="logo-name">Ashraf Ayman</span>
+              <span class="logo-role">GIS Solutions Engineer</span>
+            </span>
+          </a>
 
         <div class="nav-actions">
-          <a class="nav-mail" id="navEmail" href="mailto:ashrafayman219@gmail.com">Email</a>
           <a class="icon-link" id="navGithub" href="https://github.com/ashrafayman219" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.58 2 12.26c0 4.5 2.87 8.32 6.84 9.67.5.1.68-.22.68-.49 0-.24-.01-.87-.01-1.71-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.5-1.11-1.5-.9-.64.07-.62.07-.62 1 .07 1.53 1.06 1.53 1.06.89 1.56 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.37-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.7 0 0 .84-.27 2.75 1.05A9.3 9.3 0 0 1 12 6.84c.85 0 1.71.12 2.51.35 1.9-1.32 2.74-1.05 2.74-1.05.56 1.4.21 2.44.1 2.7.65.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.8-4.58 5.06.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.81 0 .27.18.6.69.49A10.03 10.03 0 0 0 22 12.26C22 6.58 17.52 2 12 2Z"/></svg>
           </a>
           <a class="icon-link" id="navLinkedin" href="https://www.linkedin.com/in/ashraf-ayman" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5C4.98 4.88 3.88 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.5 8.5h4V24h-4V8.5zM8.5 8.5h3.8v2.1h.05c.53-1 1.82-2.1 3.75-2.1 4 0 4.7 2.6 4.7 6V24h-4v-7.7c0-1.8 0-4.2-2.55-4.2s-2.95 2-2.95 4.1V24h-4V8.5z"/></svg>
           </a>
+            <a class="nav-mail" id="navEmail" href="mailto:ashrafayman219@gmail.com">Email</a>
+          </div>
         </div>
-      </div>
-    </header>
 
-    <nav class="nav-tabs" aria-label="Primary">
+        <nav class="nav-tabs" aria-label="Primary">
       <span class="nav-track" aria-hidden="true"><span class="nav-bar"></span></span>
       <ul class="nav-links" id="navLinks">
         <li style="--n:0"><a href="#home" data-section="home" class="is-active"><svg class="nav-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg><span class="nav-label">Home</span></a></li>
@@ -102,19 +121,20 @@
         <li style="--n:3"><a href="#experience" data-section="experience"><svg class="nav-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg><span class="nav-label">Experience</span></a></li>
         <li style="--n:4"><a href="#contact" data-section="contact"><svg class="nav-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg><span class="nav-label">Contact</span></a></li>
       </ul>
-      <button class="nav-expand" id="navExpand" type="button" aria-expanded="false" aria-label="Show section names">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 6 8 12l6 6"/></svg>
-      </button>
       <span class="nav-indicator" id="navIndicator" aria-hidden="true"></span>
-    </nav>
+        </nav>
+      </div>
+    </header>
 
     <main>
       <section class="hero" id="home">
         <div class="container hero-grid">
-          <div>
+          <div class="hero-copy">
             <p class="hero-kicker">Mansoura, Egypt</p>
             <h1 class="hero-name">Ashraf Ayman</h1>
-            <p class="hero-roles" id="heroRoles">GIS Software Developer</p>
+            <p class="hero-roles" id="heroRoles">GIS Solutions Engineer</p>
+          </div>
+          <div class="hero-body">
             <p class="hero-about" id="heroAbout"></p>
             <div class="hero-actions">
               <a class="btn btn-primary" href="#map">View map</a>
@@ -183,7 +203,7 @@
                 </div>
                 <div class="panel" id="panel-locations">
                   <div class="section-label">Locations</div>
-                  <label class="visually-hidden" for="locationSearch">Search locations</label>
+              <label class="visually-hidden" for="locationSearch">Search locations</label>
                   <input id="locationSearch" type="search" placeholder="Search projects" autocomplete="off" />
                   <ul class="location-list" id="locationList"></ul>
                 </div>
@@ -191,14 +211,14 @@
             </aside>
 
             <div id="mapView"></div>
-            <p class="map-orient-hint">Turn your phone sideways for a wider map.</p>
             <div id="map-pins" aria-label="Project goals"></div>
 
             <div id="map-legend">
               <div class="legend-title">Projects</div>
               <div id="legendContent">
-                <div class="legend-item"><span class="legend-swatch professional-swatch"></span><span class="legend-text">Professional</span></div>
-                <div class="legend-item"><span class="legend-swatch academic-swatch"></span><span class="legend-text">Academic</span></div>
+                <div class="legend-item"><span class="legend-swatch" style="background:#3eb4c6"></span><span class="legend-text">Professional</span></div>
+                <div class="legend-item"><span class="legend-swatch" style="background:#c6a15a"></span><span class="legend-text">Education</span></div>
+                <div class="legend-item"><span class="legend-swatch" style="background:#1c2838"></span><span class="legend-text">Academic</span></div>
               </div>
             </div>
 
@@ -286,6 +306,37 @@
               </div>
               <div class="detail-body" id="detail-body"></div>
             </aside>
+            <button class="flow-style" id="flowStyle" type="button" aria-label="Flow line style, Comet">Style: Comet</button>
+
+            <div class="turn-prompt" id="turnPrompt" role="dialog" aria-modal="true" aria-labelledby="turnTitle">
+              <div class="turn-card">
+                <div class="turn-gfx" aria-hidden="true">
+                  <svg viewBox="52 40 136 148">
+                    <defs><clipPath id="turnScreen"><rect x="94" y="72" width="52" height="96" rx="5"/></clipPath></defs>
+                    <path class="turn-arc" pathLength="1" d="M172 66 A78 78 0 0 0 72 72" fill="none" stroke="#19c2d8" stroke-width="5" stroke-linecap="round"/>
+                    <path class="turn-arrow" d="M66 60 L70 82 L88 70 Z" fill="#19c2d8" transform="rotate(22 74.7 70.7)"/>
+                    <g class="turn-phone">
+                      <rect x="88" y="64" width="64" height="112" rx="12" fill="#1b2a33" stroke="#fff" stroke-width="3.5"/>
+                      <rect x="112" y="67" width="16" height="2" rx="1" fill="#fff" opacity=".6"/>
+                      <rect x="94" y="72" width="52" height="96" rx="5" fill="#e8eef0"/>
+                      <g clip-path="url(#turnScreen)">
+                        <path d="M94 96H146M94 120H146M94 144H146M112 72V168M130 72V168" fill="none" stroke="#cdd9dc" stroke-width="1"/>
+                        <g fill="none" stroke="#8fb0b8" stroke-width="1.2"><ellipse cx="124" cy="114" rx="30" ry="22"/><ellipse cx="124" cy="114" rx="19" ry="13"/><ellipse cx="124" cy="114" rx="8" ry="5"/></g>
+                        <path d="M94 152 C106 140 112 158 124 144 S140 134 146 138" fill="none" stroke="#5aa6d6" stroke-width="3" stroke-linecap="round"/>
+                        <path d="M101 158 C98 138 118 142 124 124" fill="none" stroke="#1a8a9a" stroke-width="1.8" stroke-dasharray="4 3" stroke-linecap="round"/>
+                        <circle cx="101" cy="158" r="3.4" fill="#1a8a9a" stroke="#fff" stroke-width="1.4"/>
+                        <path d="M124 124 C118 116 116 112 116 108 A8 8 0 1 1 132 108 C132 112 130 116 124 124 Z" fill="#1a6b82"/><circle cx="124" cy="108" r="3" fill="#fff"/>
+                      </g>
+                    </g>
+                  </svg>
+                </div>
+                <h2 id="turnTitle">Turn your phone sideways</h2>
+                <p>The map is easier to read in landscape. This works even if auto-rotate is off.</p>
+                <div class="turn-actions">
+                  <button class="turn-btn turn-btn-go" id="turnGo" type="button">Rotate for me</button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -294,7 +345,7 @@
         <div class="container">
           <header class="section-header projects-head">
             <div>
-              <p class="section-kicker">Selected work</p>
+            <p class="section-kicker">Selected work</p>
               <h2 class="section-title">Featured projects</h2>
             </div>
             <div class="projects-hint" id="projectsHint" aria-hidden="true">
@@ -402,7 +453,6 @@
           <header class="section-header">
             <p class="section-kicker">Background</p>
             <h2 class="section-title">Experience and education</h2>
-            <p class="section-sub">Gulf Terminal today; Applied Innovation Center in 2024; Edge Pro before that; surveying and GIS training in Mansoura and Cairo.</p>
           </header>
           <div class="split-two">
             <div>
@@ -533,12 +583,6 @@
       </button>
     </nav>
 
-    <button class="btn btn-primary back-to-top" id="backToTop" type="button" aria-label="Back to top">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M12 19V5m0 0-6.5 6.5M12 5l6.5 6.5" />
-      </svg>
-    </button>
-
     <svg id="liquid-glass-svg" xmlns="http://www.w3.org/2000/svg" width="0" height="0" aria-hidden="true" focusable="false">
       <defs>
         <filter id="glass-distortion" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
@@ -578,6 +622,88 @@
       </div>
     </div>
 
+    <aside class="gm" id="gm" data-open="false" data-stop="home" aria-label="Portfolio map">
+      <div class="gm-head">
+        <div class="gm-title">Portfolio map<small id="gm-where">You are in Home</small></div>
+        <button class="gm-close" id="gm-close" type="button" aria-label="Shrink map">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+      <div class="gm-stage" id="gm-stage" role="button" tabindex="0" aria-label="Enlarge map">
+        <svg class="gm-svg" viewBox="0 0 300 300" id="gm-svg" aria-hidden="true">
+          <rect class="sea" width="300" height="300"/>
+          <path class="water-wave" d="M10 20q12-8 24 0t24 0"/>
+          <path class="water-wave" d="M230 282q12-8 24 0t24 0"/>
+          <path class="water-wave" d="M14 270q12-8 24 0t24 0"/>
+          <path class="land" d="M40 250C20 200 40 140 70 100 90 60 150 40 200 50c50 10 90 50 88 110-2 50-30 100-90 110-60 10-130 10-158-20z"/>
+          <path class="contour" d="M70 220C58 190 70 150 92 125c20-25 70-35 110-20 40 15 62 50 56 90-6 36-40 60-90 62-40 2-86-8-98-37z"/>
+          <path class="contour" d="M105 200c-8-20 4-45 30-55 28-10 62 0 74 28 10 24-10 44-44 46-34 2-52-4-60-19z"/>
+          <g class="trees">
+            <circle class="tree" cx="40" cy="190" r="6"/><circle class="tree" cx="50" cy="205" r="4"/>
+            <circle class="tree" cx="140" cy="250" r="6"/><circle class="tree" cx="155" cy="258" r="4"/>
+            <circle class="tree" cx="252" cy="130" r="5"/><circle class="tree" cx="150" cy="70" r="5"/>
+            <circle class="tree" cx="268" cy="250" r="4"/>
+          </g>
+          <g id="gm-grid" class="grid"></g>
+          <g class="ov on" id="gm-ov-hydro"><path class="river" d="M150 66C138 96 170 118 150 150S132 190 150 214S142 246 152 266"/></g>
+          <g class="ov on" id="gm-ov-land"><path class="lu1" d="M190 196l32-12 22 26-26 26-34-14z"/><path class="lu2" d="M70 168l28-8 12 26-22 18-22-12z"/><path class="lu3" d="M120 60l34-6 8 20-30 12z"/></g>
+          <g class="ov on" id="gm-ov-urban"><circle class="urb" cx="236" cy="112" r="11"/><circle class="urb" cx="104" cy="214" r="14"/><circle class="urb" cx="196" cy="236" r="8"/></g>
+          <path id="gm-road" class="road" d="M62 236C58 195 66 160 92 140C118 120 150 150 178 168C206 186 240 140 214 80C200 50 270 110 262 160C256 190 262 205 244 214"/>
+          <path id="gm-trail" class="trail" d="M62 236C58 195 66 160 92 140C118 120 150 150 178 168C206 186 240 140 214 80C200 50 270 110 262 160C256 190 262 205 244 214"/>
+          <g id="gm-nodes"></g>
+          <g id="gm-hero" class="hero">
+            <ellipse class="shadow" cx="0" cy="1" rx="19" ry="4.5"/>
+            <defs>
+              <radialGradient id="gm-skin" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#fde2c6"/><stop offset="1" stop-color="#eeb386"/></radialGradient>
+              <linearGradient id="gm-hair" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8d573c"/><stop offset="1" stop-color="#5e3624"/></linearGradient>
+              <linearGradient id="gm-shirt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f8c95a"/><stop offset="1" stop-color="#e2a52e"/></linearGradient>
+              <linearGradient id="gm-shorts" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5fb8ad"/><stop offset="1" stop-color="#3f8d84"/></linearGradient>
+              <linearGradient id="gm-shoe" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f0626b"/><stop offset="1" stop-color="#cf3f4c"/></linearGradient>
+            </defs>
+            <g class="pin"><path class="pinfill ln" d="M0 -131c-6 0-9 4.5-9 8.5c0 5 9 12 9 12s9-7 9-12c0-4-3-8.5-9-8.5z"/><circle cx="0" cy="-123" r="3" fill="#fff"/></g>
+            <g class="bob" id="gm-boy">
+              <g id="gm-leg-l"><rect class="skin ln" x="-11" y="-24" width="7.5" height="15" rx="3.5"/><path d="M-10 -22q1.5 7 0 13" fill="none" stroke="#d8996c" stroke-width="1.4" stroke-linecap="round" opacity=".6"/><rect class="ln" x="-11" y="-11" width="7.5" height="5" fill="#fff"/><path class="shoe ln" d="M-12.5 -7h9.5q3 0 4 3v1.5q0 2.5-2.5 2.5h-9.5q-2 0-2-2.2z"/><path d="M-10 -4.5q4-3 9 0M-8 -6.5l3 1.5M-5 -7l2 1.8" fill="none" stroke="#fff" stroke-width="1" stroke-linecap="round" opacity=".7"/><rect class="ln" x="-13" y="-2.4" width="15.5" height="2.4" rx="1.2" fill="#fff"/></g>
+              <g id="gm-leg-r"><rect class="skin ln" x="3.5" y="-24" width="7.5" height="15" rx="3.5"/><path d="M10 -22q-1.5 7 0 13" fill="none" stroke="#d8996c" stroke-width="1.4" stroke-linecap="round" opacity=".6"/><rect class="ln" x="3.5" y="-11" width="7.5" height="5" fill="#fff"/><path class="shoe ln" d="M12.5 -7h-9.5q-3 0-4 3v1.5q0 2.5 2.5 2.5h9.5q2 0 2-2.2z"/><path d="M10 -4.5q-4-3-9 0M8 -6.5l-3 1.5M5 -7l-2 1.8" fill="none" stroke="#fff" stroke-width="1" stroke-linecap="round" opacity=".7"/><rect class="ln" x="-2.5" y="-2.4" width="15.5" height="2.4" rx="1.2" fill="#fff"/></g>
+              <path class="shorts ln" d="M-16 -38h32l1.5 17h-15l-2.5-6l-2.5 6h-15z"/>
+              <path d="M-17.5 -21h15M2.5 -21h15" stroke="#9adcd2" stroke-width="2.6"/>
+              <path d="M-16 -38h32l.4 3q-16 3.5-32.8 0z" fill="#2f6e66" opacity=".4"/>
+              <path d="M-14 -37q1 6 7 6M14 -37q-1 6-7 6" fill="none" stroke="#2f6e66" stroke-width="1.2" stroke-linecap="round"/>
+              <rect class="skin ln" x="-5" y="-64" width="10" height="9" rx="3"/>
+              <path class="shirt ln" d="M-14 -58q14-5 28 0l2 22q-16 3-32 0z"/>
+              <path d="M6 -57q8 1 10 21q-5 1.5-9 1.5q2-10-1-22z" fill="#c78f1f" opacity=".35"/>
+              <path d="M-11 -55q-1 7 0 13" fill="none" stroke="#fff3b8" stroke-width="2" stroke-linecap="round" opacity=".55"/>
+              <path d="M0 -51c-2.5 0-3.5 2-3.5 3.5c0 2 3.5 5 3.5 5s3.5-3 3.5-5c0-1.5-1-3.5-3.5-3.5z" fill="#e0505a"/><circle cx="0" cy="-47.5" r="1.2" fill="#fff"/>
+              <path d="M-6 -50q-2 5 0 11M7 -52q3 6 1 12" fill="none" stroke="#c78f1f" stroke-width="1.2" stroke-linecap="round" opacity=".6"/>
+              <path d="M-7 -59q7 7 14 0" fill="none" stroke="#e0505a" stroke-width="3" stroke-linecap="round"/>
+              <g id="gm-arm-l"><rect class="skin ln" x="-24" y="-47" width="7.5" height="19" rx="3.7"/><ellipse class="skin ln" cx="-20.3" cy="-27" rx="4.2" ry="4.6"/><path class="shirt ln" d="M-14 -58q-9-1-11 5l-1 9l10 3z"/><path d="M-26 -44l10 3" stroke="#e0505a" stroke-width="2.6" stroke-linecap="round"/></g>
+              <g id="gm-arm-r"><rect class="skin ln" x="16.5" y="-47" width="7.5" height="19" rx="3.7"/><ellipse class="skin ln" cx="20.3" cy="-27" rx="4.2" ry="4.6"/><path class="shirt ln" d="M14 -58q9-1 11 5l1 9l-10 3z"/><path d="M26 -44l-10 3" stroke="#e0505a" stroke-width="2.6" stroke-linecap="round"/></g>
+              <ellipse class="skin ln" cx="-19.5" cy="-78" rx="4.5" ry="5.5"/><ellipse class="skin ln" cx="19.5" cy="-78" rx="4.5" ry="5.5"/>
+              <ellipse class="skin ln" cx="0" cy="-80" rx="19.5" ry="19"/>
+              <ellipse class="ln" style="stroke-width:1;stroke:#7a4a33" cx="-8.5" cy="-78" rx="6.2" ry="6.8" fill="#fff"/><ellipse class="ln" style="stroke-width:1;stroke:#7a4a33" cx="8.5" cy="-78" rx="6.2" ry="6.8" fill="#fff"/>
+              <circle cx="-8" cy="-77.5" r="4.4" fill="#6b3f2a"/><circle cx="8" cy="-77.5" r="4.4" fill="#6b3f2a"/>
+              <circle cx="-8" cy="-77.5" r="2.2" fill="#2a160f"/><circle cx="8" cy="-77.5" r="2.2" fill="#2a160f"/>
+              <circle cx="-9.8" cy="-79.5" r="1.5" fill="#fff"/><circle cx="6.2" cy="-79.5" r="1.5" fill="#fff"/><circle cx="-6.3" cy="-75.5" r=".8" fill="#fff"/><circle cx="9.7" cy="-75.5" r=".8" fill="#fff"/>
+              <path d="M-14.7 -79q6.2-7.5 12.4 0M2.3 -79q6.2-7.5 12.4 0" fill="none" stroke="#2a160f" stroke-width="1.1" stroke-linecap="round"/>
+              <ellipse cx="-13.5" cy="-68.5" rx="4.2" ry="2.8" fill="#e8908c" opacity=".55"/><ellipse cx="13.5" cy="-68.5" rx="4.2" ry="2.8" fill="#e8908c" opacity=".55"/>
+              <path d="M-1.8 -71q1.8 1.8 3.6 0" fill="none" stroke="#c98a63" stroke-width="1.4" stroke-linecap="round"/>
+              <path d="M-5 -65q5 4.5 10 0" fill="none" stroke="#6b2f2a" stroke-width="1.6" stroke-linecap="round"/>
+              <path d="M-14 -87q5-3 11-1M3 -88q6-2 11 1" fill="none" stroke="#5e3624" stroke-width="2" stroke-linecap="round"/>
+              <path class="hair ln" d="M-20 -78C-23 -97 -8 -105 3 -102C14 -104 24 -93 20 -78C19 -84 15 -90 11 -91C7 -87 2 -84 -3 -83C-6 -86 -9 -90 -11 -92C-15 -90 -18 -85 -20 -78z"/>
+              <path class="hair ln" d="M2 -101q-1-7 7-9q-2 3-1 5q4-4 9-3q-5 2-6 6z"/>
+            </g>
+          </g>
+        </svg>
+        <svg class="gm-north" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18"/><text x="20" y="13">N</text><path class="na" d="M20 16l5 15-5-3-5 3z"/></svg>
+        <div class="gm-scale" aria-hidden="true"><b id="gm-scale-label">22 km</b><i></i></div>
+        <span class="gm-coords" id="gm-coords" aria-live="off"></span>
+      </div>
+      <p class="gm-hint">Tap a place to travel there. Arrow keys also work. Escape shrinks the map.</p>
+    </aside>
+
+    <div class="turn-land" id="turnLand" hidden>
+      <button class="turn-back" id="turnBack" type="button">Back to portrait</button>
+    </div>
+
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
     <script src="js/config.js"></script>
@@ -588,5 +714,6 @@
     <script src="js/road-geometry.js"></script>
     <script src="js/journey.js"></script>
     <script src="js/knowledge.js"></script>
+    <script src="js/game-map.js"></script>
   </body>
 </html>

@@ -17,7 +17,7 @@
   --radius: 12px;
   --radius-sm: 8px;
   --nav-h: 4.25rem;
-  --font: "Noto Sans", "Segoe UI", sans-serif;
+  --font: "Source Sans 3", "Segoe UI", sans-serif;
   --font-display: var(--font);
   --ease: 0.22s ease;
   --z-nav: 40;
@@ -112,28 +112,6 @@ h3,
   line-height: 1.2;
   letter-spacing: -0.02em;
   color: var(--text);
-}
-
-.skip-link {
-  position: absolute;
-  left: 1rem;
-  top: -3rem;
-  background: var(--navy);
-  color: #fff;
-  padding: 0.5rem 0.75rem;
-  z-index: 100;
-  border-radius: 6px;
-  text-decoration: none;
-}
-
-.skip-link:hover,
-.skip-link:focus {
-  color: #fff;
-  text-decoration: none;
-}
-
-.skip-link:focus {
-  top: 0.75rem;
 }
 
 .container {

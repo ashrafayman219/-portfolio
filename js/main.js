@@ -14,6 +14,8 @@
 
       const phoneQuery = window.matchMedia("(max-width: 767px)");
       let activeId = "";
+      let pinnedId = "";
+      let pinnedUntil = 0;
 
       const moveIndicator = (link) => {
         if (!tabs || !indicator || !link) return;
@@ -73,6 +75,13 @@
 
       if (links) {
         links.querySelectorAll("a").forEach((link) => {
+          link.addEventListener("click", () => {
+            const id = link.getAttribute("data-section");
+            if (!id) return;
+            pinnedId = id;
+            pinnedUntil = performance.now() + 900;
+            setActive(id);
+          });
           link.addEventListener("mouseenter", () => {
             if (phoneQuery.matches) return;
             hoverLink = link;
@@ -103,31 +112,29 @@
             else el.removeAttribute("aria-current");
           }
         });
-        if (changed && phoneQuery.matches && links) {
-          const current = links.querySelector('[data-section="' + id + '"]');
-          if (current && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-            current.classList.remove("is-pop");
-            void current.offsetWidth;
-            current.classList.add("is-pop");
-          }
-        }
         syncIndicator();
       };
       const updateSpy = () => {
         const header = document.querySelector(".site-header");
-        const offset = (header ? header.offsetHeight : 0) + 12;
+        const sample = sections[0];
+        const scrollMargin = sample ? parseFloat(getComputedStyle(sample).scrollMarginTop) || 0 : 0;
+        const headerBottom = header ? header.getBoundingClientRect().bottom : 0;
+        const line = Math.max(headerBottom, scrollMargin) + 16;
         const scrollable = document.documentElement.scrollHeight - window.innerHeight;
-        const atEnd = scrollable > 0 && window.scrollY >= scrollable - 24;
+        const atEnd = scrollable > 0 && window.scrollY >= scrollable - 48;
         let current = sections[0] ? sections[0].id : "home";
-        if (atEnd && sections.length) {
+        if (performance.now() < pinnedUntil && pinnedId) {
+          current = pinnedId;
+        } else if (atEnd && sections.length) {
           current = sections[sections.length - 1].id;
         } else {
           sections.forEach((section) => {
-            if (section.getBoundingClientRect().top - offset <= 0) current = section.id;
+            if (section.getBoundingClientRect().top <= line) current = section.id;
           });
         }
         const progress = scrollable > 0 ? Math.min(1, Math.max(0, window.scrollY / scrollable)) : 0;
         if (tabs) tabs.style.setProperty("--p", String(progress));
+        if (header) header.classList.toggle("is-scrolled", window.scrollY > 8);
         setActive(current);
       };
       const followIndicator = () => {
@@ -138,139 +145,24 @@
         };
         requestAnimationFrame(step);
       };
-      const expandBtn = document.getElementById("navExpand");
-      const holdEdge = () => {
-        if (!tabs || !phoneQuery.matches || !tabs.style.left || tabs.style.left === "auto") return;
-        const box = tabs.getBoundingClientRect();
-        if (window.innerWidth - box.right > box.left) return;
-        tabs.style.left = "auto";
-        tabs.style.right = Math.max(8, window.innerWidth - box.right) + "px";
-        tabs.style.top = box.top + "px";
-        tabs.style.transform = "none";
-      };
-      if (expandBtn && tabs) {
-        expandBtn.addEventListener("click", () => {
-          const open = !tabs.classList.contains("is-expanded");
-          holdEdge();
-          tabs.classList.toggle("is-expanded", open);
-          expandBtn.setAttribute("aria-expanded", String(open));
-          expandBtn.setAttribute("aria-label", open ? "Hide section names" : "Show section names");
-          followIndicator();
-        });
-      }
-      let drag = null;
-      let blockClick = false;
-      const clampNav = () => {
-        if (!tabs || !tabs.style.left || tabs.style.left === "auto") return;
-        const left = Math.min(window.innerWidth - tabs.offsetWidth - 8, Math.max(8, parseFloat(tabs.style.left)));
-        const top = Math.min(window.innerHeight - tabs.offsetHeight - 8, Math.max(8, parseFloat(tabs.style.top) || 0));
-        tabs.style.left = left + "px";
-        tabs.style.top = top + "px";
-      };
-      const placeDrag = () => {
-        if (!drag) return;
-        const left = Math.min(window.innerWidth - drag.w - 8, Math.max(8, drag.left + drag.dx));
-        const top = Math.min(window.innerHeight - drag.h - 8, Math.max(8, drag.top + drag.dy));
-        drag.nextLeft = left;
-        drag.nextTop = top;
-        tabs.style.transform = "translate3d(" + (left - drag.left) + "px," + (top - drag.top) + "px,0)";
-      };
-      if (tabs) {
-        tabs.addEventListener("pointerdown", (event) => {
-          if (!phoneQuery.matches || event.button !== 0) return;
-          blockClick = false;
-          const box = tabs.getBoundingClientRect();
-          drag = {
-            id: event.pointerId,
-            x: event.clientX,
-            y: event.clientY,
-            left: box.left,
-            top: box.top,
-            w: box.width,
-            h: box.height,
-            dx: 0,
-            dy: 0,
-            moved: false,
-            frame: 0
-          };
-          tabs.setPointerCapture(event.pointerId);
-        });
-        tabs.addEventListener("pointermove", (event) => {
-          if (!drag || event.pointerId !== drag.id) return;
-          drag.dx = event.clientX - drag.x;
-          drag.dy = event.clientY - drag.y;
-          if (!drag.moved && Math.hypot(drag.dx, drag.dy) < 8) return;
-          if (!drag.moved) {
-            drag.moved = true;
-            tabs.classList.add("is-dragging");
-            tabs.style.right = "auto";
-            tabs.style.left = drag.left + "px";
-            tabs.style.top = drag.top + "px";
-            tabs.style.transform = "none";
-          }
-          if (drag.frame) return;
-          drag.frame = requestAnimationFrame(() => {
-            if (!drag) return;
-            drag.frame = 0;
-            placeDrag();
-          });
-        });
-        const endDrag = (event) => {
-          if (!drag || event.pointerId !== drag.id) return;
-          if (drag.frame) cancelAnimationFrame(drag.frame);
-          if (drag.moved) {
-            placeDrag();
-            tabs.style.left = drag.nextLeft + "px";
-            tabs.style.top = drag.nextTop + "px";
-            tabs.style.transform = "none";
-            blockClick = true;
-          }
-          tabs.classList.remove("is-dragging");
-          drag = null;
-        };
-        tabs.addEventListener("pointerup", endDrag);
-        tabs.addEventListener("pointercancel", endDrag);
-        tabs.addEventListener("click", (event) => {
-          if (!blockClick) return;
-          blockClick = false;
-          event.preventDefault();
-          event.stopPropagation();
-        }, true);
-      }
       window.addEventListener("scroll", updateSpy, { passive: true });
+      window.addEventListener("scrollend", () => {
+        pinnedUntil = 0;
+        updateSpy();
+      });
+      window.addEventListener("load", syncIndicator);
       window.addEventListener("resize", () => {
-        clampNav();
+        if (tabs && !phoneQuery.matches) {
+          tabs.style.left = "";
+          tabs.style.right = "";
+          tabs.style.top = "";
+          tabs.style.bottom = "";
+          tabs.style.transform = "";
+        }
         syncIndicator();
       });
       updateSpy();
       followIndicator();
-    },
-
-    initBackToTop() {
-      const button = document.getElementById("backToTop");
-      const hero = document.getElementById("home");
-      const phone = window.matchMedia("(max-width: 767px)");
-      const show = (on) => button.classList.toggle("is-visible", on);
-      if (hero && "IntersectionObserver" in window) {
-        const watcher = new IntersectionObserver((entries) => {
-          if (!phone.matches) return;
-          show(!entries[0].isIntersecting);
-        });
-        watcher.observe(hero);
-      }
-      window.addEventListener("scroll", () => {
-        if (phone.matches) return;
-        show(window.scrollY > 480);
-      }, { passive: true });
-      if (phone.addEventListener) {
-        phone.addEventListener("change", () => {
-          if (!phone.matches) show(window.scrollY > 480);
-        });
-      }
-      button.addEventListener("click", () => {
-        const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        window.scrollTo({ top: 0, behavior: reduced ? "auto" : "smooth" });
-      });
     },
 
     initCounters() {
@@ -343,8 +235,6 @@
 
   document.addEventListener("DOMContentLoaded", async () => {
     PortfolioApp.initNav();
-    PortfolioApp.initBackToTop();
-
     try {
       const data = await PortfolioApp.loadData();
       window.PortfolioUI.render(data);
@@ -361,7 +251,6 @@
         });
       });
       const startSite = () => {
-        window.PortfolioUI.startRoleCycle();
         const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         window.setTimeout(() => PortfolioApp.initCounters(), reduced ? 0 : 600);
         PortfolioApp.observeReveals();

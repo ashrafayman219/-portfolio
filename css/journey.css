@@ -2,12 +2,6 @@ body.is-loading {
   overflow: hidden;
 }
 
-body.is-loading .skip-link {
-  position: fixed;
-  top: 0.75rem;
-  z-index: 90;
-}
-
 body.is-loading .site-header,
 body.is-loading .nav-tabs,
 body.is-loading main,
@@ -28,6 +22,23 @@ body.is-entering .site-header {
   body.is-entering .site-header {
     animation-name: enter-fade;
   }
+
+  body.is-entering .nav-tabs {
+    animation: dockIn 0.8s cubic-bezier(0.2, 1.2, 0.3, 1) 0.2s backwards;
+  }
+}
+
+@keyframes dockIn {
+  from {
+    opacity: 0;
+    transform: translateY(60px);
+  }
+}
+
+@media (max-width: 767px) and (prefers-reduced-motion: reduce) {
+  body.is-entering .nav-tabs {
+    animation: none;
+  }
 }
 
 @keyframes enter-fade {
@@ -43,16 +54,17 @@ body.is-entering .profile-photo {
   animation: enter-profile 0.95s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
 }
 
-body.is-entering .hero-grid > div:first-child > * {
+body.is-entering .hero-copy > *,
+body.is-entering .hero-body > * {
   animation: enter-up 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-body.is-entering .hero-grid > div:first-child > *:nth-child(1) { animation-delay: 0.16s; }
-body.is-entering .hero-grid > div:first-child > *:nth-child(2) { animation-delay: 0.24s; }
-body.is-entering .hero-grid > div:first-child > *:nth-child(3) { animation-delay: 0.32s; }
-body.is-entering .hero-grid > div:first-child > *:nth-child(4) { animation-delay: 0.4s; }
-body.is-entering .hero-grid > div:first-child > *:nth-child(5) { animation-delay: 0.48s; }
-body.is-entering .hero-grid > div:first-child > *:nth-child(6) { animation-delay: 0.56s; }
+body.is-entering .hero-copy > *:nth-child(1) { animation-delay: 0.16s; }
+body.is-entering .hero-copy > *:nth-child(2) { animation-delay: 0.24s; }
+body.is-entering .hero-copy > *:nth-child(3) { animation-delay: 0.32s; }
+body.is-entering .hero-body > *:nth-child(1) { animation-delay: 0.4s; }
+body.is-entering .hero-body > *:nth-child(2) { animation-delay: 0.48s; }
+body.is-entering .hero-body > *:nth-child(3) { animation-delay: 0.56s; }
 
 body.is-entering main > :not(.hero),
 body.is-entering .site-footer,
@@ -68,20 +80,139 @@ body.is-entering .mobile-nav {
   align-items: center;
   justify-content: center;
   padding: clamp(0.75rem, 2vh, 1.5rem);
-  background: var(--bg);
+  overflow: hidden;
+  background: #cfe6f5;
   cursor: pointer;
   transition: opacity 0.9s ease, visibility 0.9s ease;
 }
 
+.journey-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 58%;
+  transform-origin: center;
+  animation: journey-kb 18s ease-in-out infinite alternate;
+  will-change: transform;
+  pointer-events: none;
+}
+
+.journey-veil {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(110% 80% at 50% 48%, #ffffff55, #ffffff00 72%),
+    linear-gradient(#ffffff00 65%, #0b2a1a40);
+}
+
+.journey-fx {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  container-type: inline-size;
+}
+
+.journey-symbols {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.j-ic {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.j-chip {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: 5.2cqw;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #394456;
+  background: #ffffffb8;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow: 0 0.5cqw 1.4cqw #0002;
+  opacity: 0;
+  animation: j-float 6s ease-in-out var(--fd, 0s) infinite alternate;
+}
+
+.journey-loader.is-armed .j-chip {
+  opacity: 1;
+  transition: opacity 1s 2.6s;
+}
+
+.j-chip svg {
+  width: 58%;
+  height: 58%;
+}
+
+.j-chip.j-rot svg {
+  animation: j-spin 14s linear infinite;
+}
+
+.j-sat {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 5cqw;
+  color: #fff;
+  filter: drop-shadow(0 0.3cqw 0.6cqw #0006);
+  animation: j-orbit 26s linear infinite;
+  opacity: 0.95;
+}
+
+.j-nb {
+  position: absolute;
+  right: max(1.2rem, env(safe-area-inset-right));
+  bottom: max(1.2rem, env(safe-area-inset-bottom));
+  display: flex;
+  align-items: flex-end;
+  gap: 0.7rem;
+  color: #fff;
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: clamp(9px, 1.4cqw, 14px);
+  text-shadow: 0 1px 4px #0008;
+}
+
+.j-nb svg {
+  width: 2.4rem;
+  filter: drop-shadow(0 1px 3px #0008);
+}
+
+.j-nb i {
+  display: block;
+  width: 4.6rem;
+  height: 0.35rem;
+  border: 2px solid #fff;
+  border-top: 0;
+  margin-bottom: 0.15rem;
+}
+
 .journey-loader .journey {
+  position: relative;
+  z-index: 2;
   flex-direction: column;
   align-items: center;
   gap: 0.7rem;
+  background: transparent;
   transform: translateX(3.5vw);
   transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.journey-loader .journey svg {
+.journey-loader .journey #j-scene {
   width: min(92vw, calc(78vh * 1900 / 640));
 }
 
@@ -92,46 +223,66 @@ body.is-entering .mobile-nav {
   font-family: var(--font);
 }
 
-.journey-name,
-.journey-role {
+.journey-id {
   opacity: 0;
+  text-align: center;
+  padding: 14px 30px 16px;
+  border-radius: 22px;
+  background: #ffffffdb;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 12px 36px #0a2a3a40;
+  font-family: var(--font);
 }
 
-.journey-loader.is-armed .journey-name,
-.journey-loader.is-armed .journey-role {
-  animation: journey-line 0.7s ease forwards;
+.journey-loader.is-armed .journey-id {
+  animation: journey-id-up 0.9s cubic-bezier(0.2, 0.9, 0.2, 1) 3.2s forwards;
 }
 
 .journey-name {
   display: block;
-  color: var(--text);
-  font-size: 1.05rem;
-  font-weight: 700;
-  animation-delay: 1.55s;
+  color: #18232b;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 550;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
 }
 
 .journey-role {
   display: block;
-  margin-top: 0.2rem;
-  color: var(--text-muted);
-  font-size: 0.78rem;
+  margin-top: 2px;
+  color: #4a5b66;
+  font-family: var(--font);
+  font-size: 0.72rem;
   font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  animation-delay: 2s;
+  letter-spacing: 0.01em;
 }
 
 .journey-enter {
-  color: var(--navy);
-  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 0 0;
+  border-radius: 99px;
+  padding: 9px 20px;
+  background: #18232b;
+  color: #fff;
+  font-family: var(--font);
+  font-size: 0.72rem;
   font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  opacity: 0;
+  letter-spacing: 0.02em;
 }
 
-.journey-loader.is-armed .journey-enter {
-  animation: journey-line 0.7s ease 3.5s forwards, enter-wait 1.8s ease 4.25s infinite;
+.journey-enter svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  animation: j-nudge 1.2s ease-in-out infinite;
 }
 
 .journey-loader.is-done {
@@ -148,33 +299,42 @@ body.is-entering .mobile-nav {
   display: flex;
   justify-content: center;
   background: var(--bg);
-  font-family: Cairo, "Segoe UI", Tahoma, Arial, sans-serif;
+  font-family: var(--font);
 }
 
-.journey svg {
+.journey #j-scene {
   width: min(96vw, calc(90vh * 1900 / 640));
   height: auto;
   display: block;
 }
 
-.journey text {
+.journey text,
+.journey tspan {
   fill: var(--text);
-  font-weight: 700;
-  font-family: Cairo, "Segoe UI", Tahoma, Arial, sans-serif;
+  font-family: var(--font);
+  font-weight: 600;
+  letter-spacing: -0.02em;
 }
 
 .journey .pin text {
   fill: #fff;
-  font-family: Poppins, var(--font);
-  font-weight: 700;
+  font-family: var(--font);
+  font-weight: 600;
 }
 
 .journey .pin {
   cursor: pointer;
   outline: none;
+  transform-box: fill-box;
+  transform-origin: center;
   transition: transform 0.3s cubic-bezier(0.3, 1.5, 0.5, 1);
-  animation: j-drop 0.8s cubic-bezier(0.2, 1.4, 0.4, 1) backwards;
+  animation: j-pop 0.7s cubic-bezier(0.2, 1.5, 0.4, 1) backwards;
   animation-delay: var(--d);
+}
+
+.journey .ms-pin {
+  opacity: 0;
+  animation: j-pin-drop 0.8s cubic-bezier(0.3, 1.6, 0.5, 1) calc(var(--d) + 0.5s) forwards;
 }
 
 .journey .pin:hover,
@@ -187,6 +347,16 @@ body.is-entering .mobile-nav {
   stroke-width: 4;
 }
 
+.journey .lab {
+  fill: #18232b;
+  font-family: var(--font);
+  font-weight: 600;
+}
+
+.journey .lab-sub {
+  font-weight: 600;
+}
+
 .journey .lab-plate,
 .journey .lab-rail {
   fill: var(--mark);
@@ -194,23 +364,20 @@ body.is-entering .mobile-nav {
 }
 
 .journey .lab-plate {
-  opacity: 0;
-  animation:
-    lab-in 0.55s ease calc(var(--d) + 0.45s) forwards,
-    lab-ready 0.9s ease 3.45s forwards;
+  opacity: 1;
+  filter: drop-shadow(0 0.45rem 1rem rgba(0, 0, 0, 0.2));
 }
 
 .journey .lab-rail {
-  transform-box: fill-box;
-  transform-origin: center;
-  transform: scaleY(0);
-  animation: rail-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--d) + 0.45s) forwards;
+  transform: none;
 }
 
 .journey .lab-group {
+  opacity: 0;
   transform-box: fill-box;
   transform-origin: left center;
   transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  animation: j-card-in 0.8s cubic-bezier(0.2, 0.9, 0.2, 1) calc(var(--d) + 0.3s) forwards;
 }
 
 .journey .lab-group.is-middle {
@@ -241,7 +408,7 @@ body.is-entering .mobile-nav {
 }
 
 .journey .rip {
-  animation: j-rip 3.2s ease-out calc(var(--d) + 1.7s) infinite;
+  animation: j-rip 2.6s ease-out calc(var(--d) + 0.8s) infinite;
 }
 
 .journey #j-rv {
@@ -281,13 +448,53 @@ body.is-entering .mobile-nav {
   }
 }
 
-@keyframes j-drop {
+@keyframes j-pop {
   from {
     opacity: 0;
-    transform: translateY(-60px) scale(0.7);
+    transform: scale(0.2);
   }
   to {
     opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes j-pin-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-36px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes j-card-in {
+  from {
+    opacity: 0;
+    transform: translateX(var(--sx, -28px));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes journey-id-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes j-nudge {
+  50% {
+    translate: 4px 0;
   }
 }
 
@@ -323,12 +530,12 @@ body.is-entering .mobile-nav {
 
 @keyframes j-rip {
   0% {
-    opacity: 0.32;
-    transform: scale(0.9);
+    opacity: 0.8;
+    transform: scale(1);
   }
   100% {
     opacity: 0;
-    transform: scale(1.5);
+    transform: scale(1.9);
   }
 }
 
@@ -392,23 +599,90 @@ body.is-entering .mobile-nav {
   }
 }
 
+@keyframes journey-kb {
+  from {
+    transform: scale(1.02);
+  }
+  to {
+    transform: scale(1.1) translate(-1.4%, -0.8%);
+  }
+}
+
+@keyframes j-float {
+  from {
+    translate: 0 0;
+  }
+  to {
+    translate: 0 -1.2cqw;
+  }
+}
+
+@keyframes j-spin {
+  to {
+    rotate: 360deg;
+  }
+}
+
+@keyframes j-orbit {
+  from {
+    translate: -10vw 1.5vh;
+    rotate: -12deg;
+  }
+  to {
+    translate: 104vw 0.6vh;
+    rotate: 6deg;
+  }
+}
+
 @media (max-width: 767px) {
   .journey-loader {
     padding: 0.75rem 0 1rem;
   }
 
   .journey-loader .journey {
+    position: static;
     gap: 0.85rem;
     transform: none;
   }
 
-  .journey-loader.is-done .journey {
-    transform: scale(1.03);
+  .journey-id {
+    position: absolute;
+    left: 50%;
+    right: auto;
+    bottom: max(1.15rem, env(safe-area-inset-bottom));
+    z-index: 3;
+    width: max-content;
+    max-width: calc(100vw - 2rem);
+    margin: 0;
+    translate: -50% 0;
   }
 
-  .journey-loader .journey svg {
+  .journey-loader.is-done .journey {
+    transform: none;
+  }
+
+  .journey-loader.is-done #j-scene {
+    transform: scale(1.03);
+    transform-origin: center;
+  }
+
+  .journey-loader .journey #j-scene {
     width: min(100vw, calc(64vh * 1180 / 930));
     height: auto;
+  }
+
+  .j-chip {
+    left: var(--mx);
+    top: var(--my);
+    width: 11cqw;
+  }
+
+  .j-sat {
+    width: 11cqw;
+  }
+
+  .j-nb {
+    display: none;
   }
 }
 
@@ -419,18 +693,44 @@ body.is-entering .mobile-nav {
     transition: none !important;
   }
 
-  .journey-name,
-  .journey-role,
-  .journey-enter {
+  .journey-id,
+  .journey .lab-group,
+  .journey .ms-pin {
     opacity: 1;
     transform: none;
+    animation: none !important;
   }
 
   .journey .lab-plate {
-    opacity: 0.16;
+    opacity: 1;
   }
 
   .journey .lab-rail {
     transform: none;
+  }
+
+  .journey-enter svg {
+    animation: none !important;
+  }
+
+  .journey-bg,
+  .j-chip,
+  .j-chip svg,
+  .j-sat {
+    animation: none !important;
+  }
+
+  .journey-bg {
+    transform: none;
+  }
+
+  .journey-loader.is-armed .j-chip,
+  .j-chip {
+    opacity: 1;
+    transition: none;
+  }
+
+  .j-sat {
+    translate: 18vw 2vh;
   }
 }

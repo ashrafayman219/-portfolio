@@ -99,7 +99,7 @@
 
   function jobLogos(job) {
     const fill = job.logoFill ? " logo-frame-fill" : "";
-    const main = `<span class="logo-frame logo-frame-circle${fill}"><img src="${escapeHtml(job.logo)}" alt="${escapeHtml(job.company)}" width="62" height="62" loading="lazy" decoding="async" /></span>`;
+    const main = `<span class="logo-slot"><span class="logo-frame logo-frame-circle${fill}"><img src="${escapeHtml(job.logo)}" alt="${escapeHtml(job.company)}" width="62" height="62" loading="lazy" decoding="async" /></span>${expandButton()}</span>`;
     if (!job.partnerLogo) return main;
     return `<div class="logo-pair">
       ${main}
@@ -195,11 +195,7 @@
   }
 
   function expandButton() {
-    return `<button type="button" class="expando-btn" aria-expanded="false" aria-label="Show details">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-        <path d="M6 9l6 6 6-6"/>
-      </svg>
-    </button>`;
+    return `<button type="button" class="expando-btn" aria-expanded="false" aria-label="Show details"><span class="expando-mark" aria-hidden="true"></span></button>`;
   }
 
   const IMG_FALLBACK = "this.onerror=null;this.style.background='#d5dde4';this.removeAttribute('src');";
@@ -342,7 +338,7 @@
       setCount("statProjects", 90, "", "+");
       setCount("statCountries", 7, "", "+");
       document.getElementById("statNow").textContent = info.currentCompany;
-      document.getElementById("heroRoles").textContent = info.roles[0];
+      document.getElementById("heroRoles").textContent = "GIS Solutions Engineer";
 
       document.getElementById("navGithub").href = info.social.github;
       document.getElementById("navLinkedin").href = info.social.linkedin;
@@ -370,25 +366,6 @@
       this.bindMarqueeDrag();
     },
 
-    startRoleCycle() {
-      const roles = this.data.personalInfo.roles;
-      const el = document.getElementById("heroRoles");
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || roles.length < 2) {
-        el.textContent = roles[0];
-        return;
-      }
-      let i = 0;
-      setInterval(() => {
-        i = (i + 1) % roles.length;
-        el.style.opacity = "0";
-        setTimeout(() => {
-          el.textContent = roles[i];
-          el.style.opacity = "1";
-        }, 220);
-      }, 3200);
-      el.style.transition = "opacity 0.2s ease";
-    },
-
     projectChip(project) {
       const loc = project.location || {};
       const place = loc.country || loc.name || "";
@@ -396,7 +373,7 @@
     },
 
     projectCardHtml(project, clone) {
-      const image = project.images && project.images[0] ? project.images[0] : "";
+          const image = project.images && project.images[0] ? project.images[0] : "";
       const hidden = clone ? ' aria-hidden="true"' : "";
       const chip = this.projectChip(project);
       const label = chip ? project.title + ", " + chip : project.title;
@@ -408,11 +385,11 @@
             `alt="${clone ? "" : escapeHtml(project.title)}" loading="lazy" decoding="async" width="640" height="360" onerror="${IMG_FALLBACK}"`
           );
       const chipHtml = chip ? `<span class="project-card-chip">${escapeHtml(chip)}</span>` : "";
-      return `
+          return `
         <article class="project-card" data-project-id="${escapeHtml(project.id)}" data-open-project="${escapeHtml(project.id)}" role="button" tabindex="${clone ? "-1" : "0"}" aria-label="${clone ? "" : escapeHtml(label)}"${hidden}>
           <div class="project-card-media">${media}${chipHtml}</div>
           <h3 class="project-card-title">${escapeHtml(project.title)}</h3>
-        </article>`;
+            </article>`;
     },
 
     dismissPanHint() {
@@ -991,7 +968,6 @@
       if (project.githubUrl) links.push(`<a class="btn btn-outline" href="${escapeHtml(project.githubUrl)}" target="_blank" rel="noopener noreferrer">GitHub</a>`);
       if (project.documentationUrl) links.push(`<a class="btn btn-outline" href="${escapeHtml(project.documentationUrl)}" target="_blank" rel="noopener noreferrer">API docs</a>`);
       if (project.presentationUrl) links.push(`<a class="btn btn-outline" href="${escapeHtml(project.presentationUrl)}" target="_blank" rel="noopener noreferrer">Presentation</a>`);
-      if (project.showOnMap !== false) links.push(`<button type="button" class="btn btn-outline" data-map-project="${escapeHtml(project.id)}">Show on map</button>`);
 
       const leadVideo = project.leadMedia === "video" && !!project.videoUrl;
       const video = project.videoUrl
@@ -1053,15 +1029,6 @@
       });
       body.querySelectorAll("[data-thumb-index]").forEach((btn) => {
         btn.addEventListener("click", () => this.showGallery(Number(btn.getAttribute("data-thumb-index"))));
-      });
-      body.querySelectorAll("[data-map-project]").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const id = btn.getAttribute("data-map-project");
-          this.closeModal();
-          document.dispatchEvent(new CustomEvent("portfolio:goto", { detail: { id: "project-" + id } }));
-          const map = document.getElementById("map");
-          if (map) map.scrollIntoView({ behavior: "smooth", block: "start" });
-        });
       });
 
       const modal = document.getElementById("projectModal");
@@ -1230,7 +1197,6 @@
                 ${jobHeadline(job)}
                 ${jobWhen(job)}
               </div>
-              ${expandButton()}
             </header>
             <div class="job-slide">
             <div class="job-body">
@@ -1258,7 +1224,6 @@
                 <p class="when">${escapeHtml([group.location, dateRange(oldest.startDate, newest.endDate), jobType(newest)].filter(Boolean).join(" · "))}</p>
                 ${jobSite(newest)}
               </div>
-              ${expandButton()}
             </header>
             <div class="job-slide">
             <ol class="role-path">${roles}</ol>
