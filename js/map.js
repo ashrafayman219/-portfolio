@@ -379,9 +379,9 @@
           window.requestAnimationFrame(() => {
             if (!mapApi.map) return;
             mapApi.fitCountries(0, {
-              topLeft: [32, 60],
-              bottomRight: [32, 92]
-            });
+              topLeft: [20, 56],
+              bottomRight: [20, 84]
+            }, true);
           });
         }, 180);
       };
@@ -1565,12 +1565,13 @@
       if (global.MapUI) global.MapUI.closeDetail();
     },
 
-    fitCountries(duration, padding) {
+    fitCountries(duration, padding, tight) {
       if (!this.map) return;
       const countries = new Set(this.visibleFeatures().map((feature) => feature.country));
       const bounds = L.latLngBounds([]);
+      const outside = (lng, lat, country) => country === "United States" && (lat > 49 || lng < -128 || lng > 170);
       const push = (lng, lat, country) => {
-        if (country === "United States" && (lat > 50 || lng < -130 || lng > 170)) return;
+        if (outside(lng, lat, country)) return;
         bounds.extend([lat, lng]);
       };
       const walk = (coords, country) => {
@@ -1581,21 +1582,21 @@
         }
         coords.forEach((part) => walk(part, country));
       };
-      if (this.coverageData && this.coverageData.features) {
+      if (!tight && this.coverageData && this.coverageData.features) {
         this.coverageData.features.forEach((feat) => {
           const country = feat.properties && feat.properties.country;
           if (!countries.has(country)) return;
           walk(feat.geometry && feat.geometry.coordinates, country);
         });
       }
-      if (!bounds.isValid()) {
+      if (tight || !bounds.isValid()) {
         this.visibleFeatures().forEach((feature) => {
-          if (feature.country === "United States" && (feature.latitude > 50 || feature.longitude < -130 || feature.longitude > 170)) return;
+          if (outside(feature.longitude, feature.latitude, feature.country)) return;
           bounds.extend([feature.latitude, feature.longitude]);
         });
       }
       if (!bounds.isValid()) return;
-      this.map.invalidateSize();
+      this.map.invalidateSize({ pan: false });
       const ms = typeof duration === "number" ? duration : 0;
       const snap = this.map.options.zoomSnap;
       this.map.options.zoomSnap = 0;
@@ -1604,8 +1605,22 @@
         paddingBottomRight: padding && padding.bottomRight ? padding.bottomRight : [28, 118],
         animate: ms > 0,
         duration: ms / 1000,
-        maxZoom: 6
+        maxZoom: tight ? 5 : 6
       });
+      if (tight) {
+        const view = this.map.getBounds();
+        const northCap = Math.min(56, bounds.getNorth() + 4);
+        const westCap = -130;
+        let lat = this.map.getCenter().lat;
+        let lng = this.map.getCenter().lng;
+        const halfLat = (view.getNorth() - view.getSouth()) / 2;
+        const halfLng = (view.getEast() - view.getWest()) / 2;
+        if (view.getNorth() > northCap) lat -= view.getNorth() - northCap;
+        if (view.getWest() < westCap) lng += westCap - view.getWest();
+        if (lat - halfLat > bounds.getSouth()) lat -= (lat - halfLat) - bounds.getSouth();
+        if (lng + halfLng < bounds.getEast()) lng += bounds.getEast() - (lng + halfLng);
+        this.map.setView([lat, lng], this.map.getZoom(), { animate: false });
+      }
       const restoreSnap = () => {
         if (this.map) this.map.options.zoomSnap = snap == null ? 1 : snap;
       };

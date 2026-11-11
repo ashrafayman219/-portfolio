@@ -1614,9 +1614,13 @@ body.map-phone-land .flow-style,
   z-index: 36;
 }
 
+#map-wrap.is-side #project-pills,
 body.map-phone-land #project-pills,
 .turn-land #project-pills {
-  padding-right: 9.5rem;
+  justify-content: center;
+  padding-left: 11rem;
+  padding-right: 10.5rem;
+  box-sizing: border-box;
 }
 
 .turn-prompt {

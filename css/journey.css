@@ -327,7 +327,6 @@ body.is-entering .mobile-nav {
   outline: none;
   transform-box: fill-box;
   transform-origin: center;
-  transition: transform 0.3s cubic-bezier(0.3, 1.5, 0.5, 1);
   animation: j-pop 0.7s cubic-bezier(0.2, 1.5, 0.4, 1) backwards;
   animation-delay: var(--d);
 }
@@ -335,11 +334,6 @@ body.is-entering .mobile-nav {
 .journey .ms-pin {
   opacity: 0;
   animation: j-pin-drop 0.8s cubic-bezier(0.3, 1.6, 0.5, 1) calc(var(--d) + 0.5s) forwards;
-}
-
-.journey .pin:hover,
-.journey .pin:focus-visible {
-  transform: translateY(-8px);
 }
 
 .journey .pin:focus-visible .ring {
@@ -355,6 +349,7 @@ body.is-entering .mobile-nav {
 
 .journey .lab-sub {
   font-weight: 600;
+  fill: #4a5966;
 }
 
 .journey .lab-plate,
@@ -365,7 +360,7 @@ body.is-entering .mobile-nav {
 
 .journey .lab-plate {
   opacity: 1;
-  filter: drop-shadow(0 0.45rem 1rem rgba(0, 0, 0, 0.2));
+  filter: drop-shadow(0 8px 18px rgba(20, 32, 40, 0.14));
 }
 
 .journey .lab-rail {
@@ -530,7 +525,7 @@ body.is-entering .mobile-nav {
 
 @keyframes j-rip {
   0% {
-    opacity: 0.8;
+    opacity: 0.35;
     transform: scale(1);
   }
   100% {
