@@ -1598,13 +1598,18 @@ body.map-phone-land #map-wrap {
 }
 
 body.map-phone-land .flow-style,
+#map-wrap:fullscreen .flow-style,
+#map-wrap:-webkit-full-screen .flow-style,
 .turn-land .flow-style {
   display: inline-flex;
 }
 
-body.map-phone-land .flow-style {
+body.map-phone-land .flow-style,
+#map-wrap:fullscreen .flow-style,
+#map-wrap:-webkit-full-screen .flow-style {
   top: max(10px, env(safe-area-inset-top, 0px));
   right: max(12px, env(safe-area-inset-right, 0px));
+  z-index: 36;
 }
 
 body.map-phone-land #project-pills,
@@ -1768,7 +1773,7 @@ body.map-phone-land #project-pills,
 
 .turn-back {
   position: absolute;
-  z-index: 30;
+  z-index: 36;
   top: 10px;
   left: 12px;
   min-height: 44px;
@@ -1781,6 +1786,13 @@ body.map-phone-land #project-pills,
   font-weight: 700;
   font-size: 14px;
   cursor: pointer;
+}
+
+body.map-phone-land .turn-back,
+#map-wrap:fullscreen .turn-back,
+#map-wrap:-webkit-full-screen .turn-back {
+  top: max(10px, env(safe-area-inset-top, 0px));
+  left: max(12px, env(safe-area-inset-left, 0px));
 }
 
 @keyframes turnPhone {
