@@ -266,6 +266,8 @@
       let sideT = 0;
       let sideSign = 0;
       let hold = null;
+      let openedSide = false;
+      let sideFitTimer = 0;
 
       const lock = () => {
         document.body.classList.toggle("turn-lock", forced);
@@ -334,6 +336,7 @@
         lock();
         mapApi.releaseMapMotion();
         fit(true);
+        fitOpenedSide();
       };
       const exitForced = () => {
         if (!forced) return;
@@ -367,11 +370,29 @@
         }
         return { wide: wide, full: full };
       };
+      const fitOpenedSide = () => {
+        window.clearTimeout(sideFitTimer);
+        sideFitTimer = window.setTimeout(() => {
+          if (!mapApi.map) return;
+          if (!forced && !fullMap() && !wrap.classList.contains("is-side")) return;
+          mapApi.map.invalidateSize({ pan: false });
+          window.requestAnimationFrame(() => {
+            if (!mapApi.map) return;
+            mapApi.fitCountries(0, {
+              topLeft: [32, 60],
+              bottomRight: [32, 92]
+            });
+          });
+        }, 180);
+      };
       const applyReal = () => {
         const wide = realLand();
         const full = fullMap();
         if (forced && wide && !full) exitForced();
         const view = syncSide();
+        const sideNow = forced || view.full || (view.wide && inMap);
+        if (sideNow && !openedSide) fitOpenedSide();
+        openedSide = sideNow;
         if (view.wide || view.full) {
           hidePrompt();
           mapApi.releaseMapMotion();
@@ -505,10 +526,11 @@
           } catch (error) {}
         }
         applyReal();
-        refit(true);
+        fitOpenedSide();
       });
       document.addEventListener("webkitfullscreenchange", () => {
         applyReal();
+        fitOpenedSide();
       });
       window.addEventListener("resize", () => {
         fit();
@@ -655,7 +677,10 @@
         this.syncRouteMotion();
       });
 
-      window.addEventListener("resize", () => this.map.invalidateSize());
+      window.addEventListener("resize", () => {
+        const box = document.getElementById("map-wrap");
+        this.map.invalidateSize({ pan: !(box && box.classList.contains("is-side")) });
+      });
 
       const container = this.map.getContainer();
       ["pointerdown", "wheel", "touchstart"].forEach((type) => {
