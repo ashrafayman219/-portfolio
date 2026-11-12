@@ -354,8 +354,7 @@
       document.getElementById("cvLink").href = info.cvUrl;
       document.getElementById("resumeLink").href = info.resumeUrl;
       document.getElementById("footerCopy").textContent =
-        "© " + (data.metadata && data.metadata.lastUpdated ? data.metadata.lastUpdated : "2026") +
-        " " + info.name;
+        "© " + new Date().getFullYear() + " " + info.name;
 
       this.renderProjects();
       this.renderWork();
