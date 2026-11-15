@@ -710,13 +710,13 @@
 .timeline-item.job-card {
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
+  gap: 0;
 }
 
 .job-head,
 .company-head {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-columns: 3.85rem minmax(0, 1fr);
   align-items: center;
   column-gap: 1rem;
   width: 100%;
@@ -771,37 +771,25 @@
 }
 
 .expando-mark {
-  position: relative;
-  width: 0.5rem;
-  height: 0.5rem;
+  display: block;
+  width: 0.36rem;
+  height: 0.36rem;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg);
+  margin-top: -0.14rem;
+  transition: transform var(--ease), margin-top var(--ease);
 }
 
-.expando-mark::before,
-.expando-mark::after {
-  content: "";
-  position: absolute;
-  background: currentColor;
-  border-radius: 1px;
+.is-open .expando-mark {
+  transform: rotate(-135deg);
+  margin-top: 0.14rem;
 }
 
-.expando-mark::before {
-  left: 0;
-  right: 0;
-  top: 50%;
-  height: 1.5px;
-  transform: translateY(-50%);
-}
-
-.expando-mark::after {
-  top: 0;
-  bottom: 0;
-  left: 50%;
-  width: 1.5px;
-  transform: translateX(-50%);
-}
-
-.is-open .expando-mark::after {
-  opacity: 0;
+@media (prefers-reduced-motion: reduce) {
+  .expando-mark {
+    transition: none;
+  }
 }
 
 @media (max-width: 767px) {
@@ -834,9 +822,8 @@
   min-height: 0;
 }
 
-.job-card.is-collapsed,
-.company-card.is-collapsed {
-  gap: 0;
+.job-slide > .job-body {
+  margin-top: 0.85rem;
 }
 
 .timeline-item > img {
@@ -848,8 +835,10 @@
 
 .logo-pair {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.45rem;
+  width: 3.85rem;
 }
 
 .logo-frame {
@@ -878,10 +867,12 @@
 }
 
 .logo-frame-pill {
+  width: 3.85rem;
   height: 3.85rem;
+  min-width: 3.85rem;
   min-height: 3.85rem;
-  padding: 0.28rem 0.75rem;
-  border-radius: 999px;
+  padding: 0.4rem;
+  border-radius: 50%;
   box-sizing: border-box;
 }
 
@@ -898,8 +889,9 @@
 }
 
 .logo-frame-pill img {
-  width: auto;
-  max-width: 9.5rem;
+  width: 100%;
+  height: 100%;
+  max-width: none;
 }
 
 .job-link {
@@ -1536,10 +1528,6 @@ body.modal-open .mobile-nav {
 
   .timeline-item:not(.job-card) {
     grid-template-columns: 3.25rem 1fr;
-  }
-
-  .logo-frame-pill img {
-    max-width: min(9.5rem, 52vw);
   }
 
   .role-path {

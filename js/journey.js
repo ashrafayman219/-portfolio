@@ -166,7 +166,7 @@
   var stops = [
     { tip: [278, 625], lx: 140, ly: 510, inner: "#2c3e50", card: "#ffffffee", ring: "#2c3e50", hot: "#2c3e50", delay: 1.4, top: "4 yrs", sub: "", word: "Mansoura University", detail: "BSc in Geomatics (1st Honor)", name: "Mansoura University, BSc in Geomatics (1st Honor), 4 years" },
     { tip: [857, 448], lx: 980, ly: 498, anchor: "start", inner: "#1a6574", card: "#ffffffee", ring: "#1a6574", hot: "#1a6574", delay: 1.9, top: "2 yrs", sub: "", lineSize: 32, lines: ["Information Technology Institute (ITI)", "National Telecommunication Institute (NTI)", "Edge Pro for Information Systems"], name: "2 years: Information Technology Institute, National Telecommunication Institute, and Edge Pro" },
-    { tip: [555, 275], lx: 248, ly: 228, anchor: "start", rail: "left", inner: "#3f5c4e", card: "#ffffffee", ring: "#3f5c4e", hot: "#3f5c4e", delay: 2.4, top: "4 yrs", sub: "", lineSize: 32, lines: ["Gulf Terminal", "AIC", "Upwork"], name: "4 years: Gulf Terminal, AIC, and Upwork" },
+    { tip: [555, 275], lx: 248, ly: 228, anchor: "start", rail: "left", inner: "#3f5c4e", card: "#ffffffee", ring: "#3f5c4e", hot: "#3f5c4e", delay: 2.4, top: "5 yrs", sub: "", lineSize: 32, lines: ["Gulf Terminal", "AIC", "Upwork"], name: "5 years: Gulf Terminal, AIC, and Upwork" },
     { tip: [970, 146], lx: 1168, ly: 162, inner: "#1f5d1c", ring: "#8fc88a", hot: "#5cc24e", delay: 3, top: "Now", sub: "Senior", word: "Gulf Terminal", name: "Gulf Terminal, Senior GIS Developer", hidden: true }
   ];
 

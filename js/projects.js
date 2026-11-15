@@ -1,13 +1,6 @@
 (function (global) {
   "use strict";
 
-  function yearsSince(dateText) {
-    const parsed = Date.parse("1 " + dateText);
-    if (Number.isNaN(parsed)) return 1;
-    const years = (Date.now() - parsed) / (365.25 * 24 * 60 * 60 * 1000);
-    return Math.max(1, Math.floor(years));
-  }
-
   function shuffle(items) {
     const list = (items || []).slice();
     for (let i = list.length - 1; i > 0; i--) {
@@ -327,14 +320,12 @@
     render(data) {
       this.data = data;
       const info = data.personalInfo;
-      const years = yearsSince(info.careerStart || "April 2022");
 
       document.getElementById("heroAbout").textContent = info.about;
       document.getElementById("heroEmail").href = "mailto:" + info.email;
       document.getElementById("navEmail").href = "mailto:" + info.email;
       document.getElementById("heroPhoto").src = info.profileImage;
-      document.getElementById("heroPhoto").alt = info.fullName || info.name;
-      setCount("statYears", years, "+ years");
+      setCount("statYears", 5, "+ years");
       setCount("statProjects", 90, "", "+");
       setCount("statCountries", 7, "", "+");
       document.getElementById("statNow").textContent = info.currentCompany;
