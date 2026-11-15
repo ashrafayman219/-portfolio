@@ -365,17 +365,9 @@
       this.bindMarqueeDrag();
     },
 
-    projectChip(project) {
-      const loc = project.location || {};
-      const place = loc.country || loc.name || "";
-      return [project.year, place].filter(Boolean).join(" · ");
-    },
-
     projectCardHtml(project, clone) {
           const image = project.images && project.images[0] ? project.images[0] : "";
       const hidden = clone ? ' aria-hidden="true"' : "";
-      const chip = this.projectChip(project);
-      const label = chip ? project.title + ", " + chip : project.title;
       const leadVideo = project.videoUrl && (project.leadMedia === "video" || !image);
       const media = leadVideo
         ? `<video class="project-card-video" data-lazy-video src="${escapeHtml(encodeURI(project.videoUrl))}" muted loop playsinline preload="none" disablepictureinpicture width="640" height="360"></video>`
@@ -383,10 +375,9 @@
             image,
             `alt="${clone ? "" : escapeHtml(project.title)}" loading="lazy" decoding="async" width="640" height="360" onerror="${IMG_FALLBACK}"`
           );
-      const chipHtml = chip ? `<span class="project-card-chip">${escapeHtml(chip)}</span>` : "";
           return `
-        <article class="project-card" data-project-id="${escapeHtml(project.id)}" data-open-project="${escapeHtml(project.id)}" role="button" tabindex="${clone ? "-1" : "0"}" aria-label="${clone ? "" : escapeHtml(label)}"${hidden}>
-          <div class="project-card-media">${media}${chipHtml}</div>
+        <article class="project-card" data-project-id="${escapeHtml(project.id)}" data-open-project="${escapeHtml(project.id)}" role="button" tabindex="${clone ? "-1" : "0"}" aria-label="${clone ? "" : escapeHtml(project.title)}"${hidden}>
+          <div class="project-card-media">${media}</div>
           <h3 class="project-card-title">${escapeHtml(project.title)}</h3>
             </article>`;
     },
