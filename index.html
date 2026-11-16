@@ -555,7 +555,7 @@
               </div>
               <p class="contact-note">References are available on request.</p>
             </div>
-            <form class="contact-card site-feedback" id="siteFeedback" data-email="ashrafayman219@gmail.com" novalidate>
+            <form class="contact-card site-feedback" id="siteFeedback" data-email="ashrafayman219@gmail.com" data-endpoint="https://script.google.com/macros/s/AKfycbyaP8DeYRdo-3CDLvhdulGw4peTW-2voR27iDYrPtHN4wXJAE3sjomUXBMw10nD-nlhjg/exec" novalidate>
               <input class="site-honey" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true">
               <p class="section-kicker">Private</p>
               <h3 class="site-feedback-title">Site feedback</h3>
@@ -563,6 +563,11 @@
               <label class="site-field">
                 <span>Name <em>optional</em></span>
                 <input type="text" name="name" maxlength="60" autocomplete="name">
+              </label>
+              <label class="site-field" id="siteEmailField">
+                <span>Email <em>optional</em></span>
+                <input type="email" name="email" maxlength="120" autocomplete="email" inputmode="email" aria-describedby="siteEmailStatus">
+                <p class="site-note-status" id="siteEmailStatus">Add an email if you want a reply.</p>
               </label>
               <fieldset class="site-field">
                 <legend>What is this?</legend>

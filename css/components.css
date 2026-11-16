@@ -1150,7 +1150,8 @@
   color: var(--text-muted);
 }
 
-.site-field.is-bad textarea {
+.site-field.is-bad textarea,
+.site-field.is-bad input {
   border-color: #c2410c;
 }
 
@@ -1158,7 +1159,8 @@
   color: #9a3412;
 }
 
-.site-field.is-good textarea {
+.site-field.is-good textarea,
+.site-field.is-good input {
   border-color: var(--accent);
 }
 

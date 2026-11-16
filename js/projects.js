@@ -222,17 +222,39 @@
       if (email) form.dataset.email = email;
       if (form.dataset.bound === "true") return;
       form.dataset.bound = "true";
+      const opened = Date.now();
       const field = form.querySelector("[name='note']");
+      const emailField = form.querySelector("[name='email']");
       const wrap = document.getElementById("siteNoteField");
+      const emailWrap = document.getElementById("siteEmailField");
       const status = document.getElementById("siteNoteStatus");
+      const emailStatus = document.getElementById("siteEmailStatus");
       let touched = false;
+      const emailOk = (value) => !value || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
       const paint = () => {
         const note = field ? field.value.trim() : "";
+        const mail = emailField ? emailField.value.trim() : "";
         if (wrap) wrap.classList.remove("is-bad", "is-good");
+        if (emailWrap) emailWrap.classList.remove("is-bad", "is-good");
+        let validMail = true;
         if (!touched) {
           if (status) status.textContent = "At least a short sentence.";
           if (field) field.removeAttribute("aria-invalid");
+          if (emailField) emailField.removeAttribute("aria-invalid");
           return note.length >= 8;
+        }
+        if (mail && !emailOk(mail)) {
+          validMail = false;
+          if (emailWrap) emailWrap.classList.add("is-bad");
+          if (emailStatus) emailStatus.textContent = "Check the email, or leave it blank.";
+          if (emailField) emailField.setAttribute("aria-invalid", "true");
+        } else if (mail) {
+          if (emailWrap) emailWrap.classList.add("is-good");
+          if (emailStatus) emailStatus.textContent = "A reply can go to this email.";
+          if (emailField) emailField.setAttribute("aria-invalid", "false");
+        } else if (emailStatus) {
+          emailStatus.textContent = "Add an email if you want a reply.";
+          if (emailField) emailField.removeAttribute("aria-invalid");
         }
         if (!note) {
           if (wrap) wrap.classList.add("is-bad");
@@ -249,10 +271,16 @@
         if (wrap) wrap.classList.add("is-good");
         if (status) status.textContent = "Ready to send.";
         if (field) field.setAttribute("aria-invalid", "false");
-        return true;
+        return validMail;
       };
       if (field) {
         field.addEventListener("input", () => {
+          touched = true;
+          paint();
+        });
+      }
+      if (emailField) {
+        emailField.addEventListener("input", () => {
           touched = true;
           paint();
         });
@@ -261,55 +289,66 @@
         event.preventDefault();
         touched = true;
         if (!paint()) {
-          if (field) field.focus();
+          const mail = emailField ? emailField.value.trim() : "";
+          if (mail && !emailOk(mail) && emailField) emailField.focus();
+          else if (field) field.focus();
           return;
         }
         const data = new FormData(form);
-        if (String(data.get("_honey") || "").trim()) return;
+        if (String(data.get("_honey") || "").trim()) {
+          form.classList.add("is-sent");
+          const sent = document.getElementById("siteSent");
+          if (sent) sent.hidden = false;
+          return;
+        }
+        const endpoint = (form.dataset.endpoint || "").trim();
         const note = String(data.get("note") || "").trim();
         const name = String(data.get("name") || "").trim();
+        const visitor = String(data.get("email") || "").trim();
         const kind = String(data.get("kind") || "Message");
-        const to = form.dataset.email || "ashrafayman219@gmail.com";
         const button = form.querySelector("[type='submit']");
+        if (!endpoint) {
+          if (wrap) wrap.classList.add("is-bad");
+          if (status) status.textContent = "This form is not connected yet.";
+          return;
+        }
         if (button) {
           button.disabled = true;
           button.textContent = "Sending…";
         }
         try {
-          const response = await fetch("https://formsubmit.co/ajax/" + encodeURIComponent(to), {
+          const response = await fetch(endpoint, {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json"
-            },
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
             body: JSON.stringify({
               name: name || "Site visitor",
+              email: visitor,
               message: note,
               type: kind,
-              _subject: "Site feedback: " + kind,
-              _template: "box",
-              _captcha: "false"
+              opened: opened,
+              _honey: ""
             })
           });
           const result = await response.json().catch(() => ({}));
-          if (!response.ok || String(result.success) === "false") {
-            const message = String(result.message || "");
-            throw new Error(message);
+          if (!response.ok || result.ok === false) {
+            const error = new Error(result.error || "send");
+            error.code = result.error || "";
+            throw error;
           }
           const sent = document.getElementById("siteSent");
           if (sent) sent.hidden = false;
           form.classList.add("is-sent");
         } catch (err) {
-          const message = String(err && err.message || "");
-          if (wrap) {
-            wrap.classList.remove("is-good");
-            wrap.classList.add("is-bad");
+          const code = err && err.code;
+          if (code === "limit") {
+            if (status) status.textContent = "Too many notes were sent. Please try again later.";
+          } else if (code === "email" && emailWrap) {
+            emailWrap.classList.add("is-bad");
+            if (emailStatus) emailStatus.textContent = "Check the email, or leave it blank.";
+          } else if (status) {
+            status.textContent = "Could not send it. Please try again.";
           }
-          if (status) {
-            status.textContent = /activat/i.test(message)
-              ? "Check your Gmail and confirm the form once. Then send the note again."
-              : "Could not send it. Please try again.";
-          }
+          if (wrap && code !== "email") wrap.classList.add("is-bad");
         } finally {
           if (button) {
             button.disabled = false;
