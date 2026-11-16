@@ -124,30 +124,32 @@
   function jobInsights(job) {
     const info = job.insights;
     if (!info) return "";
-    const jss = Number(info.jss) || 0;
-    const radius = 16;
-    const circ = 2 * Math.PI * radius;
-    const dash = (jss / 100) * circ;
     const badge = info.badge
       ? `<div class="insight-rated">
-          <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
-            <path fill="currentColor" d="M12 2.4 14.9 8.3l6.5.9-4.7 4.6 1.1 6.5L12 17.2l-5.8 3.1 1.1-6.5-4.7-4.6 6.5-.9Z"/>
-          </svg>
+          <span class="insight-hex" aria-hidden="true">
+            <svg class="insight-hex-shape" viewBox="0 0 38 42">
+              <polygon points="19,3 34,11.7 34,30.3 19,39 4,30.3 4,11.7" fill="currentColor" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/>
+            </svg>
+            <svg class="insight-hex-star" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round">
+              <path d="M10.84 4.83 Q12.00 3.20 13.16 4.83 L14.48 6.66 Q15.17 7.63 16.32 7.99 L18.46 8.68 Q20.37 9.28 19.18 10.89 L17.85 12.70 Q17.14 13.67 17.14 14.87 L17.16 17.12 Q17.17 19.12 15.27 18.49 L13.14 17.78 Q12.00 17.40 10.86 17.78 L8.73 18.49 Q6.83 19.12 6.84 17.12 L6.86 14.87 Q6.86 13.67 6.15 12.70 L4.82 10.89 Q3.63 9.28 5.54 8.68 L7.68 7.99 Q8.83 7.63 9.52 6.66 Z"/>
+            </svg>
+          </span>
           <div>
             <strong>${escapeHtml(info.badge)}</strong>
             <span>Recognized talent</span>
           </div>
         </div>`
       : "";
+    const jss = Number(info.jss) || 0;
     const score = info.jss != null
       ? `<div class="insight-jss">
-          <div class="jss-wrap">
-            <svg class="jss-ring" viewBox="0 0 40 40" aria-hidden="true">
-              <circle class="jss-track" cx="20" cy="20" r="${radius}"></circle>
-              <circle class="jss-value" cx="20" cy="20" r="${radius}" stroke-dasharray="${dash} ${circ}"></circle>
+          <span class="insight-score" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round">
+              <path d="M4.5 15.5 L3.5 7.5 L8.5 11 L12 5 L15.5 11 L20.5 7.5 L19.5 15.5 Z"/>
+              <path d="M5.5 20 H18.5"/>
             </svg>
-            <strong>${jss}%</strong>
-          </div>
+          </span>
+          <strong class="insight-pct">${jss}%</strong>
           <div class="insight-jss-copy">
             <strong>Job Success</strong>
             <span>Client satisfaction score</span>
@@ -326,7 +328,7 @@
       document.getElementById("navEmail").href = "mailto:" + info.email;
       document.getElementById("heroPhoto").src = info.profileImage;
       setCount("statYears", 5, "+ years");
-      setCount("statProjects", 90, "", "+");
+      setCount("statProjects", 120, "", "+");
       setCount("statCountries", 7, "", "+");
       document.getElementById("statNow").textContent = info.currentCompany;
       document.getElementById("heroRoles").textContent = "GIS Solutions Engineer";
