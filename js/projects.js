@@ -327,9 +327,9 @@
       document.getElementById("heroEmail").href = "mailto:" + info.email;
       document.getElementById("navEmail").href = "mailto:" + info.email;
       document.getElementById("heroPhoto").src = info.profileImage;
-      setCount("statYears", 5, "+ years");
-      setCount("statProjects", 120, "", "+");
-      setCount("statCountries", 7, "", "+");
+      setCount("statYears", 5, "+");
+      setCount("statProjects", 120, "+");
+      setCount("statCountries", 7, "+");
       document.getElementById("statNow").textContent = info.currentCompany;
       document.getElementById("heroRoles").textContent = "GIS Solutions Engineer";
 
