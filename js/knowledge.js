@@ -153,12 +153,12 @@
   }
 
   function mobile(svg) {
-    var trunkX = 28;
-    var top = 28;
-    var step = 78;
-    var boxX = 52;
-    var boxW = 292;
-    var boxH = 72;
+    var trunkX = 22;
+    var top = 22;
+    var step = 58;
+    var boxX = 40;
+    var boxW = 172;
+    var boxH = 48;
 
     defs(svg, '<linearGradient id="kt-bx-m" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#e5f4f6"/></linearGradient><filter id="kt-ds-m" x="-20%" y="-30%" width="150%" height="170%"><feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#1a7a8c" flood-opacity=".22"/></filter>');
 
@@ -183,9 +183,9 @@
         fill: "url(#kt-bx-m)", stroke: INK, "stroke-width": 3, filter: "url(#kt-ds-m)"
       }, hit);
       var label = el("text", {
-        class: "bt", "text-anchor": "middle", "font-size": 20, fill: INK
+        class: "bt", "text-anchor": "middle", "font-size": 15, fill: INK
       }, hit);
-      setLines(label, boxX + boxW / 2, y, wrap(branch.name, 18), 24, 20);
+      setLines(label, boxX + boxW / 2, y, wrap(branch.name, 16), 18, 15);
       delay(el("circle", { class: "pop", cx: trunkX, cy: y, r: 7, fill: INK }, svg), start);
     });
 

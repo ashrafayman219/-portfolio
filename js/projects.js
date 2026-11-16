@@ -931,88 +931,220 @@
       }
     },
 
-    openModal(projectId, origin) {
-      const project = this.data.projects.find((item) => item.id === projectId);
-      if (!project) return;
-      const body = document.getElementById("modalBody");
-      const images = project.images || [];
-      const main = images[0] || "";
-      const thumbs = images
-        .map(
-          (src, index) =>
-            `<button type="button" class="${index === 0 ? "is-active" : ""}" data-thumb-index="${index}">
-              ${pictureHtml(src, 'alt="" loading="lazy" decoding="async"')}
-            </button>`
-        )
-        .join("");
+    slideImage(src, alt) {
+      const webp = webpPath(src);
+      const fallback = webp
+        ? ` data-fallback="${escapeHtml(src)}" onerror="this.onerror=null;this.src=this.dataset.fallback"`
+        : "";
+      return `<img src="${escapeHtml(webp || src)}" alt="${escapeHtml(alt)}" draggable="false"${fallback}>`;
+    },
 
+    bindProjectSheet() {
+      if (this.sheetBound) return;
+      this.sheetBound = true;
+      const stage = document.getElementById("sheetStage");
+      const track = document.getElementById("sheetTrack");
+      const body = document.getElementById("modalBody");
+      const prog = document.getElementById("sheetProg");
+      const zoom = document.getElementById("sheetZoom");
+      const lb = document.getElementById("sheetLb");
+      const lbImg = document.getElementById("sheetLbImg");
+      const lbClose = document.getElementById("sheetLbClose");
+      const grab = document.getElementById("projectGrab");
+      const panel = document.querySelector("#projectModal .modal-panel");
+      const prev = document.getElementById("projectPrev");
+      const next = document.getElementById("projectNext");
+      if (prev) prev.addEventListener("click", () => this.stepProject(-1));
+      if (next) next.addEventListener("click", () => this.stepProject(1));
+      document.querySelectorAll("#projectModal [data-gallery-step]").forEach((btn) => {
+        btn.addEventListener("click", () => this.showGallery(this.galleryIndex + Number(btn.getAttribute("data-gallery-step"))));
+      });
+      if (zoom) {
+        zoom.addEventListener("click", () => {
+          const item = (this.galleryItems || [])[this.galleryIndex];
+          const src = item && item.type === "image" ? item.src : "";
+          if (!src || !lb || !lbImg) return;
+          const webp = webpPath(src);
+          lbImg.src = webp || src;
+          lbImg.alt = (this.galleryTitle || "Project") + " image " + (this.galleryIndex + 1);
+          if (webp) {
+            lbImg.dataset.fallback = src;
+            lbImg.onerror = function () {
+              this.onerror = null;
+              this.src = this.dataset.fallback;
+            };
+          }
+          lb.hidden = false;
+        });
+      }
+      const hideLb = () => {
+        if (!lb) return;
+        lb.hidden = true;
+        if (lbImg) lbImg.removeAttribute("src");
+      };
+      if (lbClose) lbClose.addEventListener("click", hideLb);
+      if (lb) lb.addEventListener("click", (event) => { if (event.target === lb) hideLb(); });
+      this.hideSheetLightbox = hideLb;
+      if (body && prog) {
+        body.addEventListener("scroll", () => {
+          const span = body.scrollHeight - body.clientHeight;
+          prog.style.transform = "scaleX(" + (span > 0 ? body.scrollTop / span : 0) + ")";
+        }, { passive: true });
+      }
+      if (stage && track) {
+        let startX = null;
+        let delta = 0;
+        stage.addEventListener("pointerdown", (event) => {
+          if (event.target.closest("button")) return;
+          startX = event.clientX;
+          delta = 0;
+          track.classList.add("is-drag");
+        });
+        stage.addEventListener("pointermove", (event) => {
+          if (startX == null) return;
+          delta = event.clientX - startX;
+          track.style.transform = "translateX(calc(" + (-this.galleryIndex * 100) + "% + " + delta + "px))";
+        });
+        const endSwipe = () => {
+          if (startX == null) return;
+          startX = null;
+          track.classList.remove("is-drag");
+          if (Math.abs(delta) > 50) this.showGallery(this.galleryIndex + (delta < 0 ? 1 : -1));
+          else this.showGallery(this.galleryIndex);
+        };
+        stage.addEventListener("pointerup", endSwipe);
+        stage.addEventListener("pointercancel", endSwipe);
+      }
+      if (grab && panel) {
+        let startY = null;
+        grab.addEventListener("pointerdown", (event) => {
+          if (!window.matchMedia("(max-width: 820px)").matches) return;
+          startY = event.clientY;
+          panel.style.transition = "none";
+        });
+        grab.addEventListener("pointermove", (event) => {
+          if (startY == null) return;
+          panel.style.transform = "translateY(" + Math.max(0, event.clientY - startY) + "px)";
+        });
+        const endGrab = (event) => {
+          if (startY == null) return;
+          const distance = event.clientY - startY;
+          startY = null;
+          panel.style.transition = "";
+          if (distance > 110) {
+            panel.style.transform = "";
+            this.closeModal();
+          } else {
+            panel.style.transform = "";
+          }
+        };
+        grab.addEventListener("pointerup", endGrab);
+        grab.addEventListener("pointercancel", endGrab);
+      }
+    },
+
+    stepProject(direction) {
+      const list = (this.data && this.data.projects) || [];
+      const index = list.findIndex((item) => item.id === this.modalProjectId);
+      if (index < 0 || !list.length) return;
+      const next = list[(index + direction + list.length) % list.length];
+      this.openModal(next.id);
+    },
+
+    openModal(projectId, origin) {
+      const list = this.data.projects || [];
+      const project = list.find((item) => item.id === projectId);
+      if (!project) return;
+      this.bindProjectSheet();
+      if (this.hideSheetLightbox) this.hideSheetLightbox();
+      const body = document.getElementById("modalBody");
+      const track = document.getElementById("sheetTrack");
+      const thumbs = document.getElementById("sheetThumbs");
+      const images = project.images || [];
+      const title = document.getElementById("modalTitle");
+      const kicker = document.getElementById("modalKicker");
+      const meta = document.getElementById("modalMeta");
+      const pos = document.getElementById("projectPos");
+      const index = list.findIndex((item) => item.id === project.id);
+      const category = project.category ? project.category.charAt(0).toUpperCase() + project.category.slice(1) : "";
+      if (title) title.textContent = project.title;
+      if (kicker) kicker.textContent = category;
+      if (meta) {
+        const bits = [project.company, project.year, project.location && project.location.name, project.subtitle].filter(Boolean);
+        meta.innerHTML = bits.map((bit) => `<li>${escapeHtml(bit)}</li>`).join("");
+      }
+      if (pos) pos.textContent = "Project " + (index + 1) + " of " + list.length;
+
+      const check = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg>';
+      const features = (project.features || []).map((item) => `<li>${check}<span>${escapeHtml(item)}</span></li>`).join("");
+      const tools = (project.technologies || []).map((item) => `<span>${escapeHtml(item)}</span>`).join("");
       const links = [];
       if (project.demoUrl) links.push(`<a class="btn btn-primary" href="${escapeHtml(project.demoUrl)}" target="_blank" rel="noopener noreferrer">Live app</a>`);
       if (project.githubUrl) links.push(`<a class="btn btn-outline" href="${escapeHtml(project.githubUrl)}" target="_blank" rel="noopener noreferrer">GitHub</a>`);
       if (project.documentationUrl) links.push(`<a class="btn btn-outline" href="${escapeHtml(project.documentationUrl)}" target="_blank" rel="noopener noreferrer">API docs</a>`);
       if (project.presentationUrl) links.push(`<a class="btn btn-outline" href="${escapeHtml(project.presentationUrl)}" target="_blank" rel="noopener noreferrer">Presentation</a>`);
-
-      const leadVideo = project.leadMedia === "video" && !!project.videoUrl;
-      const video = project.videoUrl
-        ? `<video class="modal-video" src="${escapeHtml(encodeURI(project.videoUrl))}" controls playsinline ${leadVideo ? "autoplay muted" : ""}></video>`
-        : "";
-      const hero = leadVideo
-        ? video
-        : main
-          ? heroImg(main, project.title)
-          : video;
-      const galleryNav =
-        !!main && images.length > 1
-          ? `<button type="button" class="gallery-nav gallery-prev" data-gallery-step="-1" aria-label="Previous image">‹</button>
-             <button type="button" class="gallery-nav gallery-next" data-gallery-step="1" aria-label="Next image">›</button>
-             <p class="gallery-count" id="galleryCount">1 / ${images.length}</p>`
-          : "";
-      const stills =
-        leadVideo && main
-          ? `<div class="modal-gallery modal-stills">
-              ${heroImg(main, project.title)}
-              ${galleryNav}
-            </div>`
-        : "";
-
-      const features = (project.features || []).map((f) => `<li>${escapeHtml(f)}</li>`).join("");
-      const techs = (project.technologies || []).map((t) => `<li>${escapeHtml(t)}</li>`).join("");
       const collab = project.collaborators
-        ? `<p><strong>With:</strong> ${escapeHtml(project.collaborators.join(", "))}</p>`
+        ? `<p class="sheet-with"><strong>With:</strong> ${escapeHtml(project.collaborators.join(", "))}</p>`
+        : "";
+      const outcome = project.description
+        ? `<div class="sheet-out"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/></svg><span>${escapeHtml(project.description)}</span></div>`
         : "";
 
-      const title = document.getElementById("modalTitle");
-      const subtitle = document.getElementById("modalSubtitle");
-      if (title) title.textContent = project.title;
-      if (subtitle) subtitle.textContent = project.company + " · " + project.year + " · " + project.location.name;
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const items = [];
+      if (project.videoUrl) items.push({ type: "video", src: project.videoUrl });
+      images.forEach((src) => items.push({ type: "image", src }));
+      const playMark = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7.5v9l8-4.5z"/></svg>';
+      if (track) {
+        track.innerHTML = items.map((item, itemIndex) => {
+          const on = itemIndex === 0 ? " is-on" : "";
+          if (item.type === "video") {
+            const autoplay = project.leadMedia === "video" && !reducedMotion ? " autoplay muted" : "";
+            return `<div class="sheet-slide is-video${on}"><video src="${escapeHtml(encodeURI(item.src))}" controls playsinline preload="metadata"${autoplay}></video></div>`;
+          }
+          return `<div class="sheet-slide${on}">${this.slideImage(item.src, project.title)}</div>`;
+        }).join("");
+        track.style.transform = "translateX(0)";
+      }
+      if (thumbs) {
+        thumbs.innerHTML = items.map((item, itemIndex) => {
+          const on = itemIndex === 0 ? " is-on" : "";
+          if (item.type === "video") {
+            return `<button type="button" class="sheet-thumb is-video${on}" data-thumb-index="${itemIndex}" aria-label="Play video">${playMark}</button>`;
+          }
+          return `<button type="button" class="sheet-thumb${on}" data-thumb-index="${itemIndex}" aria-label="Show image ${itemIndex + 1}">${pictureHtml(item.src, 'alt=""')}</button>`;
+        }).join("");
+        thumbs.hidden = items.length < 2;
+        thumbs.querySelectorAll("[data-thumb-index]").forEach((btn) => {
+          btn.addEventListener("click", () => this.showGallery(Number(btn.getAttribute("data-thumb-index"))));
+        });
+      }
+      const media = document.querySelector("#projectModal .sheet-media");
+      if (media) media.classList.toggle("is-single", items.length < 2);
+      const count = document.getElementById("galleryCount");
+      if (count) {
+        count.hidden = items.length < 2;
+        count.textContent = items.length ? "1 / " + items.length : "";
+      }
+
       body.innerHTML = `
-        <div class="modal-gallery">
-          ${hero}
-          ${leadVideo ? "" : galleryNav}
-        </div>
-        ${stills}
-        ${images.length > 1 ? `<div class="thumbs">${thumbs}</div>` : ""}
-        ${!leadVideo && main && video ? video : ""}
-        <p>${escapeHtml(project.longDescription)}</p>
+        ${outcome}
+        ${tools ? `<h3>Technologies</h3><div class="sheet-chips">${tools}</div>` : ""}
+        ${project.longDescription ? `<h3>Overview</h3><p class="sheet-copy">${escapeHtml(project.longDescription)}</p>` : ""}
         ${collab}
-        <h3>What it does</h3>
-        <ul>${features}</ul>
-        <h3>Technologies</h3>
-        <ul class="tag-list">${techs}</ul>
-        <div class="modal-links">${links.join("")}</div>
+        ${features ? `<h3>What it does</h3><ul class="sheet-checks">${features}</ul>` : ""}
+        ${links.length ? `<div class="modal-links">${links.join("")}</div>` : ""}
       `;
       body.scrollTop = 0;
+      const prog = document.getElementById("sheetProg");
+      if (prog) prog.style.transform = "scaleX(0)";
 
+      this.modalProjectId = project.id;
+      this.galleryItems = items;
       this.galleryImages = images;
       this.galleryIndex = 0;
       this.galleryTitle = project.title;
-
-      body.querySelectorAll("[data-gallery-step]").forEach((btn) => {
-        btn.addEventListener("click", () => this.showGallery(this.galleryIndex + Number(btn.getAttribute("data-gallery-step"))));
-      });
-      body.querySelectorAll("[data-thumb-index]").forEach((btn) => {
-        btn.addEventListener("click", () => this.showGallery(Number(btn.getAttribute("data-thumb-index"))));
-      });
+      this.showGallery(0);
 
       const modal = document.getElementById("projectModal");
       const panel = modal.querySelector(".modal-panel");
@@ -1036,11 +1168,10 @@
       modal.hidden = false;
       modal.classList.add("is-open");
       body.scrollTop = 0;
+      if (panel) panel.style.transform = "";
       if (panel && !reduced && origin) {
-        panel.style.transform = "none";
         const panelRect = panel.getBoundingClientRect();
         const cardRect = origin.getBoundingClientRect();
-        panel.style.transform = "";
         this.setModalOrigin(panel, panelRect, cardRect);
         const epoch = this.modalEpoch;
         window.requestAnimationFrame(() => {
@@ -1091,29 +1222,29 @@
     },
 
     showGallery(index) {
-      if (!this.galleryImages.length) return;
-      this.galleryIndex = (index + this.galleryImages.length) % this.galleryImages.length;
-      const hero = document.getElementById("modalHero");
+      const items = this.galleryItems || [];
+      if (!items.length) return;
+      this.galleryIndex = (index + items.length) % items.length;
+      const track = document.getElementById("sheetTrack");
       const count = document.getElementById("galleryCount");
-      if (hero) {
-        const src = this.galleryImages[this.galleryIndex];
-        const webp = webpPath(src);
-        hero.src = webp || src;
-        if (webp) {
-          hero.dataset.fallback = src;
-          hero.onerror = function () {
-            this.onerror = null;
-            this.src = this.dataset.fallback;
-          };
-        } else {
-          hero.onerror = null;
-          delete hero.dataset.fallback;
-        }
-        hero.alt = (this.galleryTitle || "Project") + " screenshot " + (this.galleryIndex + 1);
+      const zoom = document.getElementById("sheetZoom");
+      const current = items[this.galleryIndex];
+      if (track && !track.classList.contains("is-drag")) {
+        track.style.transform = "translateX(" + (-this.galleryIndex * 100) + "%)";
       }
-      if (count) count.textContent = this.galleryIndex + 1 + " / " + this.galleryImages.length;
-      document.querySelectorAll("#modalBody [data-thumb-index]").forEach((btn) => {
-        btn.classList.toggle("is-active", Number(btn.getAttribute("data-thumb-index")) === this.galleryIndex);
+      if (track) {
+        track.querySelectorAll(".sheet-slide").forEach((slide, slideIndex) => {
+          slide.classList.toggle("is-on", slideIndex === this.galleryIndex);
+          const clip = slide.querySelector("video");
+          if (clip && slideIndex !== this.galleryIndex) clip.pause();
+        });
+      }
+      if (count) count.textContent = this.galleryIndex + 1 + " / " + items.length;
+      if (zoom) zoom.hidden = !current || current.type !== "image";
+      document.querySelectorAll("#sheetThumbs [data-thumb-index]").forEach((btn) => {
+        const on = Number(btn.getAttribute("data-thumb-index")) === this.galleryIndex;
+        btn.classList.toggle("is-on", on);
+        btn.setAttribute("aria-current", on ? "true" : "false");
       });
     },
 
@@ -1142,9 +1273,11 @@
         const closedEpoch = epoch + 1;
         this.modalEpoch = closedEpoch;
         modal.classList.remove("is-open", "is-settled", "is-closing");
-      modal.hidden = true;
+        modal.hidden = true;
+        if (this.hideSheetLightbox) this.hideSheetLightbox();
         this.unlockPageScroll();
         this.galleryImages = [];
+        this.galleryItems = [];
         this.galleryIndex = 0;
         this.galleryTitle = "";
         window.requestAnimationFrame(() => {
@@ -1285,10 +1418,17 @@
     const modal = document.getElementById("projectModal");
     const open = modal && modal.classList.contains("is-open");
     if (event.key === "Escape") {
+      const light = document.getElementById("sheetLb");
+      if (light && !light.hidden) {
+        light.hidden = true;
+        const image = document.getElementById("sheetLbImg");
+        if (image) image.removeAttribute("src");
+        return;
+      }
       PortfolioUI.closeModal();
       return;
     }
-    if (!open || PortfolioUI.galleryImages.length < 2) return;
+    if (!open || !(PortfolioUI.galleryItems || []).length || PortfolioUI.galleryItems.length < 2) return;
     if (event.key === "ArrowRight") {
       event.preventDefault();
       PortfolioUI.showGallery(PortfolioUI.galleryIndex + 1);

@@ -78,14 +78,139 @@
 }
 
 @media (max-width: 767px) {
+  .knowledge-stage {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
   .knowledge-desktop {
     display: none;
   }
 
-  .knowledge-mobile {
+  .knowledge-stage .knowledge-mobile {
     display: block;
-    width: 100%;
+    flex: 1 1 auto;
+    width: auto;
+    min-width: 0;
+    margin: 0;
   }
+
+  .geoai {
+    flex: 0 0 38%;
+    width: 38%;
+    margin: 0;
+  }
+}
+
+.knowledge-stage {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .knowledge-stage .knowledge-tree {
+    flex: 1 1 auto;
+    width: auto;
+    min-width: 0;
+    margin-inline: 0;
+  }
+}
+
+.geoai {
+  margin: 0;
+}
+
+@media (min-width: 768px) {
+  .geoai {
+    flex: 0 0 clamp(13rem, 20vw, 18rem);
+    width: clamp(13rem, 20vw, 18rem);
+  }
+}
+
+.geoai-scene {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+.geoai .layer {
+  animation: geo-float 6s ease-in-out infinite;
+}
+
+.geoai .l-top { animation-delay: -3s; }
+.geoai .l-mid { animation-delay: -1.5s; }
+.geoai .l-bot { animation-delay: 0s; }
+
+@keyframes geo-float {
+  0%, 100% { transform: translateY(-3px); }
+  50% { transform: translateY(3px); }
+}
+
+.geoai .tile {
+  fill: var(--accent);
+  stroke: var(--bg);
+  stroke-opacity: 0.7;
+  stroke-width: 1;
+  animation: geo-shimmer 4.5s ease-in-out infinite;
+}
+
+@keyframes geo-shimmer {
+  0%, 100% { fill-opacity: 0.14; }
+  50% { fill-opacity: 0.46; }
+}
+
+.geoai .road {
+  fill: none;
+  stroke: #2c3e50;
+  stroke-width: 3;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  opacity: 0.8;
+}
+
+.geoai .flow {
+  fill: none;
+  stroke: #7eb8c4;
+  stroke-width: 3.2;
+  stroke-linecap: round;
+  stroke-dasharray: 14 220;
+  animation: geo-flow 3.6s linear infinite;
+}
+
+@keyframes geo-flow {
+  to { stroke-dashoffset: -468; }
+}
+
+.geoai .link {
+  fill: none;
+  stroke: #8a7344;
+  stroke-width: 1.8;
+  stroke-dasharray: 3 4;
+  animation: geo-dash 1.4s linear infinite;
+}
+
+.geoai .region {
+  fill: #8a7344;
+  stroke: #8a7344;
+  stroke-width: 1.2;
+  stroke-dasharray: 4 3;
+  animation: geo-dash 1.4s linear infinite;
+}
+
+@keyframes geo-dash {
+  to { stroke-dashoffset: -14; }
+}
+
+.geoai .bob {
+  animation: geo-bob 2.4s ease-in-out infinite;
+}
+
+@keyframes geo-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -105,5 +230,14 @@
 
   .knowledge-tree .hov {
     transition: none;
+  }
+
+  .geoai .layer,
+  .geoai .tile,
+  .geoai .flow,
+  .geoai .link,
+  .geoai .region,
+  .geoai .bob {
+    animation: none;
   }
 }

@@ -261,6 +261,55 @@
   ],
   "projects": [
     {
+      "id": "texas-hospital-drive-time",
+      "title": "Hospital Drive-Time Coverage, Texas",
+      "subtitle": "30- and 60-minute service areas",
+      "category": "professional",
+      "year": "2026",
+      "company": "Freelance",
+      "status": "completed",
+      "featured": true,
+      "showOnMap": true,
+      "description": "Drive-time analysis of how county populations reach specialist hospitals in Texas, built with ArcGIS Network Analyst.",
+      "longDescription": "I measured how county populations reach specialist hospitals in Texas. In ArcGIS Pro Network Analyst I generated 30- and 60-minute drive-time service areas from the hospital locations, using the ArcGIS Online network dataset. I overlaid those areas on county population, then calculated the people within each drive time and the share of each county covered. A provided crosswalk rolled the county results up to Trauma Service Areas. The delivery was the county and TSA datasets, maps of the hospital distribution and of the 30- and 60-minute coverage, and the ArcGIS Pro project file.",
+      "technologies": [
+        "ArcGIS Pro",
+        "Network Analyst",
+        "Service Area",
+        "ArcGIS Online network dataset"
+      ],
+      "features": [
+        "30- and 60-minute drive-time service areas from hospital locations",
+        "Service Area analysis on the ArcGIS Online network dataset",
+        "Service areas overlaid with county population",
+        "Population within 30 and 60 minutes, and percent coverage by county",
+        "County results aggregated to Trauma Service Areas with a crosswalk",
+        "County and TSA datasets",
+        "Maps of hospital distribution and 30- and 60-minute coverage",
+        "ArcGIS Pro project file"
+      ],
+      "images": [
+        "images/Map2_County_30min_Coverage Texas.png",
+        "images/ArcGIS Pro Project Screenshot.png"
+      ],
+      "demoUrl": null,
+      "githubUrl": null,
+      "tags": [
+        "Network Analyst",
+        "Drive time",
+        "Healthcare access",
+        "ArcGIS Pro"
+      ],
+      "filters": ["ArcGIS"],
+      "location": {
+        "latitude": 31.0,
+        "longitude": -99.0,
+        "name": "Texas",
+        "country": "United States"
+      },
+      "mapLabel": "Hospital access"
+    },
+    {
       "id": "adey-arcgis-sync",
       "title": "ArcGIS Server Sync",
       "subtitle": "The layer was a polygon",

@@ -455,8 +455,35 @@
             <h2 class="section-title" id="knowledgeTitle">Knowledge tree</h2>
             <p class="section-sub">Web maps, spatial analysis, GeoAI, remote sensing, and LiDAR.</p>
           </header>
-          <svg class="knowledge-tree knowledge-desktop" viewBox="0 68 1280 424" role="img" aria-label="Knowledge tree. Geodatabases, GeoAI, web GIS maps, Python and SQL, remote sensing, spatial analysis, LiDAR processing, and ArcGIS Enterprise."></svg>
-          <svg class="knowledge-tree knowledge-mobile" viewBox="0 0 400 640" role="img" aria-label="Knowledge tree. Geodatabases, GeoAI, web GIS maps, Python and SQL, remote sensing, spatial analysis, LiDAR processing, and ArcGIS Enterprise."></svg>
+          <div class="knowledge-stage">
+            <svg class="knowledge-tree knowledge-desktop" viewBox="0 68 1280 424" role="img" aria-label="Knowledge tree. Geodatabases, GeoAI, web GIS maps, Python and SQL, remote sensing, spatial analysis, LiDAR processing, and ArcGIS Enterprise."></svg>
+            <svg class="knowledge-tree knowledge-mobile" viewBox="0 0 230 500" role="img" aria-label="Knowledge tree. Geodatabases, GeoAI, web GIS maps, Python and SQL, remote sensing, spatial analysis, LiDAR processing, and ArcGIS Enterprise."></svg>
+            <figure class="geoai">
+              <svg class="geoai-scene" viewBox="168 22 470 688" role="img" aria-label="A neural network sending a location prediction onto layered map data.">
+                <g id="geo-edges"></g>
+                <g id="geo-pulses"></g>
+                <g id="geo-nodes"></g>
+                <g id="geo-links"></g>
+                <g class="layer l-bot"><g id="geo-bot"></g></g>
+                <g class="layer l-mid">
+                  <polygon points="172,533 398,421 624,533 398,645" fill="#2c3e50" fill-opacity=".08" stroke="#2c3e50" stroke-opacity=".45"/>
+                  <g id="geo-roads"></g>
+                </g>
+                <g class="layer l-top">
+                  <polygon points="172,472 398,361 624,472 398,583" fill="#8a7344" fill-opacity=".07" stroke="#8a7344" stroke-opacity=".55"/>
+                  <polygon id="geo-region" class="region" points="388,467 441,443 502,447 515,486 470,494 418,495" fill-opacity=".2"/>
+                  <g id="geo-pts"></g>
+                  <g transform="translate(460 462)">
+                    <circle id="geo-ring" r="6" fill="none" stroke="#1a7a8c" stroke-width="2" opacity="0" transform="scale(1 .5)"/>
+                    <g class="bob">
+                      <path d="M0 0C-6-10-18-20-18-32a18 18 0 1 1 36 0C18-20 6-10 0 0Z" fill="#1a7a8c"/>
+                      <circle cx="0" cy="-32" r="6" fill="#fff"/>
+                    </g>
+                  </g>
+                </g>
+              </svg>
+            </figure>
+          </div>
         </div>
       </section>
 
@@ -638,14 +665,41 @@
     <div class="modal" id="projectModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" hidden>
       <div class="modal-backdrop" data-close-modal></div>
       <div class="modal-panel">
-        <div class="modal-head">
-          <div class="modal-head-copy">
-            <h2 id="modalTitle"></h2>
-            <p class="project-meta" id="modalSubtitle"></p>
-          </div>
-          <button class="modal-close" type="button" data-close-modal><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6 9 12l6 6"/></svg><span>Back</span></button>
+        <div class="sheet-grab" id="projectGrab" aria-hidden="true"></div>
+        <div class="sheet">
+          <section class="sheet-media" aria-label="Project images">
+            <div class="sheet-stage" id="sheetStage">
+              <div class="sheet-track" id="sheetTrack"></div>
+              <button class="sheet-nav prev" type="button" data-gallery-step="-1" aria-label="Previous image">‹</button>
+              <button class="sheet-nav next" type="button" data-gallery-step="1" aria-label="Next image">›</button>
+              <p class="sheet-count" id="galleryCount"></p>
+              <button class="sheet-zoom" id="sheetZoom" type="button">Enlarge</button>
+            </div>
+            <div class="sheet-thumbs" id="sheetThumbs"></div>
+          </section>
+          <section class="sheet-info">
+            <header class="sheet-head">
+              <p class="sheet-kicker" id="modalKicker"></p>
+              <h2 id="modalTitle"></h2>
+              <ul class="sheet-meta" id="modalMeta"></ul>
+            </header>
+            <div class="sheet-prog" aria-hidden="true"><i id="sheetProg"></i></div>
+            <div class="sheet-scroll" id="modalBody"></div>
+            <footer class="sheet-foot">
+              <button type="button" id="projectPrev">Previous</button>
+              <span id="projectPos"></span>
+              <button class="pri" type="button" id="projectNext">Next project</button>
+            </footer>
+          </section>
         </div>
-        <div id="modalBody"></div>
+        <button class="sheet-x" type="button" data-close-modal aria-label="Close project">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle class="rg" cx="12" cy="12" r="11.2" pathLength="60"/><path class="cr" d="M8.2 8.2l7.6 7.6M15.8 8.2l-7.6 7.6"/></svg>
+          <kbd>Esc</kbd>
+        </button>
+      </div>
+      <div class="sheet-lb" id="sheetLb" hidden>
+        <img id="sheetLbImg" alt="">
+        <button type="button" id="sheetLbClose">Close</button>
       </div>
     </div>
 
@@ -741,6 +795,7 @@
     <script src="js/road-geometry.js"></script>
     <script src="js/journey.js"></script>
     <script src="js/knowledge.js"></script>
+    <script src="js/geoai.js"></script>
     <script src="js/game-map.js"></script>
   </body>
 </html>
