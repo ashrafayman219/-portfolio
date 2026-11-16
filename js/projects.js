@@ -36,7 +36,7 @@
   function pictureHtml(src, attrs) {
     const webp = webpPath(src);
     const img = `<img src="${escapeHtml(src)}" ${attrs} />`;
-    return webp ? `<picture><source srcset="${escapeHtml(webp)}" type="image/webp" />${img}</picture>` : img;
+    return webp ? `<picture><source srcset="${escapeHtml(encodeURI(webp))}" type="image/webp" />${img}</picture>` : img;
   }
 
   function heroImg(src, alt) {
