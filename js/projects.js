@@ -1312,7 +1312,7 @@
         const closedEpoch = epoch + 1;
         this.modalEpoch = closedEpoch;
         modal.classList.remove("is-open", "is-settled", "is-closing");
-        modal.hidden = true;
+      modal.hidden = true;
         if (this.hideSheetLightbox) this.hideSheetLightbox();
         this.unlockPageScroll();
         this.galleryImages = [];
@@ -1368,7 +1368,7 @@
           const oldest = group.roles[group.roles.length - 1];
           const roles = group.roles
             .map((job) => `<li class="role-item">${roleCopy(job)}</li>`)
-            .join("");
+        .join("");
 
           return `
           <article class="company-card reveal is-collapsed" data-expando>

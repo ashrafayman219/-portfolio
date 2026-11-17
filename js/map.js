@@ -557,6 +557,74 @@
       applyReal();
     },
 
+    bindWheelGate() {
+      const box = document.getElementById("map-wrap");
+      const hint = document.getElementById("mapWheelHint");
+      if (!box || !hint || box.dataset.wheelGate === "true") return;
+      box.dataset.wheelGate = "true";
+      const fine = window.matchMedia("(hover: hover) and (pointer: fine)");
+      const chrome = "#top-bar, #dock, #map-legend, #bottom-stack, #detail-panel, .flyout, .bookmark-pill, .turn-prompt, .turn-back, .flow-style";
+      const onMap = (target) => {
+        if (!target || !target.closest) return false;
+        if (target.closest(chrome)) return false;
+        return !!target.closest("#mapView, #map-pins");
+      };
+      let active = false;
+      let timer = 0;
+      const holdWheel = (on) => {
+        if (!this.map || !this.map.scrollWheelZoom) return;
+        if (on) this.map.scrollWheelZoom.enable();
+        else this.map.scrollWheelZoom.disable();
+      };
+      if (fine.matches) holdWheel(false);
+      const show = () => {
+        if (!fine.matches || active) return;
+        hint.classList.add("is-on");
+        window.clearTimeout(timer);
+        timer = window.setTimeout(() => hint.classList.remove("is-on"), 2600);
+      };
+      const set = (on) => {
+        active = !!(on && fine.matches);
+        box.classList.toggle("is-wheel", active);
+        holdWheel(active);
+        if (active) {
+          hint.classList.remove("is-on");
+          window.clearTimeout(timer);
+        }
+      };
+      box.addEventListener("wheel", (event) => {
+        if (!fine.matches || active || !onMap(event.target)) return;
+        event.stopPropagation();
+        if (!hint.classList.contains("is-on")) show();
+        else {
+          hint.classList.remove("is-nudge");
+          void hint.offsetWidth;
+          hint.classList.add("is-nudge");
+        }
+      }, { capture: true, passive: true });
+      box.addEventListener("pointerover", (event) => {
+        if (!fine.matches || active || event.pointerType !== "mouse") return;
+        if (onMap(event.target)) show();
+        else hint.classList.remove("is-on");
+      });
+      box.addEventListener("pointerdown", (event) => {
+        if (onMap(event.target)) set(true);
+      });
+      box.addEventListener("pointerleave", (event) => {
+        if (!event.buttons) {
+          set(false);
+          hint.classList.remove("is-on");
+        }
+      });
+      document.addEventListener("pointerdown", (event) => {
+        if (!box.contains(event.target)) set(false);
+      });
+      window.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") set(false);
+      });
+      window.addEventListener("blur", () => set(false));
+    },
+
     createMap() {
       if (typeof L === "undefined" || typeof L.markerClusterGroup !== "function") {
         throw new Error("Leaflet did not load");
@@ -668,6 +736,7 @@
 
       this.ensureRouteCanvas();
       this.map.on("move zoom resize", () => this.projectRoutePaths());
+      this.map.on("zoomanim", (event) => this.alignRouteZoom(event.center, event.zoom));
       document.addEventListener("visibilitychange", () => {
         if (document.visibilityState === "hidden") {
           if (this.routeFrame) cancelAnimationFrame(this.routeFrame);
@@ -686,6 +755,7 @@
       ["pointerdown", "wheel", "touchstart"].forEach((type) => {
         container.addEventListener(type, () => this.stopTour(), { passive: true });
       });
+      this.bindWheelGate();
 
       if ("IntersectionObserver" in window) {
         const wrap = document.getElementById("map-wrap");
@@ -1147,7 +1217,7 @@
       pane.style.zIndex = "450";
       pane.style.pointerEvents = "none";
       const canvas = document.createElement("canvas");
-      canvas.className = "route-canvas";
+      canvas.className = "route-canvas leaflet-zoom-animated";
       canvas.setAttribute("aria-hidden", "true");
       pane.appendChild(canvas);
       this.routeCanvas = canvas;
@@ -1164,8 +1234,17 @@
       return size;
     },
 
+    alignRouteZoom(center, zoom) {
+      if (!this.map || !this.routeCanvas || this.routeDrawnZoom == null || !this.routeDrawnCenter) return;
+      const scale = this.map.getZoomScale(zoom, this.routeDrawnZoom);
+      const viewHalf = this.map.getSize().multiplyBy(0.5);
+      const currentCenterPoint = this.map.project(this.routeDrawnCenter, zoom);
+      const topLeft = viewHalf.multiplyBy(-scale).add(currentCenterPoint).subtract(this.map._getNewPixelOrigin(center, zoom));
+      L.DomUtil.setTransform(this.routeCanvas, topLeft, scale);
+    },
+
     projectRoutePaths() {
-      if (!this.map || !this.routeCanvas) return;
+      if (!this.map || !this.routeCanvas || this.map._animatingZoom) return;
       const canvas = this.routeCanvas;
       const size = this.placeRouteCanvas();
       const dpr = Math.min(2, window.devicePixelRatio || 1);
@@ -1204,6 +1283,8 @@
         return curve.end > 0 ? curve : null;
       });
       if (this.routeReduced) this.paintRouteFrame();
+      this.routeDrawnCenter = this.map.getCenter().clone();
+      this.routeDrawnZoom = this.map.getZoom();
     },
 
     syncRouteMotion() {

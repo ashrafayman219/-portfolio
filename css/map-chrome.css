@@ -35,6 +35,90 @@
   font-family: var(--font);
 }
 
+#map-wrap.is-wheel {
+  box-shadow: 0 0 0 3px rgba(26, 122, 140, 0.35);
+}
+
+.map-wheel-hint {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 16;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  translate: -50% calc(-50% + 10px);
+  padding: 0.55rem 1rem 0.55rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(20, 36, 43, 0.88);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.88rem;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s, translate 0.25s;
+}
+
+.map-wheel-hint.is-on {
+  opacity: 1;
+  translate: -50% -50%;
+}
+
+.map-wheel-hint.is-nudge {
+  animation: mapWheelNudge 0.5s ease;
+}
+
+.map-wheel-mouse {
+  position: relative;
+  flex: none;
+  width: 18px;
+  height: 28px;
+  border: 2px solid #fff;
+  border-radius: 10px;
+}
+
+.map-wheel-mouse::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 5px;
+  width: 3px;
+  height: 6px;
+  margin-left: -1.5px;
+  border-radius: 2px;
+  background: #fff;
+  animation: mapWheelDot 1.6s ease-in-out infinite;
+}
+
+@keyframes mapWheelDot {
+  0% { opacity: 0; transform: translateY(0); }
+  30% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(8px); }
+}
+
+@keyframes mapWheelNudge {
+  0%, 100% { translate: -50% -50%; }
+  30% { translate: -50% calc(-50% - 6px); }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  #map-wrap { overscroll-behavior: auto; }
+  #map-wrap.is-wheel { overscroll-behavior: contain; }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .map-wheel-hint { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .map-wheel-hint,
+  .map-wheel-mouse::after {
+    animation: none;
+    transition: none;
+  }
+}
+
 #map-wrap:fullscreen,
 #map-wrap:-webkit-full-screen {
   height: 100%;
@@ -52,6 +136,11 @@
   z-index: 0;
   touch-action: none;
   overscroll-behavior: contain;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  #mapView { overscroll-behavior: auto; }
+  #map-wrap.is-wheel #mapView { overscroll-behavior: contain; }
 }
 
 #mapView .esri-view {
