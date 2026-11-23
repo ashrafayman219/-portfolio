@@ -1,4 +1,7 @@
 :root {
+  /* Soft theme fade; width morph is JS (Niyam body, crawl cut off) */
+  --nav-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --nav-dur: 0.9s;
   --bg: #f7f8fa;
   --bg-elevated: #ffffff;
   --text: #1b2430;

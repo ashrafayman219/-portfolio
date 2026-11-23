@@ -12,6 +12,28 @@
   transition: background var(--ease), color var(--ease), transform var(--ease);
 }
 
+.btn-with-icon {
+  align-items: center;
+  line-height: 1;
+}
+
+.btn-with-icon svg {
+  flex: none;
+  display: block;
+  width: 1rem;
+  height: 1rem;
+  fill: currentColor;
+}
+
+#contactLinkedin svg {
+  translate: 0 -1.5px;
+}
+
+.btn-with-icon span {
+  display: inline-block;
+  line-height: 1;
+}
+
 .btn:hover {
   transform: translateY(-1px);
 }
@@ -364,11 +386,13 @@
 .projects-track {
   display: flex;
   width: max-content;
-  animation: projectsMarquee 40s linear infinite;
+  will-change: transform;
+  animation: projectsMarquee 95s linear infinite;
 }
 
 .projects-track.is-js {
   animation: none;
+  transform: translate3d(0, 0, 0);
 }
 
 .projects-set {
@@ -388,6 +412,11 @@
 .projects-marquee.is-dragging .project-card:hover .project-card-media {
   transform: none;
   box-shadow: none;
+}
+
+.projects-marquee.is-dragging .project-card:hover .project-card-media img,
+.projects-marquee.is-dragging .project-card:hover .project-card-media .project-card-video {
+  transform: none;
 }
 
 .projects-marquee .project-card {
@@ -468,8 +497,12 @@
 }
 
 .project-card:hover .project-card-media {
-  transform: translateY(-4px);
   box-shadow: var(--shadow-hover);
+}
+
+.project-card:hover .project-card-media img,
+.project-card:hover .project-card-media .project-card-video {
+  transform: scale(1.08);
 }
 
 .project-card.is-highlighted .project-card-media {
@@ -501,6 +534,8 @@
   background: var(--media-bg, #d5dde4);
   -webkit-user-drag: none;
   user-select: none;
+  transform: scale(1);
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .project-card-video {

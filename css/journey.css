@@ -18,6 +18,21 @@ body.is-entering .site-header {
   animation: enter-down 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+body.is-entering .header-shell {
+  animation: enter-nav-pill 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes enter-nav-pill {
+  from {
+    opacity: 0;
+    transform: scale(1.1);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 @media (max-width: 767px) {
   body.is-entering .site-header {
     animation-name: enter-fade;
@@ -35,8 +50,15 @@ body.is-entering .site-header {
   }
 }
 
+@media (max-width: 767px) {
+  body.is-entering .header-shell {
+    animation-name: enter-fade;
+  }
+}
+
 @media (max-width: 767px) and (prefers-reduced-motion: reduce) {
-  body.is-entering .nav-tabs {
+  body.is-entering .nav-tabs,
+  body.is-entering .header-shell {
     animation: none;
   }
 }
@@ -66,10 +88,14 @@ body.is-entering .hero-body > *:nth-child(1) { animation-delay: 0.4s; }
 body.is-entering .hero-body > *:nth-child(2) { animation-delay: 0.48s; }
 body.is-entering .hero-body > *:nth-child(3) { animation-delay: 0.56s; }
 
-body.is-entering main > :not(.hero),
+body.is-entering main > :not(.hero):not(.splash),
 body.is-entering .site-footer,
 body.is-entering .mobile-nav {
   animation: enter-up 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.28s both;
+}
+
+body.is-entering .splash {
+  animation: enter-fade 0.6s ease both;
 }
 
 .journey-loader {

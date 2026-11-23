@@ -2,7 +2,7 @@
   "use strict";
 
   var STOPS = [
-    { id: "home", label: "Home", x: 62, y: 236, icon: '<path d="M4 11l8-7 8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/>' },
+    { id: "profile", label: "Home", x: 62, y: 236, icon: '<path d="M4 11l8-7 8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/>' },
     { id: "map", label: "Map", x: 92, y: 140, icon: '<path d="M12 21s-6-5.6-6-10a6 6 0 0 1 12 0c0 4.4-6 10-6 10z"/><circle cx="12" cy="11" r="2"/>' },
     { id: "projects", label: "Projects", x: 178, y: 168, icon: '<rect x="4" y="4" width="6.5" height="6.5" rx="1"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1"/>' },
     { id: "experience", label: "Experience", x: 214, y: 80, icon: '<rect x="3.5" y="8" width="17" height="12" rx="2"/><path d="M9 8V6a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M3.5 13h17"/>' },

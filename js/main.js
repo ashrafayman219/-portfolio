@@ -13,7 +13,7 @@
       let hoverLink = null;
 
       const phoneQuery = window.matchMedia("(max-width: 767px)");
-      let activeId = "";
+      let activeId = null;
       let pinnedId = "";
       let pinnedUntil = 0;
 
@@ -34,15 +34,25 @@
           indicator.style.top = "";
           indicator.style.height = "";
           indicator.style.width = box.width + "px";
-          indicator.style.transform = "translateX(" + (box.left - tabsBox.left - tabs.clientLeft) + "px)";
+          /* top:50% in CSS — keep Y at -50% so the pill stays vertically centered */
+          indicator.style.transform =
+            "translate(" + (box.left - tabsBox.left - tabs.clientLeft) + "px, -50%)";
         }
         indicator.classList.add("is-ready");
       };
 
-      const activeLink = () => links.querySelector("a.is-active") || links.querySelector("a");
+      const activeLink = () => (links ? links.querySelector("a.is-active") : null);
 
       const syncIndicator = () => {
-        moveIndicator(hoverLink || activeLink());
+        const link = hoverLink || activeLink();
+        if (!link) {
+          if (indicator) {
+            indicator.classList.remove("is-ready");
+            indicator.style.width = "0px";
+          }
+          return;
+        }
+        moveIndicator(link);
       };
 
       const closeFab = () => {
@@ -101,25 +111,129 @@
       }
 
       const sections = [...document.querySelectorAll("main section[id]")];
+      const header = document.querySelector(".site-header");
+      const shell = document.querySelector(".header-shell");
+      let shellRaf = 0;
+      // Soft Niyam width morph — padding snaps (pad tween caused end vibration).
+      // Ease crawl is discarded: we only use the first 60% of Niyam's curve.
+      const SHELL_DUR = 900;
+      const PAD = {
+        open: { y: 16, x: 48 },
+        closed: { y: 8, x: 24 }
+      };
+
+      const niyamEase = (() => {
+        const p1x = 0.16;
+        const p1y = 1;
+        const p2x = 0.3;
+        const p2y = 1;
+        const sampleX = (t) =>
+          3 * (1 - t) * (1 - t) * t * p1x + 3 * (1 - t) * t * t * p2x + t * t * t;
+        const sampleY = (t) =>
+          3 * (1 - t) * (1 - t) * t * p1y + 3 * (1 - t) * t * t * p2y + t * t * t;
+        return (x) => {
+          let t = x;
+          for (let i = 0; i < 6; i += 1) {
+            const xEst = sampleX(t) - x;
+            const d =
+              3 * (1 - t) * (1 - t) * p1x +
+              6 * (1 - t) * t * (p2x - p1x) +
+              3 * t * t * (1 - p2x);
+            if (Math.abs(xEst) < 1e-5 || Math.abs(d) < 1e-5) break;
+            t = Math.min(1, Math.max(0, t - xEst / d));
+          }
+          return sampleY(t);
+        };
+      })();
+
+      const shellTargetWidth = (scrolled) => {
+        const cap = scrolled ? 960 : 1400;
+        return Math.round(Math.min(cap, window.innerWidth - 32));
+      };
+
+      const applyShellWidth = (width) => {
+        if (!shell || phoneQuery.matches) return;
+        shell.style.width = Math.round(width) + "px";
+        shell.style.maxWidth = "none";
+      };
+
+      const applyShellPad = (pad) => {
+        if (!shell || phoneQuery.matches) return;
+        shell.style.padding = pad.y + "px " + pad.x + "px";
+      };
+
+      const animateShell = (scrolled) => {
+        if (!shell || phoneQuery.matches) {
+          syncIndicator();
+          return;
+        }
+        if (shellRaf) cancelAnimationFrame(shellRaf);
+        const fromW = Math.round(shell.getBoundingClientRect().width);
+        const toW = shellTargetWidth(scrolled);
+        const toPad = scrolled ? PAD.closed : PAD.open;
+
+        // Snap padding once — do not tween it (that was the end vibration)
+        applyShellPad(toPad);
+        shell.classList.add("is-morphing");
+
+        if (fromW === toW) {
+          shell.classList.remove("is-morphing");
+          applyShellWidth(toW);
+          syncIndicator();
+          return;
+        }
+
+        const start = performance.now();
+        let lastW = fromW;
+        const finish = () => {
+          shellRaf = 0;
+          applyShellWidth(toW);
+          shell.classList.remove("is-morphing");
+          syncIndicator();
+        };
+        const tick = (now) => {
+          const t = Math.min(1, (now - start) / SHELL_DUR);
+          // Soft Niyam body only — map full duration onto first 60% of the curve
+          // so the decelerating crawl never runs.
+          const e = Math.min(1, Math.max(0, niyamEase(Math.min(1, t / 0.6))));
+          const w = Math.round(fromW + (toW - fromW) * e);
+          if (w !== lastW) {
+            applyShellWidth(w);
+            lastW = w;
+          }
+          if (w === toW || t >= 1 || e >= 0.999) {
+            finish();
+            return;
+          }
+          shellRaf = requestAnimationFrame(tick);
+        };
+        shellRaf = requestAnimationFrame(tick);
+      };
+
       const setActive = (id) => {
-        const changed = id !== activeId;
+        if (id === activeId) return;
         activeId = id;
         document.querySelectorAll("[data-section]").forEach((el) => {
-          const on = el.getAttribute("data-section") === id;
+          const on = Boolean(id) && el.getAttribute("data-section") === id;
           el.classList.toggle("is-active", on);
           if (el.closest("#navLinks")) {
             if (on) el.setAttribute("aria-current", "true");
             else el.removeAttribute("aria-current");
           }
         });
-        syncIndicator();
+        // Hide the sliding pill on the splash (no section selected)
+        if (!id && indicator) {
+          indicator.classList.remove("is-ready");
+          indicator.style.width = "0px";
+        } else {
+          syncIndicator();
+        }
       };
       const updateSpy = () => {
-        const header = document.querySelector(".site-header");
         const sample = sections[0];
         const scrollMargin = sample ? parseFloat(getComputedStyle(sample).scrollMarginTop) || 0 : 0;
-        const headerBottom = header ? header.getBoundingClientRect().bottom : 0;
-        const line = Math.max(headerBottom, scrollMargin) + 16;
+        // Fixed offset — never use live header height (morphing it caused scroll jitter)
+        const line = Math.max(88, scrollMargin) + 16;
         const scrollable = document.documentElement.scrollHeight - window.innerHeight;
         const atEnd = scrollable > 0 && window.scrollY >= scrollable - 48;
         let current = sections[0] ? sections[0].id : "home";
@@ -132,10 +246,20 @@
             if (section.getBoundingClientRect().top <= line) current = section.id;
           });
         }
+        // Splash (#home) has no nav highlight; Home lights up at #profile
+        const navSection = current === "home" ? "" : current;
         const progress = scrollable > 0 ? Math.min(1, Math.max(0, window.scrollY / scrollable)) : 0;
         if (tabs) tabs.style.setProperty("--p", String(progress));
-        if (header) header.classList.toggle("is-scrolled", window.scrollY > 8);
-        setActive(current);
+        if (header) {
+          const wasScrolled = header.classList.contains("is-scrolled");
+          // Hysteresis matches Niyam threshold (~60) without edge flicker
+          const nowScrolled = wasScrolled ? window.scrollY > 40 : window.scrollY > 60;
+          if (wasScrolled !== nowScrolled) {
+            header.classList.toggle("is-scrolled", nowScrolled);
+            animateShell(nowScrolled);
+          }
+        }
+        setActive(navSection);
       };
       const followIndicator = () => {
         const started = performance.now();
@@ -159,8 +283,24 @@
           tabs.style.bottom = "";
           tabs.style.transform = "";
         }
+        if (shell) {
+          if (phoneQuery.matches) {
+            shell.style.width = "";
+            shell.style.maxWidth = "";
+            shell.style.padding = "";
+            shell.classList.remove("is-morphing");
+          } else if (header) {
+            const scrolled = header.classList.contains("is-scrolled");
+            applyShellPad(scrolled ? PAD.closed : PAD.open);
+            applyShellWidth(shellTargetWidth(scrolled));
+          }
+        }
         syncIndicator();
       });
+      if (shell && !phoneQuery.matches) {
+        applyShellPad(PAD.open);
+        applyShellWidth(shellTargetWidth(false));
+      }
       updateSpy();
       followIndicator();
     },

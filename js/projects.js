@@ -205,14 +205,13 @@
     marqueeRaf: null,
     marqueeShift: 0,
     marqueeLoop: 0,
-    marqueeSpeed: 72,
-    marqueeVelocity: 70,
+    marqueeDuration: 95,
+    marqueeSpeed: 0,
     marqueeHolding: false,
     marqueeNudged: false,
     marqueeNudging: false,
     marqueeDidDrag: false,
     marqueeDragBound: false,
-    marqueeFling: 0,
     marqueePlaying: true,
     allFilter: "all",
 
@@ -372,10 +371,10 @@
       document.getElementById("statNow").textContent = info.currentCompany;
       document.getElementById("heroRoles").textContent = "GIS Solutions Engineer";
 
-      document.getElementById("navGithub").href = info.social.github;
-      document.getElementById("navLinkedin").href = info.social.linkedin;
-      document.getElementById("contactGithub").href = info.social.github;
-      document.getElementById("contactLinkedin").href = info.social.linkedin;
+      const contactGithub = document.getElementById("contactGithub");
+      const contactLinkedin = document.getElementById("contactLinkedin");
+      if (contactGithub) contactGithub.href = info.social.github;
+      if (contactLinkedin) contactLinkedin.href = info.social.linkedin;
       document.getElementById("contactEmail").href = "mailto:" + info.email;
       document.getElementById("contactEmail").textContent = info.email;
       document.getElementById("contactMail").href = "mailto:" + info.email;
@@ -556,10 +555,6 @@
         else {
           play.addEventListener("click", () => {
             this.marqueePlaying = !this.marqueePlaying;
-            if (!this.marqueePlaying) {
-              this.marqueeVelocity = 0;
-              this.marqueeFling = 0;
-            }
             this.syncPlayButton();
           });
         }
@@ -652,8 +647,7 @@
       });
       track.appendChild(loop);
 
-      const duration = Math.max(18, Math.round((set.scrollWidth || limit) / 70));
-      track.style.animationDuration = duration + "s";
+      track.style.animationDuration = this.marqueeDuration + "s";
       this.bindCardVideos();
       this.startMarquee();
     },
@@ -665,15 +659,14 @@
       if (this.marqueeHolding || this.marqueeDragging) return true;
       if (marquee.classList.contains("is-paused")) return true;
       if (marquee.classList.contains("is-modal-paused")) return true;
-      if (marquee.querySelector(":focus-visible")) return true;
       return false;
     },
 
     wrapMarqueeShift() {
       const width = this.marqueeLoop;
       if (!width) return;
-      while (this.marqueeShift >= 0) this.marqueeShift -= width;
-      while (this.marqueeShift < -width) this.marqueeShift += width;
+      while (this.marqueeShift >= width) this.marqueeShift -= width;
+      while (this.marqueeShift < 0) this.marqueeShift += width;
     },
 
     stopMarquee() {
@@ -691,10 +684,10 @@
     },
 
     applyMarqueeFrame() {
-      const marquee = document.getElementById("projectsMarquee");
-      if (!marquee) return;
-      const dpr = window.devicePixelRatio || 1;
-      marquee.scrollLeft = Math.round(-this.marqueeShift * dpr) / dpr;
+      const track = document.getElementById("projectsGrid");
+      if (!track) return;
+      const x = -this.marqueeShift;
+      track.style.transform = "translate3d(" + x + "px,0,0)";
     },
 
     startMarquee() {
@@ -705,9 +698,10 @@
       if (!track || !marquee || !set) return;
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
       this.marqueeLoop = set.scrollWidth;
-      this.marqueeSpeed = 72;
-      this.marqueeVelocity = this.marqueePlaying ? 72 : 0;
-      this.marqueeShift = -this.marqueeLoop;
+      /* Niyam-like flow, slightly slower; positive dir = content moves right */
+      this.marqueeDuration = 95;
+      this.marqueeSpeed = this.marqueeLoop > 0 ? this.marqueeLoop / this.marqueeDuration : 0;
+      this.marqueeShift = 0;
       track.classList.add("is-js");
       this.applyMarqueeFrame();
       let last = performance.now();
@@ -719,21 +713,8 @@
           this.applyMarqueeFrame();
           return;
         }
-        const hovering = window.matchMedia("(hover: hover) and (pointer: fine)").matches && marquee.matches(":hover");
-        if (!this.marqueePlaying || hovering) {
-          this.marqueeVelocity = 0;
-          if (hovering) this.marqueeFling = 0;
-        } else {
-          const target = this.marqueeAutoplayPaused() ? 0 : this.marqueeSpeed;
-          this.marqueeVelocity += (target - this.marqueeVelocity) * (1 - Math.exp(-dt * 2.2));
-        }
-        if (!this.marqueeDragging && !this.marqueeNudging) {
-          if (this.marqueeFling) {
-            this.marqueeShift += this.marqueeFling * dt;
-            this.marqueeFling *= Math.exp(-dt * 3);
-            if (Math.abs(this.marqueeFling) < 80) this.marqueeFling = 0;
-          }
-          if (this.marqueeVelocity) this.marqueeShift += this.marqueeVelocity * dt;
+        if (!this.marqueeDragging && !this.marqueeNudging && !this.marqueeAutoplayPaused()) {
+          this.marqueeShift -= this.marqueeSpeed * dt;
         }
         this.wrapMarqueeShift();
         this.applyMarqueeFrame();
@@ -780,19 +761,8 @@
       let startX = 0;
       let startShift = 0;
       let holding = false;
-      let lastX = 0;
-      let lastTime = 0;
-      let pointerSpeed = 0;
 
-      const dragGain = (dx) => {
-        const span = Math.max(window.innerWidth, 320);
-        const travel = Math.min(1.35, Math.abs(dx) / span);
-        const coarse = window.matchMedia("(pointer: coarse)").matches;
-        const base = coarse ? 3.1 : 1.55;
-        const boost = coarse ? 7.5 : 2.8;
-        return base + travel * travel * boost;
-      };
-
+      /* Niyam-style: 1:1 mouse pan, pause while dragging, no fling */
       marquee.addEventListener("pointerdown", (event) => {
         if (event.button !== 0) return;
         if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -801,23 +771,15 @@
         this.marqueeHolding = true;
         this.marqueeDragging = false;
         this.marqueeDidDrag = false;
-        this.marqueeFling = 0;
         startX = event.clientX;
         startShift = this.marqueeShift;
-        lastX = event.clientX;
-        lastTime = event.timeStamp;
-        pointerSpeed = 0;
       });
 
       marquee.addEventListener("pointermove", (event) => {
         if (!holding) return;
         const dx = event.clientX - startX;
-        const stepTime = event.timeStamp - lastTime;
-        if (stepTime > 0 && stepTime < 80) pointerSpeed = ((event.clientX - lastX) / stepTime) * 1000;
-        lastX = event.clientX;
-        lastTime = event.timeStamp;
         if (!this.marqueeDragging) {
-          if (Math.abs(dx) < 8) return;
+          if (Math.abs(dx) < 6) return;
           this.marqueeDragging = true;
           this.marqueeDidDrag = true;
           marquee.classList.add("is-dragging");
@@ -827,25 +789,20 @@
             /* ignore */
           }
         }
-        const gain = dragGain(dx);
         if (Math.abs(dx) > 12) this.dismissPanHint();
-        this.marqueeShift = startShift + dx * gain;
+        this.marqueeShift = startShift - dx;
         this.wrapMarqueeShift();
         this.applyMarqueeFrame();
       });
 
       const endDrag = () => {
-        if (holding && this.marqueeDragging) {
-          const dx = lastX - startX;
-          const gain = dragGain(dx);
-          const fling = Math.max(-4000, Math.min(4000, pointerSpeed * gain));
-          if (Math.abs(fling) > 500) this.marqueeFling = fling;
-        }
         holding = false;
         this.marqueeHolding = false;
         if (!this.marqueeDragging) return;
         this.marqueeDragging = false;
         marquee.classList.remove("is-dragging");
+        this.wrapMarqueeShift();
+        this.applyMarqueeFrame();
         if (this.marqueeDidDrag) {
           window.setTimeout(() => {
             this.marqueeDidDrag = false;
@@ -875,10 +832,13 @@
         const next = set.scrollWidth;
         if (!next) return;
         const old = this.marqueeLoop || next;
-        const progress = old ? -this.marqueeShift / old : 1;
+        const progress = old ? this.marqueeShift / old : 0;
         this.marqueeLoop = next;
-        this.marqueeShift = -progress * next;
+        this.marqueeDuration = 95;
+        this.marqueeSpeed = next / this.marqueeDuration;
+        this.marqueeShift = progress * next;
         this.wrapMarqueeShift();
+        this.applyMarqueeFrame();
       });
     },
 
@@ -946,8 +906,7 @@
         marquee.scrollTo({ left: Math.max(0, marquee.scrollLeft + delta), behavior: reduced ? "auto" : "smooth" });
         return;
       }
-      this.marqueeShift -= delta;
-      this.marqueeVelocity = 0;
+      this.marqueeShift += delta;
       this.wrapMarqueeShift();
       this.applyMarqueeFrame();
     },
