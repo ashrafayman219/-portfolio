@@ -273,7 +273,7 @@
 }
 
 .gm-north circle { fill: #fff; stroke: rgba(27, 36, 48, 0.12); }
-.gm-north .na { fill: #e5484d; }
+.gm-north .na { fill: #1b2430; }
 .gm-north text {
   font-family: var(--font);
   font-weight: 700;

@@ -215,6 +215,44 @@
     marqueePlaying: true,
     allFilter: "all",
 
+    bindDocDownloads() {
+      const wrap = document.getElementById("docDownloads");
+      const sent = document.getElementById("docSent");
+      const note = document.getElementById("docSentNote");
+      const cv = document.getElementById("cvLink");
+      const resume = document.getElementById("resumeLink");
+      if (!wrap || !sent || wrap.dataset.bound === "true") return;
+      wrap.dataset.bound = "true";
+      let resetTimer = 0;
+
+      const showDone = (message) => {
+        if (note) note.textContent = message;
+        wrap.classList.add("is-sent");
+        sent.hidden = false;
+        const mark = sent.querySelector(".site-sent-mark");
+        if (mark) {
+          const next = mark.cloneNode(true);
+          mark.replaceWith(next);
+        }
+        window.clearTimeout(resetTimer);
+        resetTimer = window.setTimeout(() => {
+          wrap.classList.remove("is-sent");
+          sent.hidden = true;
+        }, 3200);
+      };
+
+      if (cv) {
+        cv.addEventListener("click", () => {
+          showDone("CV saved to your device.");
+        });
+      }
+      if (resume) {
+        resume.addEventListener("click", () => {
+          showDone("Resume saved to your device.");
+        });
+      }
+    },
+
     bindSiteFeedback(email) {
       const form = document.getElementById("siteFeedback");
       if (!form) return;
@@ -384,6 +422,7 @@
         info.currentPosition + " at " + info.currentCompany;
       document.getElementById("cvLink").href = info.cvUrl;
       document.getElementById("resumeLink").href = info.resumeUrl;
+      this.bindDocDownloads();
       document.getElementById("footerCopy").textContent =
         "© " + new Date().getFullYear() + " " + info.name;
 

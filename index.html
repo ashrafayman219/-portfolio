@@ -126,12 +126,12 @@
         </nav>
 
         <div class="nav-actions">
-          <a class="nav-mail is-elevate" id="navEmail" href="mailto:ashrafayman219@gmail.com">
-            <svg class="nav-mail-elev" viewBox="0 0 100 24" preserveAspectRatio="none" aria-hidden="true">
-              <path class="nav-mail-elev-area" d="M0 20L12 14L22 17L34 6L46 12L58 3L70 11L82 8L100 16V24H0Z"/>
-              <path class="nav-mail-elev-line" pathLength="1" d="M0 20L12 14L22 17L34 6L46 12L58 3L70 11L82 8L100 16"/>
+          <a class="nav-mail is-send" id="navEmail" href="mailto:ashrafayman219@gmail.com">
+            <span class="nav-mail-label">Email</span>
+            <svg class="nav-mail-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M22 2L11 13"/>
+              <path d="M22 2l-7 20-4-9-9-4 20-7z"/>
             </svg>
-            <span>Email</span>
           </a>
         </div>
         </div>
@@ -533,7 +533,7 @@
             <div>
               <h3 class="section-kicker">Education</h3>
               <div class="timeline" id="eduTimeline"></div>
-              <div class="doc-downloads">
+              <div class="doc-downloads" id="docDownloads">
                 <a class="doc-file" id="cvLink" href="files/Ashraf Ayman CV.pdf" download>
                   <span class="doc-file-mark" aria-hidden="true">
                     <svg viewBox="0 0 24 24"><path d="M12 4v10M8 10l4 4 4-4M5 19h14"/></svg>
@@ -552,6 +552,14 @@
                     <span class="doc-file-note">Short version, PDF</span>
                   </span>
                 </a>
+                <div class="doc-sent" id="docSent" hidden>
+                  <svg class="site-sent-mark" viewBox="0 0 84 84" aria-hidden="true">
+                    <circle cx="42" cy="42" r="36" pathLength="1"/>
+                    <path d="M26 43l11 11 21-23" pathLength="1"/>
+                  </svg>
+                  <p class="doc-sent-title">Downloaded</p>
+                  <p class="doc-sent-note" id="docSentNote">Saved to your device.</p>
+                </div>
               </div>
             </div>
           </div>
