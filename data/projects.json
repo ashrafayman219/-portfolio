@@ -4,7 +4,7 @@
     "fullName": "Ashraf Ayman Abdel Majeed",
     "title": "GIS Software Developer",
     "roles": [
-      "Sr. GIS Solutions Engineer",
+      "GIS Engineer",
       "GIS Software Developer",
       "GIS Analyst",
       "GIS Instructor",
@@ -130,7 +130,7 @@
     {
       "id": "upwork",
       "company": "Upwork",
-      "position": "Sr. GIS Solutions Engineer",
+      "position": "GIS Engineer",
       "headline": "ArcGIS Pro, Esri GeoAI, Remote Sensing",
       "startDate": "2024",
       "endDate": "Present",
@@ -176,7 +176,7 @@
     {
       "id": "aic",
       "company": "Applied Innovation Center (AIC)",
-      "position": "Team Leader",
+      "position": "GIS Team Lead",
       "startDate": "January 2024",
       "endDate": "December 2024",
       "location": "Smart Village, Giza, Egypt",
@@ -759,7 +759,7 @@
       "featured": true,
       "showOnMap": true,
       "description": "An Esri GeoAI workflow that detects parking lots in Valdosta, Georgia from satellite imagery and writes the results to a GIS layer.",
-      "longDescription": "I built this as an Upwork freelance project in 2024 in the GIS Solutions Engineer role. The client wanted a GeoAI demo that could extract street features such as sidewalks and parking lots. I used Esri GeoAI in ArcGIS to detect parking lots in Valdosta, GA. The workflow processed satellite imagery, trained a model to find parking lots, and converted the detections into a GIS layer. The deliverable was a spatial dataset that could go into GIS apps for analysis and decision-making.",
+      "longDescription": "I built this as an Upwork freelance project in 2024 in the GIS Engineer role. The client wanted a GeoAI demo that could extract street features such as sidewalks and parking lots. I used Esri GeoAI in ArcGIS to detect parking lots in Valdosta, GA. The workflow processed satellite imagery, trained a model to find parking lots, and converted the detections into a GIS layer. The deliverable was a spatial dataset that could go into GIS apps for analysis and decision-making.",
       "technologies": [
         "Esri GeoAI",
         "ArcGIS Pro",
@@ -900,7 +900,7 @@
       "featured": true,
       "showOnMap": true,
       "description": "A Google Earth virtual tour of a route in New York City, with cinematic camera paths, 3D buildings, and elevation along the way.",
-      "longDescription": "I built this as an Upwork freelance project in 2025 in the GIS Solutions Engineer role. It is a high-quality virtual tour of a route in New York City, made in Google Earth. The tour uses cinematic camera paths and 3D buildings to tell the GIS story of the route, including elevation change and geospatial context. The deliverable was a smooth professional video for portfolio demonstration, published 17 November 2025.",
+      "longDescription": "I built this as an Upwork freelance project in 2025 in the GIS Engineer role. It is a high-quality virtual tour of a route in New York City, made in Google Earth. The tour uses cinematic camera paths and 3D buildings to tell the GIS story of the route, including elevation change and geospatial context. The deliverable was a smooth professional video for portfolio demonstration, published 17 November 2025.",
       "technologies": [
         "Google Earth",
         "GIS software",

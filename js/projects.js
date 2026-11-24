@@ -407,7 +407,7 @@
       setCount("statProjects", 120, "+");
       setCount("statCountries", 7, "+");
       document.getElementById("statNow").textContent = info.currentCompany;
-      document.getElementById("heroRoles").textContent = "GIS Solutions Engineer";
+      document.getElementById("heroRoles").textContent = "GIS Engineer";
 
       const contactGithub = document.getElementById("contactGithub");
       const contactLinkedin = document.getElementById("contactLinkedin");
