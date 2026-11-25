@@ -452,7 +452,13 @@
       panel.classList.toggle("is-open", open);
       fab.setAttribute("aria-expanded", open ? "true" : "false");
       fab.setAttribute("aria-label", open ? "Close ask chat" : "Open ask chat");
-      if (open) input.focus({ preventScroll: true });
+      /* Mobile: skip autofocus so the keyboard does not open until the visitor taps the field */
+      if (
+        open &&
+        !window.matchMedia("(max-width: 700px), (hover: none) and (pointer: coarse)").matches
+      ) {
+        input.focus({ preventScroll: true });
+      }
     }
 
     async function ask(raw) {
