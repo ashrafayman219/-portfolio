@@ -17,8 +17,51 @@
       a: "Goodbye - feel free to open this chat again anytime."
     },
     {
-      k: ["who is", "who are", "about him", "about ashraf", "introduce", "bio", "yourself", "profile", "summary", "tell me about"],
-      a: "<b>Ashraf Ayman Abdel Majeed</b> is a GIS Engineer / GIS Solutions Engineer based in Mansoura, Egypt. He builds GIS web maps, spatial analysis, GeoAI, remote sensing, and LiDAR solutions. <i>“A good map tells an excellent story.”</i>"
+      k: [
+        "who are you",
+        "what are you",
+        "are you a bot",
+        "are you ai",
+        "are you chatgpt",
+        "your name",
+        "who am i chatting",
+        "assistant"
+      ],
+      a:
+        "I’m <b>Ashraf’s portfolio assistant</b>. I answer from this site about his background, skills, projects, and how to contact him.<br><br>" +
+        "Ask <b>who is Ashraf</b> or tap <b>About</b> for his full intro."
+    },
+    {
+      k: [
+        "who is",
+        "who ashraf",
+        "who ayman",
+        "who is ashraf",
+        "who is ayman",
+        "about him",
+        "about ashraf",
+        "about ayman",
+        "introduce",
+        "bio",
+        "profile",
+        "summary",
+        "tell me about",
+        "overview",
+        "background"
+      ],
+      a:
+        "<b>Ashraf Ayman Abdel Majeed</b> is a <b>GIS Engineer</b> based in <b>Mansoura, Egypt</b>.<br><br>" +
+        "He builds GIS web maps, spatial analysis, GeoAI, remote sensing, and LiDAR solutions - currently as <b>Senior GIS Developer</b> at Gulf Terminal and a <b>Top Rated</b> freelance GIS Engineer on Upwork.<br><br>" +
+        "<b>Path</b> <span class=\"ask-path-yrs\">5+ years</span>" +
+        "<ol class=\"ask-path\">" +
+        "<li><span>BSc Geomatics</span><small>1<sup>st</sup> Honor</small></li>" +
+        "<li><span>ITI &amp; NTI</span><small>Training</small></li>" +
+        "<li><span>Edge Pro</span><small>GIS Developer</small></li>" +
+        "<li><span>AIC</span><small>GIS Team Lead</small></li>" +
+        "<li><span>Gulf Terminal + Upwork</span><small>Senior · Top Rated</small></li>" +
+        "</ol>" +
+        "<i>“A good map tells an excellent story.”</i><br><br>" +
+        "Ask about <b>education</b>, <b>career</b>, <b>skills</b>, <b>projects</b>, or <b>contact</b> for more detail."
     },
     {
       k: ["what do you do", "what does he do", "what is his job", "his role", "his job", "his title", "his profession", "work as", "solutions engineer", "gis engineer", "gis developer", "gis analyst"],
@@ -247,7 +290,7 @@
     return (
       "No. Ashraf is not a " +
       escapeHtml(claim) +
-      ". He is a <b>GIS Engineer / GIS Solutions Engineer</b> focused on web maps, spatial analysis, and GeoAI."
+      ". He is a <b>GIS Engineer</b> focused on web maps, spatial analysis, and GeoAI."
     );
   }
 
@@ -275,13 +318,83 @@
         best = entry;
       }
     }
-    if (!best || bestScore < 6) return null;
+    if (!best || bestScore < 3) return null;
     return best.a;
+  }
+
+  function kbByKeyword(key) {
+    for (var i = 0; i < KB.length; i++) {
+      if (KB[i].k.indexOf(key) !== -1) return KB[i].a;
+    }
+    return null;
+  }
+
+  function aboutAnswer() {
+    return kbByKeyword("about ashraf");
+  }
+
+  function isGreetingIntent(t) {
+    return /^(?:hi+|hii+|hello+|hey+|yo|salam|salaam|مرحبا|اهلا|أهلا)(?:\s+(?:there|ashraf|ayman|again))?$/.test(
+      t
+    ) || /^(?:good\s+(?:morning|evening|afternoon|day))$/.test(t);
+  }
+
+  function isAssistantIntent(t) {
+    if (
+      /^(?:who\s+are\s+you|what\s+are\s+you|who\s+r\s+u|what\s+r\s+u)(?:\s|$)/.test(
+        t
+      )
+    ) {
+      return true;
+    }
+    if (
+      /^(?:are\s+you\s+(?:a\s+)?(?:bot|ai|robot|chatgpt|assistant)|your\s+name)\b/.test(
+        t
+      )
+    ) {
+      return true;
+    }
+    return false;
+  }
+
+  /* Catches chip, short asks, typos (whoe), and "who ashraf" forms before weak-token scoring. */
+  function isAboutIntent(t) {
+    if (
+      t === "about" ||
+      t === "bio" ||
+      t === "profile" ||
+      t === "summary" ||
+      t === "overview" ||
+      t === "background" ||
+      t === "ashraf" ||
+      t === "ayman" ||
+      t === "ashraf ayman" ||
+      t === "ashraf ayman abdel majeed"
+    ) {
+      return true;
+    }
+    if (
+      /^(?:whoe?|who)\s+(?:is\s+|are\s+)?(?:ashraf|ayman|he|him)(?:\s|$)/.test(t)
+    ) {
+      return true;
+    }
+    if (
+      /^(?:tell\s+me\s+about|about|info\s+(?:on|about)|summary\s+(?:of|for|about)|introduce)\s+(?:ashraf|ayman|him|himself|yourself)\b/.test(
+        t
+      )
+    ) {
+      return true;
+    }
+    if (/\bwhoe?\s+is\s+(?:ashraf|ayman)\b/.test(t)) return true;
+    return false;
   }
 
   function localAnswer(q) {
     var t = norm(q);
     if (!t) return null;
+    if (isGreetingIntent(t)) return kbByKeyword("hello");
+    if (isAssistantIntent(t)) return kbByKeyword("who are you");
+    if (isAboutIntent(t)) return aboutAnswer();
     return kbAnswer(t) || roleQuestion(t);
   }
 

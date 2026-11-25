@@ -173,6 +173,65 @@ html[data-theme="dark"] .ask-av {
   padding-left: 18px;
 }
 
+.ask-path-yrs {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 0.78em;
+  font-weight: 700;
+  background: color-mix(in srgb, var(--ask-acc) 18%, transparent);
+  color: var(--ask-acc);
+  vertical-align: middle;
+}
+
+.ask-path {
+  list-style: none;
+  margin: 10px 0 14px;
+  padding: 0 0 0 2px;
+}
+
+.ask-path li {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  align-items: baseline;
+  padding: 7px 0 7px 22px;
+  font-weight: 700;
+}
+
+.ask-path li::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--ask-acc);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ask-acc) 22%, transparent);
+  translate: 0 -50%;
+}
+
+.ask-path li:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: 7px;
+  top: calc(50% + 8px);
+  bottom: -8px;
+  width: 2px;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--ask-acc) 45%, transparent);
+}
+
+.ask-path small {
+  font-size: 0.78em;
+  font-weight: 600;
+  color: var(--ask-mute);
+  text-align: right;
+}
+
 .ask-msg a {
   color: inherit;
   font-weight: 700;

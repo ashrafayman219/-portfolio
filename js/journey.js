@@ -9,8 +9,17 @@
   var leaving = false;
   var raf = 0;
   var pctEl = document.getElementById("introPct");
+  var stEl = document.getElementById("introSt");
   var skipBtn = document.getElementById("introSkip");
   var mapSvg = document.getElementById("introMap");
+  var STATUS = [
+    "Welcome. Glad you're here",
+    "Ashraf Ayman · GIS Engineer",
+    "Maps, analysis & GeoAI",
+    "Projects & experience",
+    "Almost ready. Thanks",
+    "Portfolio ready"
+  ];
 
   function measureScrollbarWidth() {
     var probe = document.createElement("div");
@@ -33,7 +42,8 @@
     leaving = true;
     cancelAnimationFrame(raf);
     loader.style.setProperty("--p", "1");
-    if (pctEl) pctEl.textContent = "100%";
+    if (pctEl) pctEl.textContent = "100";
+    if (stEl) stEl.textContent = STATUS[STATUS.length - 1];
 
     window.scrollTo(0, 0);
     loader.classList.add("is-out");
@@ -149,14 +159,28 @@
     mapSvg.querySelector(".L2").innerHTML = html;
 
     html = "";
-    for (var n = 0; n < 16; n++) {
+    /* Guaranteed samples in the open mid-gap (empty band above the intro card on mobile) */
+    var samples = mobile
+      ? [[465, 102]]
+      : [[430, 210]];
+    for (var s = 0; s < samples.length; s++) {
+      html +=
+        '<circle cx="' +
+        samples[s][0] +
+        '" cy="' +
+        samples[s][1] +
+        '" r="7" style="animation-delay:' +
+        (2.8 + s * 0.08).toFixed(2) +
+        's"/>';
+    }
+    for (var n = 0; n < 13; n++) {
       html +=
         '<circle cx="' +
         (r() * 780 + 10).toFixed(0) +
         '" cy="' +
         (r() * 480 + 10).toFixed(0) +
         '" r="6" style="animation-delay:' +
-        (2.8 + n * 0.06).toFixed(2) +
+        (3.05 + n * 0.06).toFixed(2) +
         's"/>';
     }
     mapSvg.querySelector(".L3").innerHTML = html;
@@ -200,7 +224,11 @@
     var p = Math.min(100, ((now - t0) / minMs) * 100);
     var shown = loaded ? p : Math.min(p, 92);
     loader.style.setProperty("--p", String(shown / 100));
-    if (pctEl) pctEl.textContent = Math.floor(shown) + "%";
+    if (pctEl) pctEl.textContent = String(Math.floor(shown));
+    if (stEl) {
+      stEl.textContent =
+        STATUS[Math.min(STATUS.length - 1, Math.floor((shown / 100) * STATUS.length))];
+    }
     if (shown >= 100) {
       window.setTimeout(closeJourneyLoader, 300);
     } else {
