@@ -192,6 +192,23 @@
   transform: translateX(8px);
 }
 
+.cta-map-ic {
+  width: 1.15em;
+  height: 1.15em;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.25s ease;
+}
+
+.cta-map:hover .cta-map-ic,
+.cta-map:focus-visible .cta-map-ic {
+  transform: translateY(-2px);
+}
+
 .splash-scroll {
   position: absolute;
   z-index: 2;
@@ -236,6 +253,72 @@
   }
 }
 
+/* Light theme — clean palette; center kept clear (network lines unchanged) */
+html[data-theme="light"] .splash {
+  background: #f5f9fa;
+  color: #0f1b24;
+}
+
+html[data-theme="light"] .splash-media {
+  background: #f5f9fa;
+}
+
+html[data-theme="light"] .splash-glow {
+  display: none;
+}
+
+html[data-theme="light"] .splash-grid {
+  opacity: 0.12;
+  background-image:
+    linear-gradient(rgba(220, 230, 234, 0.7) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(220, 230, 234, 0.7) 1px, transparent 1px);
+  /* Keep mid field open — grid only near edges */
+  mask-image: radial-gradient(ellipse 55% 45% at 50% 42%, transparent 0%, transparent 55%, #000 100%);
+  -webkit-mask-image: radial-gradient(ellipse 55% 45% at 50% 42%, transparent 0%, transparent 55%, #000 100%);
+}
+
+html[data-theme="light"] .splash-veil {
+  background: linear-gradient(
+    to bottom,
+    rgba(245, 249, 250, 0.35) 0%,
+    transparent 22%,
+    transparent 72%,
+    rgba(227, 241, 243, 0.28) 100%
+  );
+}
+
+html[data-theme="light"] .splash-title {
+  color: #0f1b24;
+}
+
+html[data-theme="light"] .splash-highlight {
+  color: #17707f;
+}
+
+html[data-theme="light"] .splash-caret {
+  background: #17707f;
+}
+
+html[data-theme="light"] .splash-sub {
+  color: #55677a;
+}
+
+html[data-theme="light"] .splash-cta {
+  background: #17707f;
+  color: #fff;
+}
+
+html[data-theme="light"] .splash-cta:hover,
+html[data-theme="light"] .splash-cta:focus-visible {
+  background: #115a67;
+  color: #fff;
+}
+
+html[data-theme="light"] .splash-scroll {
+  color: #17707f;
+  filter: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .splash-caret,
   .splash-scroll.is-in {
@@ -249,7 +332,8 @@
     transform: none;
   }
 
-  .cta-arrow > span {
+  .cta-arrow > span,
+  .cta-map-ic {
     transition: none;
   }
 

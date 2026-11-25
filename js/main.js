@@ -259,6 +259,16 @@
             animateShell(nowScrolled);
           }
         }
+        // Mobile dock: stay dark until the profile stats come into view
+        if (tabs && phoneQuery.matches) {
+          const stats = document.querySelector(".hero-stats");
+          if (stats) {
+            const line = window.innerHeight * 0.72;
+            tabs.classList.toggle("is-light", stats.getBoundingClientRect().top < line);
+          }
+        } else if (tabs) {
+          tabs.classList.remove("is-light");
+        }
         setActive(navSection);
       };
       const followIndicator = () => {

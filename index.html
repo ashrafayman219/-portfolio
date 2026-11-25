@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script>
       (function () {
+        try {
+          var theme = localStorage.getItem("portfolio-theme");
+          if (theme !== "light" && theme !== "dark") theme = "light";
+          document.documentElement.setAttribute("data-theme", theme);
+        } catch (e) {
+          document.documentElement.setAttribute("data-theme", "light");
+        }
         var nav = performance.getEntriesByType("navigation")[0];
         if (!nav || nav.type !== "reload") return;
         if ("scrollRestoration" in history) history.scrollRestoration = "manual";
@@ -40,7 +47,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
-    <link rel="preload" as="image" href="images/journey-bg.webp" type="image/webp" />
     <link rel="stylesheet" href="css/tokens.css" />
     <link rel="stylesheet" href="css/layout.css" />
     <link rel="stylesheet" href="css/components.css" />
@@ -51,48 +57,61 @@
     <link rel="stylesheet" href="css/game-map.css" />
   </head>
   <body class="is-loading">
-    <div class="journey-loader" id="journeyLoader">
-      <img class="journey-bg" src="images/journey-bg.webp" alt="" width="1672" height="941" decoding="async" fetchpriority="high" />
-      <div class="journey-veil" aria-hidden="true"></div>
-      <div class="journey-fx" aria-hidden="true">
-        <svg class="journey-symbols" width="0" height="0" focusable="false">
-          <symbol id="ji-pin" viewBox="0 0 24 24"><path d="M12 22s-7-6-7-12a7 7 0 0 1 14 0c0 6-7 12-7 12z"/><circle cx="12" cy="10" r="2.6"/></symbol>
-          <symbol id="ji-layers" viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 12.5l9 5 9-5"/><path d="M3 17l9 5 9-5"/></symbol>
-          <symbol id="ji-hex" viewBox="0 0 24 24"><path d="M8 3h8l4 7-4 7H8l-4-7z"/><path d="M4 10h16M8 3l4 7 4-7M8 17l4-7 4 7"/></symbol>
-          <symbol id="ji-drone" viewBox="0 0 24 24"><rect x="9.5" y="9.5" width="5" height="5" rx="1.2"/><path d="M9.8 9.8L7 7M14.2 9.8L17 7M9.8 14.2L7 17M14.2 14.2L17 17"/><circle cx="5.5" cy="5.5" r="2.5"/><circle cx="18.5" cy="5.5" r="2.5"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></symbol>
-          <symbol id="ji-sat" viewBox="0 0 24 24"><g transform="rotate(-35 12 12)"><rect x="9.5" y="9" width="5" height="6" rx="1"/><rect x="1" y="9.5" width="6.5" height="5" rx=".7"/><rect x="16.5" y="9.5" width="6.5" height="5" rx=".7"/><path d="M7.5 12h2M14.5 12h2"/></g></symbol>
+    <div class="journey-loader" id="journeyLoader" role="dialog" aria-label="Intro: Ashraf Ayman, GIS Engineer">
+      <div class="intro-scene" id="introScene">
+        <svg class="intro-map" id="introMap" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          <g class="L1"></g>
+          <g class="L2"></g>
+          <g class="L3"></g>
         </svg>
-        <div class="j-chip j-rot" style="--x:4%;--y:14%;--mx:2%;--my:12%"><svg class="j-ic"><use href="#ji-drone"/></svg></div>
-        <div class="j-chip" style="--x:32%;--y:11%;--mx:32%;--my:5%;--fd:-2s"><svg class="j-ic"><use href="#ji-layers"/></svg></div>
-        <div class="j-chip" style="--x:61%;--y:16%;--mx:62%;--my:13%;--fd:-4s"><svg class="j-ic"><use href="#ji-hex"/></svg></div>
-        <div class="j-chip" style="--x:88%;--y:11%;--mx:86%;--my:5%;--fd:-1s"><svg class="j-ic"><use href="#ji-pin"/></svg></div>
-        <svg class="j-sat j-ic" viewBox="0 0 24 24"><use href="#ji-sat"/></svg>
-        <div class="j-nb"><svg viewBox="0 0 24 24" class="j-ic"><circle cx="12" cy="12" r="10"/><path d="M12 4l3.5 9-3.5-2-3.5 2z" fill="#fff"/></svg><div>N<i></i>50 km</div></div>
-      </div>
-      <div class="journey">
-        <svg id="j-scene" font-family="Source Sans 3, Segoe UI, sans-serif" viewBox="-110 70 1900 640" role="group" aria-label="Career journey of Ashraf Ayman, from a geomatics degree in Mansoura, through ITI and Edge Pro, to Gulf Terminal.">
-          <defs>
-            <filter id="j-blur" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="14"/></filter>
-            <filter id="j-soft" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="6"/></filter>
-            <linearGradient id="j-rg" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#6b7280"/><stop offset="1" stop-color="#4b5563"/></linearGradient>
-            <filter id="j-grain" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 .35 0 0 0 0 .4 0 0 0 0 .46 0 0 0 .22 0" result="g"/><feComposite in="g" in2="SourceAlpha" operator="in"/></filter>
-            <mask id="j-mask" maskUnits="userSpaceOnUse" x="-200" y="-200" width="1700" height="1700"><path id="j-rv" fill="none" stroke="#fff" stroke-width="420" stroke-linecap="butt"/></mask>
-          </defs>
-          <path id="j-road" d="M560 1020 C460 950 300 880 100 880 C53 880 15 842 15 795 C15 748 53 710 100 710 C190 710 235 662 320 640 C520 598 690 590 790 540 C890 490 845 390 750 360 C680 338 580 366 545 305 C515 252 580 228 640 222 C750 211 860 225 940 165 C988 129 1020 48 1040 -30" fill="none" stroke="none"/>
-          <g id="j-roadg"></g>
-          <g id="j-arrows"></g>
-          <rect x="1076" y="115" width="184" height="8" rx="4" fill="#3f9a36" visibility="hidden"/>
-          <g id="j-pins"></g>
-          <g id="j-cols" text-anchor="middle"></g>
-        </svg>
-        <div class="journey-id">
-          <p class="journey-caption">
-            <span class="journey-name">Ashraf Ayman</span>
-            <span class="journey-role">GIS Engineer</span>
-          </p>
-          <p class="journey-enter">Click anywhere to enter
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-          </p>
+        <aside class="intro-panel">
+          <header class="intro-head">
+            <div>
+              <h1 class="intro-name"><span class="intro-mk"><span>Ashraf Ayman</span></span></h1>
+              <p class="intro-role"><span class="intro-mk intro-mk-role"><span>GIS Engineer</span></span></p>
+            </div>
+            <svg class="intro-na" viewBox="0 0 60 60" aria-hidden="true">
+              <circle cx="30" cy="32" r="22"/>
+              <g class="nr"><path class="ar" d="M30 16L39 44L30 38L21 44Z"/></g>
+              <text x="30" y="7" text-anchor="middle">N</text>
+            </svg>
+          </header>
+          <ul class="intro-layers">
+            <li style="--d:1.3s">
+              <span class="intro-cb" aria-hidden="true"><svg viewBox="0 0 24 24"><path pathLength="1" d="M4 12.5l5 5L20 6.5"/></svg></span>
+              <div class="intro-tx">
+                <i>Education</i>
+                <b>Mansoura University</b>
+                <small>BSc in Geomatics (1<sup>st</sup> Honor)</small>
+              </div>
+              <em>4 yrs</em>
+            </li>
+            <li style="--d:1.8s">
+              <span class="intro-cb" aria-hidden="true"><svg viewBox="0 0 24 24"><path pathLength="1" d="M4 12.5l5 5L20 6.5"/></svg></span>
+              <div class="intro-tx">
+                <i>Training</i>
+                <b>Information Technology Institute (ITI)</b>
+                <b>National Telecommunication Institute (NTI)</b>
+                <b>Edge Pro for Information Systems</b>
+              </div>
+              <em>2 yrs</em>
+            </li>
+            <li style="--d:2.3s">
+              <span class="intro-cb" aria-hidden="true"><svg viewBox="0 0 24 24"><path pathLength="1" d="M4 12.5l5 5L20 6.5"/></svg></span>
+              <div class="intro-tx">
+                <i>Career</i>
+                <b>Gulf Terminal</b>
+                <b>AIC</b>
+                <b>Upwork</b>
+              </div>
+              <em>5 yrs</em>
+            </li>
+          </ul>
+        </aside>
+        <div class="intro-ft">
+          <div class="intro-bar" aria-hidden="true"><i></i></div>
+          <span class="intro-pct" id="introPct">0%</span>
+          <button class="intro-skip" id="introSkip" type="button">Skip intro →</button>
         </div>
       </div>
     </div>
@@ -126,6 +145,15 @@
         </nav>
 
         <div class="nav-actions">
+          <button type="button" class="theme-toggle" id="themeToggle" aria-label="Switch to dark theme" aria-pressed="true">
+            <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="4"/>
+              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+            </svg>
+            <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 14.5A8.5 8.5 0 1 1 9.5 3a7 7 0 0 0 11.5 11.5z"/>
+            </svg>
+          </button>
           <a class="nav-mail is-send" id="navEmail" href="mailto:ashrafayman219@gmail.com">
             <span class="nav-mail-label">Email</span>
             <svg class="nav-mail-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -153,7 +181,7 @@
             <span class="splash-highlight" id="splashHighlight"></span><span class="splash-caret" id="splashCaretB" hidden></span>
           </h1>
           <p class="splash-sub" id="splashSub">GIS web maps, spatial analysis, and GeoAI for complex spatial problems.</p>
-          <a class="splash-cta cta-arrow" id="splashCta" href="#map">Explore Map <span aria-hidden="true">→</span></a>
+          <a class="splash-cta cta-map" id="splashCta" href="#map">Explore Map <svg class="cta-map-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></a>
         </div>
         <div class="splash-scroll" aria-hidden="true">
           <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
@@ -170,7 +198,7 @@
           <div class="hero-body">
             <p class="hero-about" id="heroAbout"></p>
             <div class="hero-actions">
-              <a class="btn btn-primary cta-arrow" href="#map">Explore Map <span aria-hidden="true">→</span></a>
+              <a class="btn btn-primary" href="#map">Explore Map</a>
               <a class="btn btn-outline" href="#projects">Featured projects</a>
               <a class="hero-text-link" id="heroEmail" href="mailto:ashrafayman219@gmail.com">Email</a>
             </div>
@@ -839,11 +867,11 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
     <script src="js/config.js"></script>
+    <script src="js/theme.js"></script>
     <script src="js/projects.js"></script>
     <script src="js/map-ui.js"></script>
     <script src="js/map.js"></script>
     <script src="js/main.js"></script>
-    <script src="js/road-geometry.js"></script>
     <script src="js/journey.js"></script>
     <script src="js/splash.js"></script>
     <script src="js/splash-network.js"></script>

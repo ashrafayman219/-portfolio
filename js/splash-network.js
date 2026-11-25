@@ -64,6 +64,12 @@
     var d;
     var link = 130;
     var cursor = 170;
+    var light = document.documentElement.getAttribute("data-theme") === "light";
+    var dot = light ? "rgba(45, 110, 130, 0.55)" : "rgba(220, 235, 255, 0.95)";
+    var cursorRgb = light ? "45, 110, 130" : "144, 205, 244";
+    var linkRgb = light ? "55, 120, 140" : "144, 190, 240";
+    var cursorAlpha = light ? 0.45 : 0.85;
+    var linkAlpha = light ? 0.34 : 0.5;
 
     for (i = 0; i < particles.length; i += 1) {
       p = particles[i];
@@ -78,7 +84,7 @@
       if (d < cursor && d > 1) {
         p.x += (dx / d) * 0.5;
         p.y += (dy / d) * 0.5;
-        ctx.strokeStyle = "rgba(144, 205, 244," + (0.85 * (1 - d / cursor)).toFixed(3) + ")";
+        ctx.strokeStyle = "rgba(" + cursorRgb + "," + (cursorAlpha * (1 - d / cursor)).toFixed(3) + ")";
         ctx.lineWidth = 1.25;
         ctx.beginPath();
         ctx.moveTo(p.x, p.y);
@@ -86,7 +92,7 @@
         ctx.stroke();
       }
 
-      ctx.fillStyle = "rgba(220, 235, 255, 0.95)";
+      ctx.fillStyle = dot;
       ctx.beginPath();
       ctx.arc(p.x, p.y, 2.2, 0, Math.PI * 2);
       ctx.fill();
@@ -100,7 +106,7 @@
         dy = p.y - q.y;
         d = Math.hypot(dx, dy);
         if (d < link) {
-          ctx.strokeStyle = "rgba(144, 190, 240," + (0.5 * (1 - d / link)).toFixed(3) + ")";
+          ctx.strokeStyle = "rgba(" + linkRgb + "," + (linkAlpha * (1 - d / link)).toFixed(3) + ")";
           ctx.lineWidth = 1.1;
           ctx.beginPath();
           ctx.moveTo(p.x, p.y);

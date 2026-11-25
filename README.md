@@ -1,6 +1,6 @@
 # Ashraf Ayman
 
-Personal portfolio of Ashraf Ayman, GIS Solutions Engineer. The site presents map projects, experience, and a way to get in touch.
+Personal portfolio of Ashraf Ayman, GIS Engineer. The site presents map projects, experience, and a way to get in touch.
 
 Built with HTML, CSS, and JavaScript. The project map uses [Leaflet](https://leafletjs.com/). There is no build step.
 
