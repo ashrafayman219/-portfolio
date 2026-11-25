@@ -86,17 +86,34 @@
     if (!mapSvg) return;
     var r = rnd(5);
     var html = "";
+    var mobile = window.matchMedia("(max-width: 700px)").matches;
     var hubs = [
       [180, 220, 1],
       [640, 150, 2],
       [520, 400, 3]
     ];
+    var ringCount = 9;
+    /* Mobile: grid of spaced hubs to fill the frame without ring overlap */
+    if (mobile) {
+      mapSvg.setAttribute("preserveAspectRatio", "xMidYMin slice");
+      hubs = [
+        [100, 40, 1],
+        [400, 35, 2],
+        [700, 40, 3],
+        [220, 200, 4],
+        [580, 200, 5],
+        [100, 360, 6],
+        [400, 380, 7],
+        [700, 360, 8]
+      ];
+      ringCount = 6;
+    }
     for (var h = 0; h < hubs.length; h++) {
       var hx = hubs[h][0];
       var hy = hubs[h][1];
       var hz = hubs[h][2];
-      for (var k = 9; k >= 1; k--) {
-        var delay = (0.35 + h * 0.45 + (9 - k) * 0.08).toFixed(2);
+      for (var k = ringCount; k >= 1; k--) {
+        var delay = (0.35 + h * 0.4 + (ringCount - k) * 0.08).toFixed(2);
         var sw = k % 4 === 0 ? 1.35 : 0.7;
         html +=
           '<path pathLength="1" d="' +

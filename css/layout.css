@@ -400,12 +400,13 @@ html[data-theme="light"] .site-header:not(.is-scrolled) .header-shell::before {
 }
 
 html[data-theme="light"] .site-header:not(.is-scrolled) .nav-tabs::before {
-  background: rgba(255, 255, 255, 0.72);
-  border-color: #dce6ea;
+  background: #ffffff;
+  border-color: #b7c8d0;
+  box-shadow: 0 10px 28px rgba(15, 27, 36, 0.1), 0 1px 3px rgba(15, 27, 36, 0.05);
 }
 
 html[data-theme="light"] .site-header:not(.is-scrolled) .nav-links a {
-  color: #55677a;
+  color: #3d4f5c;
 }
 
 html[data-theme="light"] .site-header:not(.is-scrolled) .nav-links a.is-active,
