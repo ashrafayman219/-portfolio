@@ -458,6 +458,7 @@ html[data-theme="light"] .journey-loader {
 html[data-theme="dark"] .intro-node em {
   color: #08202a;
   border-color: #fff;
+  box-shadow: 0 4px 12px #0004;
 }
 
 .intro-tx {

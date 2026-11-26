@@ -22,17 +22,122 @@
   };
 
   const TILES = {
+    dark: [
+      "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}",
+      "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}"
+    ],
     gray: [
       "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
       "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}"
     ],
     streets: ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"],
-    satellite: ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"]
+    topo: ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}"],
+    terrain: [
+      "https://server.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/{z}/{y}/{x}",
+      "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Reference_Overlay/MapServer/tile/{z}/{y}/{x}"
+    ],
+    satellite: ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],
+    hybrid: [
+      "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+      "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}"
+    ],
+    oceans: [
+      "https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}",
+      "https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Reference/MapServer/tile/{z}/{y}/{x}"
+    ],
+    natgeo: ["https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}"],
+    osm: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"]
   };
 
-  const CIRCLE_COLORS = ["#3eb4c6", "#c6a15a", "#1c2838"];
+  const DARK_BASEMAPS = { dark: 1, satellite: 1, hybrid: 1, oceans: 1 };
+
+  const ACCENT_KEY = "portfolio.map.accent";
+  const ACCENT_PALETTES = [
+    {
+      id: "teal",
+      label: "Teal",
+      arc: "#1a8a9a",
+      glow: "#19c2d8",
+      cluster: "#1a6a80",
+      clusterSel: "#145668",
+      home: "#4ec8d8",
+      spider: "#1a7a8c",
+      pins: ["#3eb4c6", "#c6a15a", "#1c2838"],
+      soft: "26, 106, 128",
+      glowRgb: "25, 194, 216"
+    },
+    {
+      id: "amber",
+      label: "Amber",
+      arc: "#a67c1a",
+      glow: "#e0b33a",
+      cluster: "#8a6414",
+      clusterSel: "#6e4f10",
+      home: "#f0c14d",
+      spider: "#b88920",
+      pins: ["#d4a017", "#3eb4c6", "#1c2838"],
+      soft: "138, 100, 20",
+      glowRgb: "224, 179, 58"
+    },
+    {
+      id: "coral",
+      label: "Coral",
+      arc: "#c45a4a",
+      glow: "#ef7a68",
+      cluster: "#a8463a",
+      clusterSel: "#86362e",
+      home: "#ff8f7a",
+      spider: "#d46b5c",
+      pins: ["#e06b5a", "#c6a15a", "#1c2838"],
+      soft: "168, 70, 58",
+      glowRgb: "239, 122, 104"
+    },
+    {
+      id: "violet",
+      label: "Violet",
+      arc: "#6b5b95",
+      glow: "#9b8ac4",
+      cluster: "#564678",
+      clusterSel: "#43385e",
+      home: "#b5a4e0",
+      spider: "#7a6aa8",
+      pins: ["#8b7bb8", "#c6a15a", "#1c2838"],
+      soft: "86, 70, 120",
+      glowRgb: "155, 138, 196"
+    },
+    {
+      id: "emerald",
+      label: "Emerald",
+      arc: "#1f7a5c",
+      glow: "#3dbe92",
+      cluster: "#18634a",
+      clusterSel: "#124c39",
+      home: "#5fd4a8",
+      spider: "#2a9a72",
+      pins: ["#2fa87a", "#c6a15a", "#1c2838"],
+      soft: "24, 99, 74",
+      glowRgb: "61, 190, 146"
+    }
+  ];
   const TOUR_STEP_MS = 2200;
   const HOME = [31.0409, 31.3785];
+
+  function accentById(id) {
+    for (var i = 0; i < ACCENT_PALETTES.length; i++) {
+      if (ACCENT_PALETTES[i].id === id) return ACCENT_PALETTES[i];
+    }
+    return ACCENT_PALETTES[0];
+  }
+
+  function loadAccentId() {
+    try {
+      var saved = localStorage.getItem(ACCENT_KEY);
+      if (saved && accentById(saved).id === saved) return saved;
+    } catch (err) {
+      /* ignore */
+    }
+    return "teal";
+  }
 
   function nearHome(latitude, longitude) {
     const toRad = (degrees) => (degrees * Math.PI) / 180;
@@ -44,8 +149,6 @@
     return 2 * 6371 * Math.asin(Math.min(1, Math.sqrt(a))) < 2;
   }
 
-  const ROUTE_ARC = "#1a8a9a";
-  const ROUTE_GLOW = "#19c2d8";
 
   function routeEase(t) {
     const x = Math.max(0, Math.min(1, t));
@@ -91,7 +194,8 @@
     };
   }
 
-  function collectFeatures(data) {
+  function collectFeatures(data, pins) {
+    const colors = pins || ACCENT_PALETTES[0].pins;
     return (data.projects || []).map((project, index) => ({
         id: "project-" + project.id,
       projectId: project.id,
@@ -103,7 +207,7 @@
       country: (project.location && project.location.country) || "Unknown",
         latitude: project.location.latitude,
         longitude: project.location.longitude,
-      color: CIRCLE_COLORS[index % CIRCLE_COLORS.length]
+      color: colors[index % colors.length]
     }));
   }
 
@@ -127,7 +231,7 @@
     features: [],
     byId: null,
     tileLayers: [],
-    currentBasemap: "gray",
+    currentBasemap: "dark",
     layerVisible: { professional: true, academic: true },
     selectedId: null,
     selectedCountry: null,
@@ -174,9 +278,16 @@
     routeReduced: false,
     routeCoarse: false,
     projectCountPlayed: false,
+    accentId: "teal",
+    routeArc: "#1a8a9a",
+    routeGlow: "#19c2d8",
 
     async init(data) {
-      this.features = collectFeatures(data);
+      this.accentId = loadAccentId();
+      const accent = accentById(this.accentId);
+      this.routeArc = accent.arc;
+      this.routeGlow = accent.glow;
+      this.features = collectFeatures(data, accent.pins);
       this.renderList(this.features);
       this.renderSearchHits(this.features);
       this.renderPills();
@@ -185,6 +296,7 @@
       this.routeReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       this.routeCoarse = window.matchMedia("(pointer: coarse), (max-width: 767px)").matches;
       this.updateStatusCounts();
+      this.applyAccent(this.accentId, false);
       this.renderLegend();
       this.armProjectCount();
       this.syncMapHold();
@@ -665,7 +777,7 @@
         zoomToBoundsOnClick: true,
         spiderfyOnMaxZoom: true,
         maxClusterRadius: 54,
-        spiderLegPolylineOptions: { weight: 1.5, color: "#8b95a1", opacity: 0.9 },
+        spiderLegPolylineOptions: { weight: 1.5, color: accentById(this.accentId).spider, opacity: 0.9 },
         spiderfyDistanceMultiplier: 1,
         spiderfyShapePositions: function (count, center) {
           const reach = count === 2 ? 58 : Math.min(84, 42 + count * 7);
@@ -913,14 +1025,72 @@
     renderLegend() {
       const root = document.getElementById("legendContent");
       if (!root) return;
+      const pins = accentById(this.accentId).pins;
       const types = [
-        ["#3eb4c6", "Professional"],
-        ["#c6a15a", "Education"],
-        ["#1c2838", "Academic"]
+        [pins[0], "Professional"],
+        [pins[1], "Education"],
+        [pins[2], "Academic"]
       ];
       root.innerHTML = types
         .map(([color, name]) => `<div class="legend-item"><span class="legend-swatch" style="background:${color}"></span><span class="legend-text">${escapeHtml(name)}</span></div>`)
         .join("");
+    },
+
+    applyAccent(id, refresh) {
+      const accent = accentById(id);
+      this.accentId = accent.id;
+      this.routeArc = accent.arc;
+      this.routeGlow = accent.glow;
+      const wrap = document.getElementById("map-wrap");
+      if (wrap) {
+        wrap.style.setProperty("--map-accent", accent.cluster);
+        wrap.style.setProperty("--map-accent-sel", accent.clusterSel);
+        wrap.style.setProperty("--map-accent-glow", accent.glow);
+        wrap.style.setProperty("--map-accent-home", accent.home);
+        wrap.style.setProperty("--map-accent-soft", accent.soft);
+        wrap.style.setProperty("--map-accent-glow-rgb", accent.glowRgb);
+        wrap.style.setProperty("--map-spider", accent.spider);
+        wrap.setAttribute("data-map-accent", accent.id);
+      }
+      if (this.group && this.group.options && this.group.options.spiderLegPolylineOptions) {
+        this.group.options.spiderLegPolylineOptions.color = accent.spider;
+      }
+      const btn = document.getElementById("btn-accent");
+      if (btn) {
+        const label = btn.querySelector("span");
+        if (label) label.textContent = accent.label;
+        btn.setAttribute("aria-label", "Map accent color, " + accent.label);
+        btn.title = "Accent: " + accent.label;
+      }
+      if (refresh === false) return;
+      if (this.features) {
+        this.features.forEach((feature, index) => {
+          feature.color = accent.pins[index % accent.pins.length];
+        });
+      }
+      if (this.byId) {
+        this.byId.forEach((marker, id) => {
+          const feature = marker.feature;
+          if (!feature) return;
+          marker.setIcon(this.pinIcon(feature));
+        });
+      }
+      if (this.homeHub) this.homeHub.setIcon(this.homeHubIcon());
+      if (this.group && typeof this.group.refreshClusters === "function") {
+        this.group.refreshClusters();
+      }
+      this.renderLegend();
+    },
+
+    cycleAccent() {
+      const index = ACCENT_PALETTES.findIndex((item) => item.id === this.accentId);
+      const next = ACCENT_PALETTES[(index + 1) % ACCENT_PALETTES.length];
+      try {
+        localStorage.setItem(ACCENT_KEY, next.id);
+      } catch (err) {
+        /* ignore */
+      }
+      this.applyAccent(next.id, true);
     },
 
     armProjectCount() {
@@ -973,22 +1143,31 @@
 
     setBasemap(name) {
       if (!this.map) return;
-      const urls = TILES[name] || TILES.gray;
-      this.currentBasemap = TILES[name] ? name : "gray";
+      const urls = TILES[name] || TILES.dark;
+      this.currentBasemap = TILES[name] ? name : "dark";
       this.tileLayers.forEach((layer) => this.map.removeLayer(layer));
       this.tileLayers = urls.map((url, index) => {
+        const isOsm = this.currentBasemap === "osm";
         const layer = L.tileLayer(url, {
           maxZoom: 13,
           noWrap: true,
           bounds: [[-85, -180], [85, 180]],
-          attribution: index === 0 ? "Tiles &copy; Esri" : "",
+          attribution:
+            index === 0
+              ? isOsm
+                ? '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                : "Tiles &copy; Esri"
+              : "",
           pane: index === 1 ? "place-labels" : "tilePane"
         });
         layer.addTo(this.map);
         return layer;
       });
       const wrap = document.getElementById("map-wrap");
-      if (wrap) wrap.setAttribute("data-basemap", this.currentBasemap);
+      if (wrap) {
+        wrap.setAttribute("data-basemap", this.currentBasemap);
+        wrap.classList.toggle("is-dark-basemap", !!DARK_BASEMAPS[this.currentBasemap]);
+      }
       document.querySelectorAll("#basemap-menu [data-basemap]").forEach((item) => {
         item.classList.toggle("active", item.getAttribute("data-basemap") === this.currentBasemap);
       });
@@ -1049,7 +1228,10 @@
       if (style === "tour") this.routeClock = 0;
       const btn = document.getElementById("flowStyle");
       if (btn) {
-        btn.textContent = "Style: " + names[style];
+        const label = "Style: " + names[style];
+        const content = btn.querySelector(":scope > .liquidGlass-content");
+        if (content) content.textContent = label;
+        else btn.textContent = label;
         btn.setAttribute("aria-label", "Flow line style, " + names[style]);
       }
       if (!this.routesOn) this.setRoutes(true);
@@ -1358,7 +1540,7 @@
       this.routePixels.forEach((curve, index) => {
         if (!curve) return;
         const shown = curve.end < 0.999 ? curveSlice(curve, 0, curve.end) : curve;
-        this.strokeCurve(ctx, shown, 1.3, 0.28, ROUTE_ARC, "round");
+        this.strokeCurve(ctx, shown, 1.3, 0.28, this.routeArc, "round");
         if (this.routeReduced || this.awaitingTurn()) return;
         const cycle = 3.4;
         const u = ((this.routeClock + index * 0.41) % cycle) / cycle;
@@ -1373,7 +1555,7 @@
             if (to <= from) continue;
             const along = 1 - slice / slices;
             const fade = Math.pow(along, 1.4);
-            this.strokeCurve(ctx, curveSlice(curve, from, to), 4.2 * along + 0.6, 0.95 * fade, ROUTE_GLOW, "butt");
+            this.strokeCurve(ctx, curveSlice(curve, from, to), 4.2 * along + 0.6, 0.95 * fade, this.routeGlow, "butt");
           }
           this.drawRouteHead(ctx, curveAt(curve, headAt), 1);
         } else {
@@ -1397,7 +1579,7 @@
         const shown = curve.end < 0.999 ? curveSlice(curve, 0, curve.end) : curve;
         ctx.setLineDash([3, 7]);
         ctx.lineDashOffset = moving ? -this.routeClock * 14 : 0;
-        this.strokeCurve(ctx, shown, 1.2, 0.45, ROUTE_ARC, "round");
+        this.strokeCurve(ctx, shown, 1.2, 0.45, this.routeArc, "round");
         ctx.setLineDash([]);
         ctx.lineDashOffset = 0;
         if (!moving) return;
@@ -1415,7 +1597,7 @@
         this.routePixels.forEach((curve) => {
           if (!curve) return;
           const shown = curve.end < 0.999 ? curveSlice(curve, 0, curve.end) : curve;
-          this.strokeCurve(ctx, shown, 1.3, 0.28, ROUTE_ARC, "round");
+          this.strokeCurve(ctx, shown, 1.3, 0.28, this.routeArc, "round");
         });
         return;
       }
@@ -1432,7 +1614,7 @@
         if (drawn <= 0) return;
         const headAt = routeEase(drawn) * curve.end;
         const partial = headAt >= curve.end - 0.001 ? curveSlice(curve, 0, curve.end) : curveSlice(curve, 0, headAt);
-        this.strokeCurve(ctx, partial, 2.2, 0.9 * fade, ROUTE_ARC, "round");
+        this.strokeCurve(ctx, partial, 2.2, 0.9 * fade, this.routeArc, "round");
         if (drawn < 1) this.drawRouteHead(ctx, curveAt(curve, headAt), fade);
         else {
           this.drawRouteRing(ctx, curve.hub, (time - start - 1.5) / 1.1, fade, curve.gap);
@@ -1454,7 +1636,7 @@
         if (drawn <= 0) return;
         const headAt = routeEase(drawn) * curve.end;
         const partial = headAt >= curve.end - 0.001 ? curveSlice(curve, 0, curve.end) : curveSlice(curve, 0, headAt);
-        this.strokeCurve(ctx, partial, 2.2, 0.9 * fade, ROUTE_ARC, "round");
+        this.strokeCurve(ctx, partial, 2.2, 0.9 * fade, this.routeArc, "round");
         if (drawn < 1) this.drawRouteHead(ctx, curveAt(curve, headAt), fade);
         else {
           this.drawRouteRing(ctx, curve.hub, (this.tourDrawT - start - 1.5) / 1.1, fade, curve.gap);
@@ -1499,10 +1681,10 @@
       ctx.save();
       ctx.globalAlpha = alpha == null ? 1 : alpha;
       if (!this.routeCoarse) {
-        ctx.shadowColor = ROUTE_GLOW;
+        ctx.shadowColor = this.routeGlow;
         ctx.shadowBlur = 14;
       }
-      ctx.fillStyle = ROUTE_GLOW;
+      ctx.fillStyle = this.routeGlow;
       ctx.beginPath();
       ctx.arc(point.x, point.y, glow, 0, Math.PI * 2);
       ctx.fill();
@@ -1518,7 +1700,7 @@
       if (age < 0 || age > 1) return;
       ctx.globalAlpha = (alpha == null ? 1 : alpha) * (1 - age);
       ctx.lineWidth = 2;
-      ctx.strokeStyle = ROUTE_GLOW;
+      ctx.strokeStyle = this.routeGlow;
       ctx.beginPath();
       ctx.arc(point.x, point.y, (gap || 4) + age * 18, 0, Math.PI * 2);
       ctx.stroke();
@@ -1540,6 +1722,9 @@
 
       const routes = document.getElementById("btn-routes");
       if (routes) routes.addEventListener("click", () => this.setRoutes(!this.routesOn));
+
+      const accentBtn = document.getElementById("btn-accent");
+      if (accentBtn) accentBtn.addEventListener("click", () => this.cycleAccent());
 
       const flow = document.getElementById("flowStyle");
       if (flow) {

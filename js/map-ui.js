@@ -122,7 +122,9 @@
         document.getElementById("map-toolbar"),
         document.getElementById("status-bar"),
         document.getElementById("map-legend"),
-        document.getElementById("detail-panel")
+        document.getElementById("detail-panel"),
+        document.getElementById("flowStyle"),
+        document.getElementById("turnBack")
       ]
         .concat([].slice.call(document.querySelectorAll("#map-wrap .flyout")))
         .concat([].slice.call(document.querySelectorAll("#project-pills .bookmark-pill")))
@@ -166,6 +168,10 @@
         return;
       }
       document.querySelectorAll("#map-wrap .liquidGlass-wrapper").forEach((el) => this.unwrapLiquidGlass(el));
+      ["flowStyle", "turnBack"].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el && el.classList.contains("liquidGlass-wrapper")) this.unwrapLiquidGlass(el);
+      });
     },
 
     labelsToolShouldStayActive() {
@@ -225,6 +231,8 @@
       btn.classList.add("active");
       btn.setAttribute("aria-expanded", "true");
       this.positionFlyout(menu, btn);
+      /* Reposition after layout (glass wrappers / grids) so width is correct */
+      requestAnimationFrame(() => this.positionFlyout(menu, btn));
       if (menuId === "search-menu") {
         const input = document.getElementById("search-input");
         if (input) setTimeout(() => input.focus(), 40);
